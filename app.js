@@ -282,6 +282,6 @@ app.listen(PORT, () => {
 
 module.exports = app;
 
-app.get("*", isLoggedIn, (req, res) => {
-  res.redirect("/patient/dashboard");
+app.get("*", (req, res) => {
+  res.redirect("/login");
 });
