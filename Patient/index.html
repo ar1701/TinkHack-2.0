@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="icons-container">
+            <i class="icon fas fa-heartbeat"></i>
+            <i class="icon fas fa-pills"></i>
+            <i class="icon fas fa-stethoscope"></i>
+            <i class="icon fas fa-user-md"></i>
+            <i class="icon fas fa-hospital"></i>
+            <i class="icon fas fa-notes-medical"></i>
+            <i class="icon fas fa-syringe"></i>
+            <i class="icon fas fa-ambulance"></i>
+        </div>
+    </div>
+
+    <!-- Menu Toggle for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2><i class="fas fa-hospital-user"></i> Patient Portal</h2>
+        <ul>
+            <li class="active"><a href="index.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="baseline.html"><i class="fas fa-chart-line"></i> Baseline Details</a></li>
+            <li><a href="reports.html"><i class="fas fa-file-upload"></i> Reports Upload</a></li>
+            <li><a href="navigator.html"><i class="fas fa-compass"></i> Patient Navigator</a></li>
+            <li><a href="caregiver.html"><i class="fas fa-hands-helping"></i> Caregiver</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> My Appointments</a></li>
+            <li><a href="assistant.html"><i class="fas fa-robot"></i> AI Assistant</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="resources.html"><i class="fas fa-book-medical"></i> Resources</a></li>
+        </ul>
+        <div class="logout">
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Welcome back, John Doe</h1>
+            <div class="user-profile">
+                <img src="./Profile.jpeg" alt="User Profile" class="profile-image">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">3</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Profile Section -->
+        <div class="dashboard-section active" id="profile">
+            <div class="section-header">
+                <h2>My Profile</h2>
+                <button class="edit-button"><i class="fas fa-edit"></i> Edit Profile</button>
+            </div>
+            
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="card-icon bg-primary">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h3>Personal Information</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <div class="info-label">Full Name:</div>
+                            <div class="info-value">John Doe</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Date of Birth:</div>
+                            <div class="info-value">January 15, 1980</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Gender:</div>
+                            <div class="info-value">Male</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Blood Group:</div>
+                            <div class="info-value">O+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="card-icon bg-info">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h3>Contact Information</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value">john.doe@example.com</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Phone:</div>
+                            <div class="info-value">+1 (555) 123-4567</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Address:</div>
+                            <div class="info-value">123 Health Street, Medical City, MC 12345</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Emergency Contact:</div>
+                            <div class="info-value">Jane Doe (+1 555-987-6543)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="card-icon bg-success">
+                                <i class="fas fa-medkit"></i>
+                            </div>
+                            <div>
+                                <h3>Medical Information</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <div class="info-label">Primary Physician:</div>
+                            <div class="info-value">Dr. Sarah Johnson</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Insurance:</div>
+                            <div class="info-value">HealthPlus Insurance (Policy #HP987654)</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Allergies:</div>
+                            <div class="info-value">Penicillin, Peanuts</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Medications:</div>
+                            <div class="info-value">Lisinopril (10mg, daily), Atorvastatin (20mg, daily)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
