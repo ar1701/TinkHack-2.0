@@ -1,0 +1,29 @@
+<% if (user.role === 'patient') { %>
+<li class="nav-item">
+  <a
+    href="/patient/dashboard"
+    class="nav-link <%= locals.path === '/patient/dashboard' ? 'active' : '' %>"
+  >
+    <i class="fas fa-tachometer-alt me-2"></i>
+    Dashboard
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/patient/medical-records"
+    class="nav-link <%= locals.path === '/patient/medical-records' ? 'active' : '' %>"
+  >
+    <i class="fas fa-file-medical me-2"></i>
+    Medical Records
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/baseline-screening"
+    class="nav-link <%= locals.path === '/patient/baseline-screening' ? 'active' : '' %>"
+  >
+    <i class="fas fa-clipboard-check me-2"></i>
+    Health Screening
+  </a>
+</li>
+<% } %>

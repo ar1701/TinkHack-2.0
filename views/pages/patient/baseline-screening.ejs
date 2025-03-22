@@ -1,0 +1,864 @@
+<%- include('../../partials/header') %>
+
+<div class="progress-bar-container mb-4">
+  <div class="progress" style="height: 8px">
+    <div
+      class="progress-bar progress-bar-striped progress-bar-animated"
+      role="progressbar"
+      style="width: 0%"
+    ></div>
+  </div>
+  <div class="d-flex justify-content-between mt-2">
+    <small class="text-muted">Progress</small>
+    <small class="text-primary fw-bold"
+      ><span id="progressPercentage">0</span>% Complete</small
+    >
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Baseline Health Screening</h4>
+        <p class="text-muted mb-4">
+          This confidential assessment helps us understand your health
+          background and risks. Your honest responses will help us provide
+          better personalized care.
+        </p>
+
+        <form id="screeningForm">
+          <!-- Drug and Medication History -->
+          <div class="screening-section mb-5">
+            <h5 class="section-title">
+              <i class="fas fa-pills text-primary me-2"></i>
+              Medication & Drug History
+            </h5>
+
+            <div class="mb-3">
+              <label class="form-label">Current Medications</label>
+              <div class="tag-input-container">
+                <input
+                  type="text"
+                  id="medicationInput"
+                  class="form-control"
+                  placeholder="Type medication name and press Enter"
+                />
+                <div
+                  id="currentMedicationTags"
+                  class="tag-container mt-2"
+                ></div>
+                <input
+                  type="hidden"
+                  id="currentMedications"
+                  name="currentMedications"
+                />
+              </div>
+              <small class="text-muted"
+                >Include prescription and over-the-counter medications</small
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Medication Allergies</label>
+              <div class="tag-input-container">
+                <input
+                  type="text"
+                  id="allergyInput"
+                  class="form-control"
+                  placeholder="Type allergy and press Enter"
+                />
+                <div
+                  id="medicationAllergyTags"
+                  class="tag-container mt-2"
+                ></div>
+                <input
+                  type="hidden"
+                  id="medicationAllergies"
+                  name="medicationAllergies"
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Recreational Drug Use</label>
+              <select class="form-select" name="recreationalDrugUse">
+                <option value="Never">Never</option>
+                <option value="Former">Former</option>
+                <option value="Current">Current</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Disease History -->
+          <div class="screening-section mb-5">
+            <h5 class="section-title">
+              <i class="fas fa-heartbeat text-danger me-2"></i>
+              Personal Health History
+            </h5>
+
+            <div class="mb-3">
+              <label class="form-label">Chronic Conditions</label>
+              <div class="tag-input-container">
+                <input
+                  type="text"
+                  id="conditionInput"
+                  class="form-control"
+                  placeholder="Type condition and press Enter"
+                />
+                <div id="chronicConditionTags" class="tag-container mt-2"></div>
+                <input
+                  type="hidden"
+                  id="chronicConditions"
+                  name="chronicConditions"
+                />
+              </div>
+              <small class="text-muted"
+                >E.g., diabetes, hypertension, asthma</small
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label"
+                >Past Surgeries or Hospitalizations</label
+              >
+              <div class="tag-input-container">
+                <input
+                  type="text"
+                  id="surgeryInput"
+                  class="form-control"
+                  placeholder="Type surgery/hospitalization and press Enter"
+                />
+                <div id="pastSurgeryTags" class="tag-container mt-2"></div>
+                <input type="hidden" id="pastSurgeries" name="pastSurgeries" />
+              </div>
+              <small class="text-muted"
+                >Include year if possible (e.g., Appendectomy 2018)</small
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mental Health Conditions</label>
+              <div class="tag-input-container">
+                <input
+                  type="text"
+                  id="mentalHealthInput"
+                  class="form-control"
+                  placeholder="Type condition and press Enter"
+                />
+                <div id="mentalHealthTags" class="tag-container mt-2"></div>
+                <input
+                  type="hidden"
+                  id="mentalHealthConditions"
+                  name="mentalHealthConditions"
+                />
+              </div>
+              <small class="text-muted">E.g., depression, anxiety, PTSD</small>
+            </div>
+          </div>
+
+          <!-- Family History -->
+          <div class="screening-section mb-5">
+            <h5 class="section-title">
+              <i class="fas fa-users text-success me-2"></i>
+              Family Health History
+            </h5>
+            <p class="text-muted mb-3">
+              Select conditions that exist in your immediate family (parents,
+              siblings, children)
+            </p>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="familyCancer"
+                    name="familyHistory.cancer"
+                  />
+                  <label class="form-check-label" for="familyCancer"
+                    >Cancer</label
+                  >
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="familyHeartDisease"
+                    name="familyHistory.heartDisease"
+                  />
+                  <label class="form-check-label" for="familyHeartDisease"
+                    >Heart Disease</label
+                  >
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="familyDiabetes"
+                    name="familyHistory.diabetes"
+                  />
+                  <label class="form-check-label" for="familyDiabetes"
+                    >Diabetes</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="familyAutoimmune"
+                    name="familyHistory.autoimmune"
+                  />
+                  <label class="form-check-label" for="familyAutoimmune"
+                    >Autoimmune Disorders</label
+                  >
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="familyMentalHealth"
+                    name="familyHistory.mentalHealth"
+                  />
+                  <label class="form-check-label" for="familyMentalHealth"
+                    >Mental Health Conditions</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Other Family Conditions</label>
+              <textarea
+                class="form-control"
+                name="familyHistory.other"
+                rows="2"
+                placeholder="List any other significant family health conditions"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Social Determinants of Health -->
+          <div class="screening-section mb-5">
+            <h5 class="section-title">
+              <i class="fas fa-home text-info me-2"></i>
+              Social Determinants of Health
+            </h5>
+            <p class="text-muted mb-3">
+              Your social environment can impact your health. This information
+              helps us provide appropriate support.
+            </p>
+
+            <div class="mb-3">
+              <label class="form-label">Race/Ethnicity</label>
+              <select class="form-select" name="sdoh.race">
+                <option value="">Select...</option>
+                <option value="Asian">Asian</option>
+                <option value="Black/African American">
+                  Black/African American
+                </option>
+                <option value="Hispanic/Latino">Hispanic/Latino</option>
+                <option value="Native American">Native American</option>
+                <option value="Pacific Islander">Pacific Islander</option>
+                <option value="White/Caucasian">White/Caucasian</option>
+                <option value="Multiple">Multiple Races</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Highest Education Level</label>
+              <select class="form-select" name="sdoh.education">
+                <option value="">Select...</option>
+                <option value="Less than high school">
+                  Less than high school
+                </option>
+                <option value="High school/GED">High school/GED</option>
+                <option value="Some college">Some college</option>
+                <option value="Associate's degree">Associate's degree</option>
+                <option value="Bachelor's degree">Bachelor's degree</option>
+                <option value="Graduate degree">Graduate degree</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Housing Situation</label>
+              <select class="form-select" name="sdoh.housing">
+                <option value="">Select...</option>
+                <option value="Own home">Own home</option>
+                <option value="Rent">Rent</option>
+                <option value="Live with family/friends">
+                  Live with family/friends
+                </option>
+                <option value="Supportive housing">Supportive housing</option>
+                <option value="Unstable housing">Unstable housing</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Healthcare Access</label>
+              <select class="form-select" name="sdoh.healthcareAccess">
+                <option value="">Select...</option>
+                <option value="Private insurance">Private insurance</option>
+                <option value="Medicare">Medicare</option>
+                <option value="Medicaid">Medicaid</option>
+                <option value="No insurance">No insurance</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Employment Status</label>
+              <select class="form-select" name="sdoh.employmentStatus">
+                <option value="">Select...</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Self-employed">Self-employed</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Retired">Retired</option>
+                <option value="Student">Student</option>
+                <option value="Unable to work">Unable to work</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Food Security</label>
+              <select class="form-select" name="sdoh.foodSecurity">
+                <option value="">Select...</option>
+                <option value="Always have enough food">
+                  Always have enough food
+                </option>
+                <option value="Sometimes worry about food">
+                  Sometimes worry about food
+                </option>
+                <option value="Often worry about food">
+                  Often worry about food
+                </option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Transportation Access</label>
+              <select class="form-select" name="sdoh.transportationAccess">
+                <option value="">Select...</option>
+                <option value="Own vehicle">Own vehicle</option>
+                <option value="Public transportation">
+                  Public transportation
+                </option>
+                <option value="Rely on others">Rely on others</option>
+                <option value="Limited access">Limited access</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Social Support Network</label>
+              <select class="form-select" name="sdoh.socialSupport">
+                <option value="">Select...</option>
+                <option value="Strong support network">
+                  Strong support network
+                </option>
+                <option value="Some support">Some support</option>
+                <option value="Limited support">Limited support</option>
+                <option value="Very isolated">Very isolated</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Additional Information -->
+          <div class="screening-section mb-5">
+            <h5 class="section-title">
+              <i class="fas fa-info-circle text-warning me-2"></i>
+              Additional Information
+            </h5>
+
+            <div class="mb-3">
+              <label class="form-label"
+                >Is there anything else you'd like us to know about your
+                health?</label
+              >
+              <textarea
+                class="form-control"
+                name="additionalInfo"
+                rows="3"
+                placeholder="Enter any additional health information here"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-check-circle me-2"></i>Submit Screening
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="analysis-result" style="display: none">
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-4">
+        <i class="fas fa-chart-pie text-primary me-2"></i>
+        Health Risk Assessment
+      </h5>
+
+      <div class="alert" id="risk-alert" role="alert">
+        <h6 class="alert-heading mb-2" id="risk-level"></h6>
+        <p class="mb-0" id="risk-explanation"></p>
+      </div>
+
+      <div class="mb-4">
+        <h6>Potential Health Concerns:</h6>
+        <ul id="potential-issues" class="list-group list-group-flush"></ul>
+      </div>
+
+      <div>
+        <h6>Recommended Next Steps:</h6>
+        <div id="recommendations"></div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-secondary" id="editBtn">
+          <i class="fas fa-edit me-2"></i>Edit Responses
+        </button>
+        <button class="btn btn-success" id="saveBtn">
+          <i class="fas fa-check me-2"></i>Save to My Records
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div
+  id="loading-overlay"
+  class="position-fixed top-0 start-0 w-100 h-100 d-none"
+>
+  <div
+    class="d-flex justify-content-center align-items-center h-100 bg-dark bg-opacity-75"
+  >
+    <div class="text-center text-white">
+      <div
+        class="spinner-border text-light mb-3"
+        role="status"
+        style="width: 3rem; height: 3rem"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <h5 id="loading-text">Analyzing your health data...</h5>
+      <p class="small">This may take a few moments</p>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Screening Saved</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <i
+            class="fas fa-check-circle text-success"
+            style="font-size: 4rem"
+          ></i>
+          <h5 class="mt-3">Your baseline screening has been saved</h5>
+          <p class="text-muted">
+            The results are now available on your dashboard
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="/patient/dashboard" class="btn btn-primary">
+          Go to Dashboard
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .screening-section {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards;
+  }
+
+  .screening-section:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #dee2e6;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .section-title:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+  }
+
+  .section-title i {
+    font-size: 1.5rem;
+    margin-right: 15px;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    max-width: 600px;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .tag {
+    background: #e9ecef;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+
+  .tag:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  #loading-overlay {
+    z-index: 2000;
+  }
+
+  #potential-issues .list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 0.75rem 0;
+  }
+
+  .issue-item {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .issue-item i {
+    margin-top: 3px;
+    margin-right: 10px;
+  }
+
+  .progress-bar-container {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-primary {
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Tag input functionality
+    const tagInputs = [
+      {
+        inputId: "medicationInput",
+        tagContainerId: "currentMedicationTags",
+        hiddenInputId: "currentMedications",
+      },
+      {
+        inputId: "allergyInput",
+        tagContainerId: "medicationAllergyTags",
+        hiddenInputId: "medicationAllergies",
+      },
+      {
+        inputId: "conditionInput",
+        tagContainerId: "chronicConditionTags",
+        hiddenInputId: "chronicConditions",
+      },
+      {
+        inputId: "surgeryInput",
+        tagContainerId: "pastSurgeryTags",
+        hiddenInputId: "pastSurgeries",
+      },
+      {
+        inputId: "mentalHealthInput",
+        tagContainerId: "mentalHealthTags",
+        hiddenInputId: "mentalHealthConditions",
+      },
+    ];
+
+    // Set up tag inputs
+    tagInputs.forEach(({ inputId, tagContainerId, hiddenInputId }) => {
+      const inputElement = document.getElementById(inputId);
+      const tagContainer = document.getElementById(tagContainerId);
+      const hiddenInput = document.getElementById(hiddenInputId);
+      let tags = [];
+
+      inputElement.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === ",") {
+          e.preventDefault();
+          const value = this.value.trim();
+          if (value && !tags.includes(value)) {
+            addTag(value);
+            this.value = "";
+            updateHiddenInput();
+          }
+        }
+      });
+
+      function addTag(text) {
+        tags.push(text);
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.innerHTML = text + ' <span class="remove-tag">&times;</span>';
+        tagContainer.appendChild(tag);
+
+        tag.querySelector(".remove-tag").addEventListener("click", function () {
+          tag.remove();
+          tags = tags.filter((t) => t !== text);
+          updateHiddenInput();
+        });
+      }
+
+      function updateHiddenInput() {
+        hiddenInput.value = JSON.stringify(tags);
+      }
+    });
+
+    // Form submission
+    const screeningForm = document.getElementById("screeningForm");
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const analysisResult = document.getElementById("analysis-result");
+
+    screeningForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Show loading overlay
+      loadingOverlay.classList.remove("d-none");
+
+      // Gather form data
+      const formData = new FormData(screeningForm);
+      const jsonData = {};
+
+      // Convert FormData to JSON
+      formData.forEach((value, key) => {
+        // Handle nested properties like familyHistory.cancer
+        if (key.includes(".")) {
+          const [parent, child] = key.split(".");
+          if (!jsonData[parent]) {
+            jsonData[parent] = {};
+          }
+          jsonData[parent][child] = value === "on" ? true : value;
+        } else {
+          // Try to parse JSON strings (for tag inputs)
+          try {
+            if (value.startsWith("[") && value.endsWith("]")) {
+              jsonData[key] = JSON.parse(value);
+            } else {
+              jsonData[key] = value;
+            }
+          } catch (error) {
+            jsonData[key] = value;
+          }
+        }
+      });
+
+      // Send data to server for analysis
+      fetch("/api/baseline-screening/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            displayResults(data.analysis);
+            loadingOverlay.classList.add("d-none");
+            analysisResult.style.display = "block";
+
+            // Scroll to results
+            analysisResult.scrollIntoView({ behavior: "smooth" });
+          } else {
+            loadingOverlay.classList.add("d-none");
+            alert("Error: " + data.message);
+          }
+        })
+        .catch((error) => {
+          loadingOverlay.classList.add("d-none");
+          console.error("Error:", error);
+          alert("An error occurred during submission.");
+        });
+    });
+
+    // Display risk assessment results
+    function displayResults(analysis) {
+      const riskAlert = document.getElementById("risk-alert");
+      const riskLevel = document.getElementById("risk-level");
+      const riskExplanation = document.getElementById("risk-explanation");
+      const potentialIssues = document.getElementById("potential-issues");
+      const recommendations = document.getElementById("recommendations");
+
+      // Set risk level and color
+      riskLevel.textContent = analysis.riskLevel + " Risk";
+      riskExplanation.textContent = analysis.analysisExplanation;
+
+      // Set alert color based on risk level
+      riskAlert.className = "alert";
+      switch (analysis.riskLevel) {
+        case "Low":
+          riskAlert.classList.add("alert-success");
+          break;
+        case "Medium":
+          riskAlert.classList.add("alert-warning");
+          break;
+        case "High":
+          riskAlert.classList.add("alert-danger");
+          break;
+      }
+
+      // Display potential issues
+      potentialIssues.innerHTML = "";
+      analysis.possibleIssues.forEach((issue) => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.innerHTML = `
+          <div class="issue-item">
+            <i class="fas fa-exclamation-circle text-warning"></i>
+            <div>${issue}</div>
+          </div>
+        `;
+        potentialIssues.appendChild(li);
+      });
+
+      // Display recommendations
+      recommendations.innerHTML = "";
+      const recommendationsList = [
+        "Schedule a follow-up appointment with your doctor to discuss these results",
+        "Consider additional screenings based on your risk factors",
+        "Update your medical records with any new information",
+        "Discuss medication adjustments with your healthcare provider",
+      ];
+
+      const ul = document.createElement("ul");
+      ul.className = "list-group list-group-flush";
+      recommendationsList.forEach((rec) => {
+        const li = document.createElement("li");
+        li.className = "list-group-item px-0";
+        li.innerHTML = `
+          <div class="d-flex align-items-start">
+            <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+            <div>${rec}</div>
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+      recommendations.appendChild(ul);
+    }
+
+    // Edit button functionality
+    document.getElementById("editBtn").addEventListener("click", function () {
+      analysisResult.style.display = "none";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Save button functionality
+    document.getElementById("saveBtn").addEventListener("click", function () {
+      // Show success modal
+      const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+      );
+      successModal.show();
+    });
+
+    // Add this to your existing script
+    function updateProgress() {
+      const form = document.getElementById("screeningForm");
+      const inputs = form.querySelectorAll(
+        'input:not([type="hidden"]), select, textarea'
+      );
+      const totalInputs = inputs.length;
+      let filledInputs = 0;
+
+      inputs.forEach((input) => {
+        if (input.type === "checkbox" && input.checked) filledInputs++;
+        else if (input.value.trim() !== "") filledInputs++;
+      });
+
+      const percentage = Math.round((filledInputs / totalInputs) * 100);
+      document.querySelector(".progress-bar").style.width = `${percentage}%`;
+      document.getElementById("progressPercentage").textContent = percentage;
+    }
+
+    // Add input event listeners
+    document.querySelectorAll("input, select, textarea").forEach((input) => {
+      input.addEventListener("input", updateProgress);
+      input.addEventListener("change", updateProgress);
+    });
+  });
+</script>
+
+<%- include('../../partials/footer') %>
