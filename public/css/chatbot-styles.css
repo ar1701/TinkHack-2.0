@@ -10,7 +10,7 @@
 .chatbot-icon {
   width: 70px;
   height: 70px;
-  background-color: var(--primary-blue);
+  background-color: #e74c3c; /* Medical red color */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -54,12 +54,22 @@
 }
 
 .chatbot-header {
-  background-color: var(--primary-blue);
+  background-color: #e74c3c; /* Medical red color */
   color: white;
   padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-content i {
+  font-size: 20px;
 }
 
 .chatbot-header h5 {
@@ -126,10 +136,11 @@
 
 .bot-message strong {
   font-weight: bold;
+  color: #e74c3c; /* Emphasize important health information */
 }
 
 .user-message {
-  background-color: var(--accent-teal);
+  background-color: #3498db; /* Changed from teal to a medical blue */
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 5px;
@@ -150,8 +161,12 @@
   margin-right: 10px;
 }
 
+.chatbot-input input:focus {
+  border-color: #e74c3c; /* Medical red focus */
+}
+
 .chatbot-input button {
-  background-color: var(--primary-blue);
+  background-color: #e74c3c; /* Medical red */
   color: white;
   border: none;
   border-radius: 50%;
@@ -165,7 +180,7 @@
 }
 
 .chatbot-input button:hover {
-  background-color: var(--secondary-blue);
+  background-color: #c0392b; /* Darker medical red */
 }
 
 /* Typing indicator */

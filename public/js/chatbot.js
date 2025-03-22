@@ -5,20 +5,23 @@ document.addEventListener("DOMContentLoaded", function () {
   chatbotContainer.className = "chatbot-container";
   chatbotContainer.innerHTML = `
         <div class="chatbot-icon" id="chatbotIcon">
-            <i class="fas fa-robot"></i>
+            <i class="fas fa-heartbeat"></i>
         </div>
         <div class="chatbot-panel" id="chatbotPanel">
             <div class="chatbot-header">
-                <h5>MedConnect Assistant</h5>
+                <div class="header-content">
+                    <i class="fas fa-heartbeat"></i>
+                    <h5>Health Assistant</h5>
+                </div>
                 <button class="close-btn" id="closeChatbot"><i class="fas fa-times"></i></button>
             </div>
             <div class="chatbot-messages" id="chatbotMessages">
                 <div class="message bot-message">
-                    Hello! I'm your MedConnect assistant powered by Gemini AI. How can I help you today?
+                    Hello! I'm your MedConnect Health Assistant powered by Gemini AI. I can answer your health-related questions and help you navigate the platform. How can I assist with your healthcare needs today?
                 </div>
             </div>
             <div class="chatbot-input">
-                <input type="text" id="userInput" placeholder="Type your message...">
+                <input type="text" id="userInput" placeholder="Ask a health question...">
                 <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -174,33 +177,56 @@ document.addEventListener("DOMContentLoaded", function () {
     const lowerMessage = message.toLowerCase();
     let botResponse = "";
 
-    if (
-      lowerMessage.includes("appointment") ||
-      lowerMessage.includes("schedule")
-    ) {
-      botResponse =
-        "You can schedule an appointment from the Appointments section in the sidebar. Would you like me to help you with that?";
-    } else if (
-      lowerMessage.includes("record") ||
-      lowerMessage.includes("history")
-    ) {
-      botResponse =
-        "Your medical records can be accessed from the Medical Records section. Is there something specific you're looking for?";
-    } else if (
-      lowerMessage.includes("doctor") ||
-      lowerMessage.includes("specialist")
-    ) {
-      botResponse =
-        "I can help you find the right specialist for your needs. Could you provide more details about what you're looking for?";
-    } else if (
-      lowerMessage.includes("help") ||
-      lowerMessage.includes("assistant")
-    ) {
-      botResponse =
-        "I'm here to help you navigate MedConnect. You can ask me about appointments, medical records, finding specialists, or any other features of the platform.";
+    // Check if query is health-related
+    if (isHealthRelated(lowerMessage)) {
+      // Health-related responses
+      if (
+        lowerMessage.includes("appointment") ||
+        lowerMessage.includes("schedule") ||
+        lowerMessage.includes("doctor visit")
+      ) {
+        botResponse =
+          "You can schedule a medical appointment from the Appointments section in the sidebar. Would you like me to help you find the right healthcare provider?";
+      } else if (
+        lowerMessage.includes("record") ||
+        lowerMessage.includes("history") ||
+        lowerMessage.includes("test") ||
+        lowerMessage.includes("result")
+      ) {
+        botResponse =
+          "Your medical records and test results can be accessed from the Medical Records section. This includes lab tests, imaging reports, and visit summaries from your healthcare providers.";
+      } else if (
+        lowerMessage.includes("doctor") ||
+        lowerMessage.includes("specialist") ||
+        lowerMessage.includes("physician") ||
+        lowerMessage.includes("provider")
+      ) {
+        botResponse =
+          "I can help you find the right medical specialist for your health needs. MedConnect partners with cardiologists, neurologists, oncologists, and many other specialists. Could you provide more details about your health concern?";
+      } else if (
+        lowerMessage.includes("symptom") ||
+        lowerMessage.includes("pain") ||
+        lowerMessage.includes("feeling") ||
+        lowerMessage.includes("sick")
+      ) {
+        botResponse =
+          "Based on your symptoms, it would be best to consult with a healthcare professional. While I can provide general health information, your doctor can provide personalized medical advice. Would you like to schedule an appointment?";
+      } else if (
+        lowerMessage.includes("medicine") ||
+        lowerMessage.includes("medication") ||
+        lowerMessage.includes("prescription") ||
+        lowerMessage.includes("drug")
+      ) {
+        botResponse =
+          "For medication-related questions, please consult with your healthcare provider or pharmacist. They can provide guidance on your prescriptions, potential side effects, and proper usage. Your medication history is available in your Medical Records section.";
+      } else {
+        botResponse =
+          "I'm here to help with health-related questions and navigating the MedConnect platform. For specific medical advice, please consult with your healthcare provider through the Messages section.";
+      }
     } else {
+      // Response for non-health related queries
       botResponse =
-        "Thank you for your message. For more specific assistance, please reach out to your patient navigator or healthcare provider through the Messages section.";
+        "I'm designed to help with health-related questions. Please ask me about medical conditions, wellness tips, healthcare services, or how to use the MedConnect platform.";
     }
 
     // Only add this response if we haven't already added a bot message (to prevent duplicates)
@@ -212,5 +238,76 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
       addMessage(botResponse, "bot");
     }
+  }
+
+  // Function to check if the query is health-related
+  function isHealthRelated(query) {
+    const healthKeywords = [
+      "health",
+      "medical",
+      "doctor",
+      "hospital",
+      "clinic",
+      "appointment",
+      "symptom",
+      "disease",
+      "condition",
+      "treatment",
+      "medicine",
+      "drug",
+      "prescription",
+      "therapy",
+      "surgery",
+      "diagnosis",
+      "checkup",
+      "pain",
+      "specialist",
+      "emergency",
+      "wellness",
+      "vaccination",
+      "immunization",
+      "blood",
+      "test",
+      "screening",
+      "cancer",
+      "diabetes",
+      "heart",
+      "allergy",
+      "vaccine",
+      "covid",
+      "virus",
+      "infection",
+      "injury",
+      "recovery",
+      "nurse",
+      "physician",
+      "dentist",
+      "cardiology",
+      "neurology",
+      "pediatrics",
+      "pharmacy",
+      "mental health",
+      "therapy",
+      "diet",
+      "nutrition",
+      "exercise",
+      "headache",
+      "fever",
+      "cough",
+      "cold",
+      "flu",
+      "pressure",
+      "stress",
+      "anxiety",
+      "depression",
+      "insurance",
+      "provider",
+      "referral",
+      "consultation",
+      "prescription",
+      "refill",
+    ];
+
+    return healthKeywords.some((keyword) => query.includes(keyword));
   }
 });

@@ -34,6 +34,15 @@ router.post("/chat", isLoggedIn, async (req, res) => {
     const medicalContext =
       "This is a healthcare platform for patients, caregivers, and patient navigators. Responses should be helpful, accurate, and maintain medical privacy standards.";
 
+    const topicConstraint = `
+    IMPORTANT: You are a medical assistant. Only respond to health-related queries.
+    If a user asks about anything not related to health, medicine, wellness, healthcare services, 
+    or the MedConnect platform, politely redirect them to ask health-related questions instead.
+    Example response for non-health topics: "I'm designed to help with health-related questions. 
+    Please ask me about medical conditions, wellness tips, healthcare services, or how to use 
+    the MedConnect platform."
+    `;
+
     const formattingInstructions = `
     Please format your responses in a clean, structured way:
     1. For emphasis, use plain text instead of asterisks, or use HTML <strong> tags if needed
@@ -44,7 +53,7 @@ router.post("/chat", isLoggedIn, async (req, res) => {
     `;
 
     // Prepare the prompt with context
-    const prompt = `${medicalContext} ${userContext}\n\n${formattingInstructions}\n\nUser query: ${message}\n\nPlease provide a helpful response:`;
+    const prompt = `${medicalContext} ${userContext}\n\n${topicConstraint}\n\n${formattingInstructions}\n\nUser query: ${message}\n\nPlease provide a helpful response:`;
 
     // Generate content with Gemini
     const result = await model.generateContent(prompt);
