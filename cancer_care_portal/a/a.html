@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigator Dashboard - Cancer Care Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f4f7f9;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Sidebar Styling */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+      color: #ecf0f1;
+      min-height: 100vh;
+      padding: 25px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar h2 {
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      font-size: 24px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .sidebar h2 i {
+      margin-right: 10px;
+    }
+    
+    .sidebar h2::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 50px;
+      background-color: #1abc9c;
+      border-radius: 5px;
+    }
+    
+    .sidebar ul {
+      list-style: none;
+      margin-top: 20px;
+    }
+    
+    .sidebar ul li {
+      padding: 15px;
+      background: rgba(44, 62, 80, 0.6);
+      margin: 15px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .sidebar ul li i {
+      margin-right: 10px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .sidebar ul li:hover, .sidebar ul li.active {
+      background-color: #1abc9c;
+      transform: translateX(10px);
+    }
+    
+    .sidebar ul li:hover i, .sidebar ul li.active i {
+      transform: scale(1.2);
+    }
+    
+    .sidebar .logout {
+      position: absolute;
+      bottom: 30px;
+      width: calc(100% - 50px);
+      background-color: #2c3e50;
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logout:hover {
+      background-color: #e74c3c;
+    }
+    
+    .sidebar .logout i {
+      margin-right: 10px;
+    }
+    
+    /* Main Content Styling */
+    .main-content {
+      margin-left: 250px;
+      padding: 30px;
+      width: calc(100% - 250px);
+      transition: all 0.3s ease;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .header-info h1 {
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    .header-info p {
+      color: #7f8c8d;
+    }
+    
+    .profile-section {
+      display: flex;
+      align-items: center;
+    }
+    
+    .notification-icon {
+      margin-right: 20px; 
+      position: relative;
+    }
+    
+    .notification-icon i {
+      font-size: 20px; 
+      color: #34495e;
+    }
+    
+    .notification-badge {
+      position: absolute; 
+      top: -8px;
+      right: -8px;
+      background-color: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .profile-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      background-color: #95a5a6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      margin-right: 15px;
+    }
+    
+    .stat-content {
+      display: flex;
+      align-items: center;
+    }
+    
+    .stat-info h3 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #2c3e50;
+    }
+    
+    .stat-info p {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    
+    .bg-blue { background-color: #3498db; }
+    .bg-orange { background-color: #f39c12; }
+    .bg-red { background-color: #e74c3c; }
+    .bg-green { background-color: #2ecc71; }
+    
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
+    
+    .card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .card-header h2 {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      color: #2c3e50;
+    }
+    
+    .card-header h2 i {
+      margin-right: 10px;
+    }
+    
+    .view-all-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .view-all-btn:hover {
+      background-color: #2980b9;
+    }
+    
+    /* Patient Activities */
+    .activity-item {
+      display: flex;
+      padding: 20px 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    
+    .patient-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+      background-color: #95a5a6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .activity-info {
+      flex: 1;
+    }
+    
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .activity-header h4 {
+      color: #2c3e50;
+      font-size: 16px;
+    }
+    
+    .activity-time {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    
+    .activity-description {
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    
+    .activity-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-button {
+      flex: 1;
+      padding: 8px 0;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .btn-green {
+      background-color: #2ecc71;
+    }
+    
+    .btn-green:hover {
+      background-color: #27ae60;
+    }
+    
+    .btn-blue {
+      background-color: #3498db;
+    }
+    
+    .btn-blue:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-red {
+      background-color: #e74c3c;
+    }
+    
+    .btn-red:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-orange {
+      background-color: #f39c12;
+    }
+    
+    .btn-orange:hover {
+      background-color: #d35400;
+    }
+    
+    /* Schedule */
+    .schedule-item {
+      position: relative;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background-color: rgba(52, 152, 219, 0.1);
+      border-left: 4px solid #3498db;
+    }
+    
+    .red-schedule {
+      background-color: rgba(231, 76, 60, 0.1);
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .green-schedule {
+      background-color: rgba(46, 204, 113, 0.1);
+      border-left: 4px solid #2ecc71;
+    }
+    
+    .orange-schedule {
+      background-color: rgba(243, 156, 18, 0.1);
+      border-left: 4px solid #f39c12;
+    }
+    
+    .schedule-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .schedule-header h4 {
+      color: #2c3e50;
+    }
+    
+    .schedule-time {
+      font-weight: bold;
+    }
+    
+    .time-blue { color: #3498db; }
+    .time-red { color: #e74c3c; }
+    .time-green { color: #2ecc71; }
+    .time-orange { color: #f39c12; }
+    
+    .schedule-description {
+      color: #34495e;
+      font-size: 14px;
+    }
+    
+    /* Tasks */
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .task-item:last-child {
+      border-bottom: none;
+    }
+    
+    .task-checkbox {
+      margin-right: 15px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .task-info {
+      flex: 1;
+    }
+    
+    .task-description {
+      margin: 0;
+      color: #34495e;
+    }
+    
+    .task-priority {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    
+    .priority-high { color: #e74c3c; }
+    .priority-medium { color: #f39c12; }
+    .priority-normal { color: #3498db; }
+    
+    .add-task-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: #34495e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .add-task-btn:hover {
+      background-color: #2c3e50;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        font-size: 24px;
+        background-color: #34495e;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
+    @media (min-width: 993px) {
+      .menu-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toggle menu for mobile -->
+  <div class="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <!-- Sidebar navigation -->
+  <div class="sidebar">
+    <h2><i class="fas fa-ribbon"></i> Cancer Care</h2>
+    <ul>
+      <li class="active"><i class="fas fa-home"></i> Dashboard</li>
+      <li><i class="fas fa-users"></i> My Patients</li>
+      <li><i class="fas fa-calendar-alt"></i> Appointments</li>
+      <li><i class="fas fa-clipboard-list"></i> Treatment Plans</li>
+      <li><i class="fas fa-comments"></i> Messages</li>
+      <li><i class="fas fa-hand-holding-heart"></i> Support Resources</li>
+      <li><i class="fas fa-chart-line"></i> Reports</li>
+      <li><i class="fas fa-cog"></i> Settings</li>
+    </ul>
+    <div class="logout">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="main-content">
+    <div class="header">
+      <div class="header-info">
+        <h1>Navigator Dashboard</h1>
+        <p>Welcome back, Sarah Johnson</p>
+      </div>
+      <div class="profile-section">
+        <div class="notification-icon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">4</span>
+        </div>
+        <div class="profile-image">SJ</div>
+        <span>Sarah Johnson</span>
+      </div>
+    </div>
+
+    <!-- Quick stats cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-blue">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>42</h3>
+            <p>Active Patients</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-orange">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="stat-info">
+            <h3>12</h3>
+            <p>Today's Appointments</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-red">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>5</h3>
+            <p>Urgent Actions</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-green">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>28</h3>
+            <p>Completed Tasks</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Patient activity feed -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-clipboard-check"></i> Today's Patient Activities</h2>
+          <button class="view-all-btn">View All</button>
+        </div>
+        
+        <div class="activity-feed">
+          <!-- Activity item 1 -->
+          <div class="activity-item">
+            <div class="patient-image">JS</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>John Smith</h4>
+                <span class="activity-time">10:30 AM</span>
+              </div>
+              <p class="activity-description">Chemotherapy session completed successfully.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-green">Update Records</button>
+                <button class="action-button btn-blue">Send Message</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 2 -->
+          <div class="activity-item">
+            <div class="patient-image">MJ</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Mary Johnson</h4>
+                <span class="activity-time">11:45 AM</span>
+              </div>
+              <p class="activity-description">Needs assistance with insurance paperwork for radiation therapy.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-red">Priority Action</button>
+                <button class="action-button btn-blue">Schedule Call</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 3 -->
+          <div class="activity-item">
+            <div class="patient-image">RD</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Robert Davis</h4>
+                <span class="activity-time">1:15 PM</span>
+              </div>
+              <p class="activity-description">Follow-up appointment with oncologist scheduled for next week.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-orange">Confirm Details</button>
+                <button class="action-button btn-blue">Send Reminder</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 4 -->
+          <div class="activity-item">
+            <div class="patient-image">JW</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Jennifer Wilson</h4>
+                <span class="activity-time">2:30 PM</span>
+              </div>
+              <p class="activity-description">Requested information about support groups for breast cancer patients.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-green">Send Resources</button>
+                <button class="action-button btn-blue">Follow Up</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right column: Upcoming appointments and tasks -->
+      <div>
+        <!-- Today's Schedule -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-calendar-day"></i> Today's Schedule</h2>
+          </div>
+          
+          <div class="schedule-container">
+            <!-- Schedule item 1 -->
+            <div class="schedule-item">
+              <div class="schedule-header">
+                <h4>John Smith</h4>
+                <span class="schedule-time time-blue">10:30 AM</span>
+              </div>
+              <p class="schedule-description">Chemotherapy Session - Oncology Dept.</p>
+            </div>
+            
+            <!-- Schedule item 2 -->
+            <div class="schedule-item red-schedule">
+              <div class="schedule-header">
+                <h4>Team Meeting</h4>
+                <span class="schedule-time time-red">11:00 AM</span>
+              </div>
+              <p class="schedule-description">Weekly Care Coordination - Room 305</p>
+            </div>
+            
+            <!-- Schedule item 3 -->
+            <div class="schedule-item green-schedule">
+              <div class="schedule-header">
+                <h4>Mary Johnson</h4>
+                <span class="schedule-time time-green">1:45 PM</span>
+              </div>
+              <p class="schedule-description">Radiation Therapy - Radiology Wing</p>
+            </div>
+            
+            <!-- Schedule item 4 -->
+            <div class="schedule-item orange-schedule">
+              <div class="schedule-header">
+                <h4>Robert Davis</h4>
+                <span class="schedule-time time-orange">3:15 PM</span>
+              </div>
+              <p class="schedule-description">Treatment Plan Review - Office 210</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pending Tasks -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-tasks"></i> Pending Tasks</h2>
+          </div>
+          
+          <div class="tasks-container">
+            <!-- Task item 1 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Call insurance about Mary's coverage</p>
+                <span class="task-priority priority-high">High Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 2 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Schedule follow-up for John Smith</p>
+                <span class="task-priority priority-medium">Medium Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 3 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Send resources to Jennifer Wilson</p>
+                <span class="task-priority priority-normal">Normal Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 4 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Complete monthly patient reports</p>
+                <span class="task-priority priority-normal">Normal Priority</span>
+              </div>
+            </div>
+          </div>
+          
+          <button class="add-task-btn">Add New Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    document.querySelector('.menu-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    });
+    
+    // Sidebar menu item click
+    const menuItems = document.querySelectorAll('.sidebar ul li');
+    menuItems.forEach(item => {
+      item.addEventListener('click', function() {
+        menuItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // Task checkboxes functionality
+    const checkboxes = document.querySelectorAll('.task-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          this.parentElement.style.opacity = '0.5';
+          this.nextElementSibling.style.textDecoration = 'line-through';
+        } else {
+          this.parentElement.style.opacity = '1';
+          this.nextElementSibling.style.textDecoration = 'none';
+        }
+      });
+    });
+    
+    // Action buttons functionality
+    const actionButtons = document.querySelectorAll('.action-button');
+    actionButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const action = this.textContent.trim();
+        const patient = this.closest('.activity-item').querySelector('h4').textContent;
+        alert(`Action: ${action} for patient: ${patient}`);
+      });
+    });
+    
+    // View all button
+    document.querySelector('.view-all-btn').addEventListener('click', function() {
+      alert('Viewing all patient activities');
+    });
+    
+    // Add new task button
+    document.querySelector('.add-task-btn').addEventListener('click', function() {
+      const taskDescription = prompt('Enter task description:');
+      if (taskDescription) {
+        const priorityOptions = ['High Priority', 'Medium Priority', 'Normal Priority'];
+        const priorityClasses = ['priority-high', 'priority-medium', 'priority-normal'];
+        const priorityIndex = Math.floor(Math.random() * 3);
+        
+        const taskHTML = `
+          <div class="task-item">
+            <input type="checkbox" class="task-checkbox">
+            <div class="task-info">
+              <p class="task-description">${taskDescription}</p>
+              <span class="task-priority ${priorityClasses[priorityIndex]}">${priorityOptions[priorityIndex]}</span>
+            </div>
+          </div>
+        `;
+        
+        document.querySelector('.tasks-container').insertAdjacentHTML('beforeend', taskHTML);
+        
+        // Add event listener to the new checkbox
+        const newCheckbox = document.querySelector('.tasks-container .task-item:last-child .task-checkbox');
+        newCheckbox.addEventListener('change', function() {
+          if (this.checked) {
+            this.parentElement.style.opacity = '0.5';
+            this.nextElementSibling.style.textDecoration = 'line-through';
+          } else {
+            this.parentElement.style.opacity = '1';
+            this.nextElementSibling.style.textDecoration = 'none';
+          }
+        });
+      }
+    });
+    
+    // Logout button
+    document.querySelector('.logout').addEventListener('click', function() {
+      if (confirm('Are you sure you want to logout?')) {
+        alert('You have been logged out successfully');
+        // In a real application, this would redirect to the login page
+      }
+    });
+  </script>
+</body>
+</html>

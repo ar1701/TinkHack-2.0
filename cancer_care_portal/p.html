@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="icons-container">
+            <i class="icon fas fa-heartbeat"></i>
+            <i class="icon fas fa-pills"></i>
+            <i class="icon fas fa-stethoscope"></i>
+            <i class="icon fas fa-user-md"></i>
+            <i class="icon fas fa-hospital"></i>
+            <i class="icon fas fa-notes-medical"></i>
+            <i class="icon fas fa-syringe"></i>
+            <i class="icon fas fa-ambulance"></i>
+        </div>
+    </div>
+
+    <!-- Menu Toggle for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2><i class="fas fa-user-md"></i> Doctor Portal</h2>
+        <ul>
+            <li class="active"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+            <li><a href="medical-records.html"><i class="fas fa-file-medical"></i> Medical Records</a></li>
+            <li><a href="prescriptions.html"><i class="fas fa-prescription"></i> Prescription & Reports</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings & Profile</a></li>
+        </ul>
+        <div class="logout">
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Welcome back, Dr. Sarah Johnson</h1>
+            <div class="user-profile">
+                <img src="./Doc.jpeg"" alt="Doctor Profile" class="profile-image">
+                <div class="notification-bell" id="notificationBell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Popup -->
+        <div class="notifications-popup" id="notificationsPopup">
+            <div class="notifications-header">
+                <h3>Notifications</h3>
+                <button class="mark-all-read">Mark all as read</button>
+            </div>
+            <div class="notifications-list">
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-primary">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Appointment Request</div>
+                        <div class="notification-message">John Doe requested an urgent appointment.</div>
+                        <div class="notification-time">10 minutes ago</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-info">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Lab Results</div>
+                        <div class="notification-message">Lab results for Maria Garcia are now available.</div>
+                        <div class="notification-time">1 hour ago</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-success">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Message</div>
+                        <div class="notification-message">Patient Robert Smith has sent you a message.</div>
+                        <div class="notification-time">3 hours ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon bg-warning">
+                        <i class="fas fa-prescription"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Prescription Refill</div>
+                        <div class="notification-message">Emily Johnson requested a prescription refill.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon bg-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Urgent Follow-up</div>
+                        <div class="notification-message">Urgent follow-up required for patient Michael Brown.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+            <div class="notifications-footer">
+                <a href="notifications.html">View all notifications</a>
+            </div>
+        </div>
+
+        <!-- Dashboard Overview Section -->
+        <div class="dashboard-section active" id="dashboard">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+                <div class="date-filter">
+                    <select id="dateFilter" class="date-select">
+                        <option value="today">Today</option>
+                        <option value="week" selected>This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="summary-container">
+                <div class="summary-card bg-primary-light">
+                    <div class="summary-icon bg-primary">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Appointments</h3>
+                        <div class="summary-count">12</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 8%</span> vs last week
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-info-light">
+                    <div class="summary-icon bg-info">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>New Patients</h3>
+                        <div class="summary-count">7</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 12%</span> vs last week
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-success-light">
+                    <div class="summary-icon bg-success">
+                        <i class="fas fa-procedures"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Procedures</h3>
+                        <div class="summary-count">5</div>
+                        <div class="summary-status">
+                            <span class="down"><i class="fas fa-arrow-down"></i> 3%</span> vs last week
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-warning-light">
+                    <div class="summary-icon bg-warning">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Pending Reports</h3>
+                        <div class="summary-count">9</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 15%</span> vs last week
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Dashboard Content -->
+            <div class="card-container">
+                <!-- Upcoming Appointments Card -->
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="card-icon bg-primary">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <h3>Today's Appointments</h3>
+                            </div>
+                        </div>
+                        <a href="appointments.html" class="view-all">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="appointment-item">
+                            <div class="appointment-time">09:00 AM</div>
+                            <div class="appointment-details">
+                                <div class="patient-info">
+                                    <img src="./Pat.jpeg" alt="Patient" class="patient-image">
+                                    <div>
+                                        <div class="patient-name">John Doe</div>
+                                        <div class="appointment-type">Regular Checkup</div>
+                                    </div>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn-action btn-accept"><i class="fas fa-video"></i></button>
+                                    <button class="btn-action btn-cancel"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">10:30 AM</div>
+                            <div class="appointment-details">
+                                <div class="patient-info">
+                                    <img src="./Pat2.jpeg" alt="Patient" class="patient-image">
+                                    <div>
+                                        <div class="patient-name">Maria Garcia</div>
+                                        <div class="appointment-type">Follow-up</div>
+                                    </div>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn-action btn-accept"><i class="fas fa-video"></i></button>
+                                    <button class="btn-action btn-cancel"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">01:15 PM</div>
+                            <div class="appointment-details">
+                                <div class="patient-info">
+                                    <img src="./Pat.jpeg" alt="Patient" class="patient-image">
+                                    <div>
+                                        <div class="patient-name">Robert Smith</div>
+                                        <div class="appointment-type">Consultation <span class="tag urgent">Urgent</span></div>
+                                    </div>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn-action btn-accept"><i class="fas fa-video"></i></button>
+                                    <button class="btn-action btn-cancel"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">03:45 PM</div>
+                            <div class="appointment-details">
+                                <div class="patient-info">
+                                    <img src="./Pat2.jpeg" alt="Patient" class="patient-image">
+                                    <div>
+                                        <div class="patient-name">Emily Johnson</div>
+                                        <div class="appointment-type">Prescription Review</div>
+                                    </div>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn-action btn-accept"><i class="fas fa-video"></i></button>
+                                    <button class="btn-action btn-cancel"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Patients Card -->
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="card-icon bg-info">
+                                <i class="fas fa-user-injured"></i>
+                            </div>
+                            <div>
+                                <h3>Recent Patients</h3>
+                            </div>
+                        </div>
+                        <a href="patients.html" class="view-all">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="patient-list">
+                            <div class="patient-list-item">
+                                <img src="./Pat2.jpeg" alt="Patient" class="patient-image">
+                                <div class="patient-list-details">
+                                    <div class="patient-list-name">Michael Brown</div>
+                                    <div class="patient-list-info">
+                                        <span class="patient-age">42 yrs</span>
+                                        <span class="patient-condition">Hypertension</span>
+                                    </div>
+                                </div>
+                                <a href="patient-details.html" class="btn-view">View</a>
+                            </div>
+                            
+                            <div class="patient-list-item">
+                                <img src="./Pat.jpeg" alt="Patient" class="patient-image">
+                                <div class="patient-list-details">
+                                    <div class="patient-list-name">Sarah Williams</div>
+                                    <div class="patient-list-info">
+                                        <span class="patient-age">35 yrs</span>
+                                        <span class="patient-condition">Diabetes</span>
+                                    </div>
+                                </div>
+                                <a href="patient-details.html" class="btn-view">View</a>
+                            </div>
+                            
+                            <div class="patient-list-item">
+                                <img src="./Pat2.jpeg" alt="Patient" class="patient-image">
+                                <div class="patient-list-details">
+                                    <div class="patient-list-name">James Miller</div>
+                                    <div class="patient-list-info">
+                                        <span class="patient-age">28 yrs</span>
+                                        <span class="patient-condition">Asthma</span>
+                                    </div>
+                                </div>
+                                <a href="patient-details.html" class="btn-view">View</a>
+                            </div>
+                            
+                            <div class="patient-list-item">
+                                <img src="./Pat.jpeg" alt="Patient" class="patient-image">
+                                <div class="patient-list-details">
+                                    <div class="patient-list-name">Jennifer Davis</div>
+                                    <div class="patient-list-info">
+                                        <span class="patient-age">51 yrs</span>
+                                        <span class="patient-condition">Arthritis</span>
+                                    </div>
+                                </div>
+                                <a href="patient-details.html" class="btn-view">View</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Timeline -->
+            <div class="card timeline-card">
+                <div class="card-header">
+                    <div class="d-flex">
+                        <div class="card-icon bg-success">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3>Recent Activity</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-primary">
+                                <i class="fas fa-file-prescription"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">10:45 AM</div>
+                                <div class="timeline-title">Prescription Created</div>
+                                <div class="timeline-description">You created a prescription for John Doe</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-info">
+                                <i class="fas fa-file-medical-alt"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">09:30 AM</div>
+                                <div class="timeline-title">Medical Record Updated</div>
+                                <div class="timeline-description">You updated the medical record for Maria Garcia</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Yesterday, 04:15 PM</div>
+                                <div class="timeline-title">Appointment Completed</div>
+                                <div class="timeline-description">Completed a follow-up appointment with Robert Smith</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-warning">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Yesterday, 02:00 PM</div>
+                                <div class="timeline-title">Lab Result Reviewed</div>
+                                <div class="timeline-description">You reviewed lab results for Emily Johnson</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-danger">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Yesterday, 10:30 AM</div>
+                                <div class="timeline-title">New Patient Registration</div>
+                                <div class="timeline-description">Michael Brown registered as a new patient</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
