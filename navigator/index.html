@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigator Dashboard - Cancer Care Portal</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <!-- Toggle menu for mobile -->
+  <div class="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <!-- Navigation bar -->
+  <div class="navbar">
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </div>
+    <div class="nav-links">
+      <a href="#">Profile</a>
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2><i class="fas fa-ribbon"></i> Cancer Care</h2>
+    <ul>
+      <li class="active"><i class="fas fa-home"></i> Dashboard</li>
+      <li><a href="p.html"><i class="fas fa-users"></i> My Patients</a></li>
+      <li><i class="fas fa-calendar-alt"></i> Appointments</li>
+      <li><i class="fas fa-clipboard-list"></i> Treatment Plans</li>
+      <li><i class="fas fa-comments"></i> Messages</li>
+      <li><i class="fas fa-hand-holding-heart"></i> Support Resources</li>
+      <li><i class="fas fa-chart-line"></i> Reports</li>
+      <li><i class="fas fa-cog"></i> Settings</li>
+    </ul>
+    <div class="logout">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="main-content">
+    <div class="header">
+      <div class="header-info">
+        <h1>Navigator Dashboard</h1>
+        <p>Welcome back, Sarah Johnson</p>
+      </div>
+      <div class="profile-section">
+        <div class="notification-icon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">4</span>
+        </div>
+        <div class="profile-image">SJ</div>
+        <span>Sarah Johnson</span>
+      </div>
+    </div>
+
+    <!-- Quick stats cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-blue">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>42</h3>
+            <p>Active Patients</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-orange">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="stat-info">
+            <h3>12</h3>
+            <p>Today's Appointments</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-red">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>5</h3>
+            <p>Urgent Actions</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon bg-green">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>28</h3>
+            <p>Completed Tasks</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Patient activity feed -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-clipboard-check"></i> Today's Patient Activities</h2>
+          <button class="view-all-btn">View All</button>
+        </div>
+        
+        <div class="activity-feed">
+          <!-- Activity item 1 -->
+          <div class="activity-item">
+            <div class="patient-image">JS</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>John Smith</h4>
+                <span class="activity-time">10:30 AM</span>
+              </div>
+              <p class="activity-description">Chemotherapy session completed successfully.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-green">Update Records</button>
+                <button class="action-button btn-blue">Send Message</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 2 -->
+          <div class="activity-item">
+            <div class="patient-image">MJ</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Mary Johnson</h4>
+                <span class="activity-time">11:45 AM</span>
+              </div>
+              <p class="activity-description">Needs assistance with insurance paperwork for radiation therapy.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-red">Priority Action</button>
+                <button class="action-button btn-blue">Schedule Call</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 3 -->
+          <div class="activity-item">
+            <div class="patient-image">RD</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Robert Davis</h4>
+                <span class="activity-time">1:15 PM</span>
+              </div>
+              <p class="activity-description">Follow-up appointment with oncologist scheduled for next week.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-orange">Confirm Details</button>
+                <button class="action-button btn-blue">Send Reminder</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity item 4 -->
+          <div class="activity-item">
+            <div class="patient-image">JW</div>
+            <div class="activity-info">
+              <div class="activity-header">
+                <h4>Jennifer Wilson</h4>
+                <span class="activity-time">2:30 PM</span>
+              </div>
+              <p class="activity-description">Requested information about support groups for breast cancer patients.</p>
+              <div class="activity-actions">
+                <button class="action-button btn-green">Send Resources</button>
+                <button class="action-button btn-blue">Follow Up</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right column: Upcoming appointments and tasks -->
+      <div>
+        <!-- Today's Schedule -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-calendar-day"></i> Today's Schedule</h2>
+          </div>
+          
+          <div class="schedule-container">
+            <!-- Schedule item 1 -->
+            <div class="schedule-item">
+              <div class="schedule-header">
+                <h4>John Smith</h4>
+                <span class="schedule-time time-blue">10:30 AM</span>
+              </div>
+              <p class="schedule-description">Chemotherapy Session - Oncology Dept.</p>
+            </div>
+            
+            <!-- Schedule item 2 -->
+            <div class="schedule-item red-schedule">
+              <div class="schedule-header">
+                <h4>Team Meeting</h4>
+                <span class="schedule-time time-red">11:00 AM</span>
+              </div>
+              <p class="schedule-description">Weekly Care Coordination - Room 305</p>
+            </div>
+            
+            <!-- Schedule item 3 -->
+            <div class="schedule-item green-schedule">
+              <div class="schedule-header">
+                <h4>Mary Johnson</h4>
+                <span class="schedule-time time-green">1:45 PM</span>
+              </div>
+              <p class="schedule-description">Radiation Therapy - Radiology Wing</p>
+            </div>
+            
+            <!-- Schedule item 4 -->
+            <div class="schedule-item orange-schedule">
+              <div class="schedule-header">
+                <h4>Robert Davis</h4>
+                <span class="schedule-time time-orange">3:15 PM</span>
+              </div>
+              <p class="schedule-description">Treatment Plan Review - Office 210</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pending Tasks -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-tasks"></i> Pending Tasks</h2>
+          </div>
+          
+          <div class="tasks-container">
+            <!-- Task item 1 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Call insurance about Mary's coverage</p>
+                <span class="task-priority priority-high">High Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 2 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Schedule follow-up for John Smith</p>
+                <span class="task-priority priority-medium">Medium Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 3 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Send resources to Jennifer Wilson</p>
+                <span class="task-priority priority-normal">Normal Priority</span>
+              </div>
+            </div>
+            
+            <!-- Task item 4 -->
+            <div class="task-item">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-info">
+                <p class="task-description">Complete monthly patient reports</p>
+                <span class="task-priority priority-normal">Normal Priority</span>
+              </div>
+            </div>
+          </div>
+          
+          <button class="add-task-btn">Add New Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
