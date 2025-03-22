@@ -1,5 +1,6 @@
 # Arogyam
-## Cancer patients, especially those from underprivileged and uneducated backgrounds, face significant challenges in accessing proper treatment. These include long hospital wait times, difficulty understanding medical procedures, emotional distress, and financial burdens. Many patients experience treatment delays due to barriers such as transportation issues, language difficulties, and lack of guidance throughout their care journey.
+
+Cancer patients, especially those from underprivileged and uneducated backgrounds, face significant challenges in accessing proper treatment. These include long hospital wait times, difficulty understanding medical procedures, emotional distress, and financial burdens. Many patients experience treatment delays due to barriers such as transportation issues, language difficulties, and lack of guidance throughout their care journey.
 
 While doctors provide essential care, there is a critical gap in structured support from patient navigators—nurses, social workers, and cancer survivors—who can assist patients in managing appointments, understanding treatment plans, and receiving emotional and logistical support. Additionally, many patients remain unaware of financial aid programs that could ease their burden.
 
