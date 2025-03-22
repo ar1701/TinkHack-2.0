@@ -3,27 +3,480 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings & Profile - Doctor Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Doctor Profile - Medical Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #136179cc;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar h2 {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li.active a {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar ul li.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--dark);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-button {
+            padding: 10px 15px;
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .bg-primary { background-color: var(--primary); }
+        .bg-info { background-color: var(--info); }
+        .bg-success { background-color: var(--success); }
+        .bg-warning { background-color: var(--warning); }
+        .bg-danger { background-color: var(--danger); }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .profile-photo-section {
+            flex: 0 0 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-photo-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .large-profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: var(--box-shadow);
+        }
+
+        .edit-photo {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+        }
+
+        .profile-info-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray);
+            color: var(--gray);
+        }
+
+        .btn-outline:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 200;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+        }
+
+        .certification-item, .qualification-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .certification-item:last-child, .qualification-item:last-child {
+            border-bottom: none;
+        }
+
+        .certification-icon, .qualification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .certification-details, .qualification-details {
+            flex: 1;
+        }
+
+        .certification-name, .qualification-degree {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .certification-info, .qualification-institution {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .certification-status {
+            margin: 0 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .valid {
+            color: #28a745;
+        }
+
+        .expiring {
+            color: #ffc107;
+        }
+
+        .certification-actions, .qualification-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edit-btn:hover {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .add-qualification, .add-certification {
+            margin-top: 20px;
+        }
+
+        .qualifications-list, .certifications-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Elements -->
-    <div class="background-container">
-        <div class="shape shape1"></div>
-        <div class="shape shape2"></div>
-        <div class="icons-container">
-            <i class="icon fas fa-heartbeat"></i>
-            <i class="icon fas fa-pills"></i>
-            <i class="icon fas fa-stethoscope"></i>
-            <i class="icon fas fa-user-md"></i>
-            <i class="icon fas fa-hospital"></i>
-            <i class="icon fas fa-notes-medical"></i>
-            <i class="icon fas fa-syringe"></i>
-            <i class="icon fas fa-ambulance"></i>
-        </div>
-    </div>
-
     <!-- Menu Toggle for Mobile -->
     <div class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
@@ -36,113 +489,35 @@
             <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
             <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
             <li><a href="patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
-            <li><a href="medical-records.html"><i class="fas fa-file-medical"></i> Medical Records</a></li>
-            <li><a href="prescriptions.html"><i class="fas fa-prescription"></i> Prescription & Reports</a></li>
-            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
-            <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings & Profile</a></li>
-        </ul>
-        <div class="logout">
+            <li><a href="medical-records.html"><i class="fas fa-file-medical"></i> Records</a></li>
+            <li><a href="prescriptions.html"><i class="fas fa-prescription"></i> Prescriptions</a></li>
+            <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
             <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </div>
+        </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h1>Settings & Profile</h1>
+            <h1>Profile Settings</h1>
             <div class="user-profile">
                 <img src="./Doc.jpeg" alt="Doctor Profile" class="profile-image">
-                <div class="notification-bell" id="notificationBell">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-count">5</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Notifications Popup (Same as index.html) -->
-        <div class="notifications-popup" id="notificationsPopup">
-            <div class="notifications-header">
-                <h3>Notifications</h3>
-                <button class="mark-all-read">Mark all as read</button>
-            </div>
-            <div class="notifications-list">
-                <div class="notification-item unread">
-                    <div class="notification-icon bg-primary">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">New Appointment Request</div>
-                        <div class="notification-message">John Doe requested an urgent appointment.</div>
-                        <div class="notification-time">10 minutes ago</div>
-                    </div>
-                </div>
-                <div class="notification-item unread">
-                    <div class="notification-icon bg-info">
-                        <i class="fas fa-file-medical"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">New Lab Results</div>
-                        <div class="notification-message">Lab results for Maria Garcia are now available.</div>
-                        <div class="notification-time">1 hour ago</div>
-                    </div>
-                </div>
-                <div class="notification-item unread">
-                    <div class="notification-icon bg-success">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">New Message</div>
-                        <div class="notification-message">Patient Robert Smith has sent you a message.</div>
-                        <div class="notification-time">3 hours ago</div>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-icon bg-warning">
-                        <i class="fas fa-prescription"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">Prescription Refill</div>
-                        <div class="notification-message">Emily Johnson requested a prescription refill.</div>
-                        <div class="notification-time">Yesterday</div>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-icon bg-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">Urgent Follow-up</div>
-                        <div class="notification-message">Urgent follow-up required for patient Michael Brown.</div>
-                        <div class="notification-time">Yesterday</div>
-                    </div>
-                </div>
-            </div>
-            <div class="notifications-footer">
-                <a href="notifications.html">View all notifications</a>
             </div>
         </div>
 
         <!-- Settings Tabs -->
         <div class="settings-tabs">
             <button class="tab-button active" data-tab="profile">Profile</button>
-            <button class="tab-button" data-tab="availability">Availability</button>
-            <button class="tab-button" data-tab="security">Security</button>
-            <button class="tab-button" data-tab="notifications">Notifications</button>
-            <button class="tab-button" data-tab="integrations">Integrations</button>
         </div>
 
         <!-- Profile Settings -->
-        <div class="settings-content active" id="profile-settings">
+        <div id="profile-content">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-primary">
-                            <i class="fas fa-user-md"></i>
-                        </div>
-                        <div>
-                            <h3>Personal Information</h3>
-                        </div>
+                    <div class="card-icon bg-primary">
+                        <i class="fas fa-user-md"></i>
                     </div>
+                    <h3>Personal Information</h3>
                 </div>
                 <div class="card-body">
                     <div class="profile-header">
@@ -153,9 +528,7 @@
                                     <i class="fas fa-camera"></i>
                                 </div>
                             </div>
-                            <div class="text-center mt-10">
-                                <button class="btn btn-outline">Change Photo</button>
-                            </div>
+                            <button class="btn btn-outline">Change Photo</button>
                         </div>
                         <div class="profile-info-section">
                             <form class="profile-form">
@@ -181,28 +554,6 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="dob">Date of Birth</label>
-                                        <input type="date" id="dob" value="1980-06-15" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="gender">Gender</label>
-                                        <select id="gender" class="form-control">
-                                            <option value="female" selected>Female</option>
-                                            <option value="male">Male</option>
-                                            <option value="other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="address">Address</label>
-                                    <textarea id="address" class="form-control" rows="2">123 Medical Center Drive, Suite 456, Boston, MA 02115</textarea>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="licenseNumber">Medical License Number</label>
-                                        <input type="text" id="licenseNumber" value="ML-123456789" class="form-control">
-                                    </div>
-                                    <div class="form-group">
                                         <label for="specialization">Primary Specialization</label>
                                         <select id="specialization" class="form-control">
                                             <option value="cardiology" selected>Cardiology</option>
@@ -210,13 +561,16 @@
                                             <option value="pediatrics">Pediatrics</option>
                                             <option value="dermatology">Dermatology</option>
                                             <option value="orthopedics">Orthopedics</option>
-                                            <option value="oncology">Oncology</option>
                                         </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="licenseNumber">Medical License Number</label>
+                                        <input type="text" id="licenseNumber" value="ML-123456789" class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="bio">Professional Bio</label>
-                                    <textarea id="bio" class="form-control" rows="4">Dr. Sarah Johnson is a board-certified cardiologist with over 15 years of experience in treating cardiovascular diseases. She specializes in preventive cardiology and heart failure management, with a patient-centered approach to care.</textarea>
+                                    <textarea id="bio" class="form-control" rows="3">Dr. Sarah Johnson is a board-certified cardiologist with over 15 years of experience in treating cardiovascular diseases. She specializes in preventive cardiology and heart failure management.</textarea>
                                 </div>
                             </form>
                         </div>
@@ -226,139 +580,24 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-info">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div>
-                            <h3>Educational Qualifications</h3>
-                        </div>
+                    <div class="card-icon bg-success">
+                        <i class="fas fa-certificate"></i>
                     </div>
+                    <h3>Certifications & Licenses</h3>
                 </div>
                 <div class="card-body">
-                    <div class="qualifications-list">
-                        <div class="qualification-item">
-                            <div class="qualification-icon bg-primary">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="qualification-details">
-                                <div class="qualification-year">2002 - 2006</div>
-                                <div class="qualification-degree">Doctor of Medicine (MD)</div>
-                                <div class="qualification-institution">Harvard Medical School</div>
-                            </div>
-                            <div class="qualification-actions">
-                                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="qualification-item">
-                            <div class="qualification-icon bg-info">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="qualification-details">
-                                <div class="qualification-year">2006 - 2009</div>
-                                <div class="qualification-degree">Residency in Internal Medicine</div>
-                                <div class="qualification-institution">Massachusetts General Hospital</div>
-                            </div>
-                            <div class="qualification-actions">
-                                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="qualification-item">
-                            <div class="qualification-icon bg-success">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="qualification-details">
-                                <div class="qualification-year">2009 - 2012</div>
-                                <div class="qualification-degree">Fellowship in Cardiovascular Disease</div>
-                                <div class="qualification-institution">Brigham and Women's Hospital</div>
-                            </div>
-                            <div class="qualification-actions">
-                                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="add-qualification">
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Qualification
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-success">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div>
-                            <h3>Certifications & Licenses</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="certifications-list">
+                    <div class="certifications-list" id="certificationsList">
+                        <!-- Existing certifications -->
                         <div class="certification-item">
                             <div class="certification-icon bg-primary">
                                 <i class="fas fa-award"></i>
                             </div>
                             <div class="certification-details">
                                 <div class="certification-name">Board Certification in Cardiovascular Disease</div>
-                                <div class="certification-info">
-                                    <span class="certification-issuer">American Board of Internal Medicine</span>
-                                    <span class="certification-date">Issued: 2012</span>
-                                    <span class="certification-expiry">Expires: 2025</span>
-                                </div>
+                                <div class="certification-info">American Board of Internal Medicine (Expires: Nov 2025)</div>
                             </div>
                             <div class="certification-status valid">
                                 <i class="fas fa-check-circle"></i> Valid
-                            </div>
-                            <div class="certification-actions">
-                                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="certification-item">
-                            <div class="certification-icon bg-info">
-                                <i class="fas fa-award"></i>
-                            </div>
-                            <div class="certification-details">
-                                <div class="certification-name">Advanced Cardiovascular Life Support (ACLS)</div>
-                                <div class="certification-info">
-                                    <span class="certification-issuer">American Heart Association</span>
-                                    <span class="certification-date">Issued: 2023</span>
-                                    <span class="certification-expiry">Expires: 2025</span>
-                                </div>
-                            </div>
-                            <div class="certification-status valid">
-                                <i class="fas fa-check-circle"></i> Valid
-                            </div>
-                            <div class="certification-actions">
-                                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="certification-item">
-                            <div class="certification-icon bg-warning">
-                                <i class="fas fa-award"></i>
-                            </div>
-                            <div class="certification-details">
-                                <div class="certification-name">State Medical License</div>
-                                <div class="certification-info">
-                                    <span class="certification-issuer">Massachusetts Board of Registration in Medicine</span>
-                                    <span class="certification-date">Issued: 2007</span>
-                                    <span class="certification-expiry">Expires: 2025</span>
-                                </div>
-                            </div>
-                            <div class="certification-status expiring">
-                                <i class="fas fa-exclamation-circle"></i> Expiring Soon
                             </div>
                             <div class="certification-actions">
                                 <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
@@ -367,7 +606,7 @@
                         </div>
                     </div>
                     <div class="add-certification">
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" id="addCertificationBtn">
                             <i class="fas fa-plus"></i> Add Certification
                         </button>
                     </div>
@@ -375,578 +614,110 @@
             </div>
 
             <div class="actions-row">
-                <button class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-outline">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Availability Settings -->
-        <div class="settings-content" id="availability-settings">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-primary">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <div>
-                            <h3>Working Hours</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="toggle-container">
-                        <label class="toggle-label">Set Custom Hours for Each Day</label>
-                        <label class="switch">
-                            <input type="checkbox" id="customHoursToggle" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-
-                    <div class="working-hours-container">
-                        <div class="working-day">
-                            <div class="day-name">Monday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select">
-                                            <option value="9:00">9:00 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select">
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot"><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Tuesday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select">
-                                            <option value="9:00">9:00 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select">
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot"><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Wednesday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select">
-                                            <option value="9:00">9:00 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select">
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot"><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Thursday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select">
-                                            <option value="9:00">9:00 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select">
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot"><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Friday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select">
-                                            <option value="9:00">9:00 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select">
-                                            <option value="15:00">3:00 PM</option>
-                                            <option value="16:00">4:00 PM</option>
-                                            <option value="17:00">5:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot"><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Saturday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots disabled">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select" disabled>
-                                            <option value="9:00">9:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select" disabled>
-                                            <option value="17:00">5:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot" disabled><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="working-day">
-                            <div class="day-name">Sunday</div>
-                            <div class="day-toggle">
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="time-slots disabled">
-                                <div class="time-slot">
-                                    <div class="time-inputs">
-                                        <select class="form-control time-select" disabled>
-                                            <option value="9:00">9:00 AM</option>
-                                        </select>
-                                        <span class="time-separator">to</span>
-                                        <select class="form-control time-select" disabled>
-                                            <option value="17:00">5:00 PM</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-icon add-time-slot" disabled><i class="fas fa-plus-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-warning">
-                            <i class="fas fa-business-time"></i>
-                        </div>
-                        <div>
-                            <h3>Appointment Settings</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="appointmentDuration">Default Appointment Duration</label>
-                        <select id="appointmentDuration" class="form-control">
-                            <option value="15">15 minutes</option>
-                            <option value="30" selected>30 minutes</option>
-                            <option value="45">45 minutes</option>
-                            <option value="60">60 minutes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="bufferTime">Buffer Time Between Appointments</label>
-                        <select id="bufferTime" class="form-control">
-                            <option value="0">No buffer</option>
-                            <option value="5">5 minutes</option>
-                            <option value="10" selected>10 minutes</option>
-                            <option value="15">15 minutes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="maxDailyAppointments">Maximum Daily Appointments</label>
-                        <input type="number" id="maxDailyAppointments" value="12" min="1" max="30" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="schedulingWindow">Scheduling Window (days in advance)</label>
-                        <input type="number" id="schedulingWindow" value="60" min="1" max="365" class="form-control">
-                    </div>
-                    <div class="toggle-container">
-                        <label class="toggle-label">Allow Online Scheduling</label>
-                        <label class="switch">
-                            <input type="checkbox" id="onlineSchedulingToggle" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-container">
-                        <label class="toggle-label">Enable Video Consultations</label>
-                        <label class="switch">
-                            <input type="checkbox" id="videoConsultationToggle" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-info">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div>
-                            <h3>Time Off & Vacation</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="time-off-container">
-                        <div class="time-off-list">
-                            <div class="time-off-item">
-                                <div class="time-off-dates">
-                                    <span class="time-off-start">2023-12-20</span>
-                                    <span class="time-off-separator">to</span>
-                                    <span class="time-off-end">2023-12-31</span>
-                                </div>
-                                <div class="time-off-reason">Year-End Vacation</div>
-                                <div class="time-off-actions">
-                                    <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="time-off-item">
-                                <div class="time-off-dates">
-                                    <span class="time-off-start">2024-02-15</span>
-                                    <span class="time-off-separator">to</span>
-                                    <span class="time-off-end">2024-02-18</span>
-                                </div>
-                                <div class="time-off-reason">Family Event</div>
-                                <div class="time-off-actions">
-                                    <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="add-time-off">
-                            <button class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Add Time Off
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-outline">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Security Settings -->
-        <div class="settings-content" id="security-settings">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-danger">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <div>
-                            <h3>Password & Security</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <form class="security-form">
-                        <div class="form-group">
-                            <label for="currentPassword">Current Password</label>
-                            <input type="password" id="currentPassword" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="newPassword">New Password</label>
-                            <input type="password" id="newPassword" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirm New Password</label>
-                            <input type="password" id="confirmPassword" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="twoFactorAuth">Two-Factor Authentication</label>
-                            <div class="toggle-container">
-                                <label class="switch">
-                                    <input type="checkbox" id="twoFactorAuth" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="toggle-status">Enabled</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-warning">
-                            <i class="fas fa-user-lock"></i>
-                        </div>
-                        <div>
-                            <h3>Login Activity</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="login-activity-list">
-                        <div class="login-activity-item">
-                            <div class="activity-icon bg-success">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="activity-details">
-                                <div class="activity-description">Successful login from Chrome on Windows</div>
-                                <div class="activity-time">2023-10-15 14:30</div>
-                                <div class="activity-location">Boston, MA, USA</div>
-                            </div>
-                        </div>
-
-                        <div class="login-activity-item">
-                            <div class="activity-icon bg-danger">
-                                <i class="fas fa-times-circle"></i>
-                            </div>
-                            <div class="activity-details">
-                                <div class="activity-description">Failed login attempt</div>
-                                <div class="activity-time">2023-10-14 22:15</div>
-                                <div class="activity-location">Unknown location</div>
-                            </div>
-                        </div>
-
-                        <div class="login-activity-item">
-                            <div class="activity-icon bg-success">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="activity-details">
-                                <div class="activity-description">Successful login from Safari on iPhone</div>
-                                <div class="activity-time">2023-10-13 09:45</div>
-                                <div class="activity-location">New York, NY, USA</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-outline">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Notifications Settings -->
-        <div class="settings-content" id="notifications-settings">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-info">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div>
-                            <h3>Notification Preferences</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="notification-preferences">
-                        <div class="form-group">
-                            <label for="emailNotifications">Email Notifications</label>
-                            <div class="toggle-container">
-                                <label class="switch">
-                                    <input type="checkbox" id="emailNotifications" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="toggle-status">Enabled</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="smsNotifications">SMS Notifications</label>
-                            <div class="toggle-container">
-                                <label class="switch">
-                                    <input type="checkbox" id="smsNotifications">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="toggle-status">Disabled</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="pushNotifications">Push Notifications</label>
-                            <div class="toggle-container">
-                                <label class="switch">
-                                    <input type="checkbox" id="pushNotifications" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="toggle-status">Enabled</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-warning">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div>
-                            <h3>Appointment Reminders</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="reminderTime">Reminder Time Before Appointment</label>
-                        <select id="reminderTime" class="form-control">
-                            <option value="15">15 minutes</option>
-                            <option value="30">30 minutes</option>
-                            <option value="60" selected>1 hour</option>
-                            <option value="120">2 hours</option>
-                            <option value="1440">1 day</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-outline">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Integrations Settings -->
-        <div class="settings-content" id="integrations-settings">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="card-icon bg-primary">
-                            <i class="fas fa-plug"></i>
-                        </div>
-                        <div>
-                            <h3>Connected Apps</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="connected-apps-list">
-                        <div class="connected-app-item">
-                            <div class="app-icon bg-success">
-                                <i class="fab fa-google"></i>
-                            </div>
-                            <div class="app-details">
-                                <div class="app-name">Google Calendar</div>
-                                <div class="app-status">Connected</div>
-                            </div>
-                            <div class="app-actions">
-                                <button class="btn-icon disconnect-btn"><i class="fas fa-unlink"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="connected-app-item">
-                            <div class="app-icon bg-info">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <div class="app-details">
-                                <div class="app-name">EHR System</div>
-                                <div class="app-status">Connected</div>
-                            </div>
-                            <div class="app-actions">
-                                <button class="btn-icon disconnect-btn"><i class="fas fa-unlink"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="connected-app-item">
-                            <div class="app-icon bg-warning">
-                                <i class="fab fa-slack"></i>
-                            </div>
-                            <div class="app-details">
-                                <div class="app-name">Slack</div>
-                                <div class="app-status">Not Connected</div>
-                            </div>
-                            <div class="app-actions">
-                                <button class="btn-icon connect-btn"><i class="fas fa-link"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn btn-primary">Save Changes</button>
+                <button class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
                 <button class="btn btn-outline">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
+    <!-- Modal for Adding Certification -->
+    <div class="modal" id="certificationModal">
+        <div class="modal-content">
+            <div class="modal-header">Add Certification</div>
+            <div class="modal-body">
+                <label for="certificationName">Certification Name</label>
+                <input type="text" id="certificationName" class="form-control" placeholder="Enter certification name">
+                <label for="certificationDetails">Details</label>
+                <input type="text" id="certificationDetails" class="form-control" placeholder="Enter details">
+                <label for="expirationDate">Expiration Date</label>
+                <input type="date" id="expirationDate" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveCertificationBtn">Save</button>
+                <button class="btn btn-outline" id="closeModalBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Modal functionality
+        const modal = document.getElementById('certificationModal');
+        const addCertificationBtn = document.getElementById('addCertificationBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const saveCertificationBtn = document.getElementById('saveCertificationBtn');
+        const certificationsList = document.getElementById('certificationsList');
+        const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+        let newCertification = null;
+
+        // Open modal on "Add Certification" button click
+        addCertificationBtn.addEventListener('click', function() {
+            modal.style.display = 'flex';
+        });
+
+        // Close modal on "Close" button click
+        closeModalBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Save certification details
+        saveCertificationBtn.addEventListener('click', function() {
+            const certificationName = document.getElementById('certificationName').value;
+            const certificationDetails = document.getElementById('certificationDetails').value;
+            const expirationDate = document.getElementById('expirationDate').value;
+
+            if (certificationName && certificationDetails && expirationDate) {
+                newCertification = {
+                    name: certificationName,
+                    details: certificationDetails,
+                    expirationDate: expirationDate,
+                    status: 'valid'
+                };
+
+                // Clear input fields
+                document.getElementById('certificationName').value = '';
+                document.getElementById('certificationDetails').value = '';
+                document.getElementById('expirationDate').value = '';
+
+                // Close modal
+                modal.style.display = 'none';
+            } else {
+                alert('Please fill all fields.');
+            }
+        });
+
+        // Save changes and reflect in the list
+        saveChangesBtn.addEventListener('click', function() {
+            if (newCertification) {
+                const certificationItem = document.createElement('div');
+                certificationItem.classList.add('certification-item');
+
+                certificationItem.innerHTML = `
+                    <div class="certification-icon bg-primary">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="certification-details">
+                        <div class="certification-name">${newCertification.name}</div>
+                        <div class="certification-info">${newCertification.details} (Expires: ${newCertification.expirationDate})</div>
+                    </div>
+                    <div class="certification-status ${newCertification.status}">
+                        <i class="fas fa-check-circle"></i> Valid
+                    </div>
+                    <div class="certification-actions">
+                        <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+
+                certificationsList.appendChild(certificationItem);
+                newCertification = null; // Reset new certification
+            }
+        });
+    </script>
 </body>
 </html>
