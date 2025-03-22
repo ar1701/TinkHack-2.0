@@ -38,7 +38,18 @@ body {
     overflow: hidden;
     z-index: -1;
 }
+.tab-content {
+    display: none;
+    padding: 20px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+}
 
+.tab-content.active {
+    display: block;
+}
 .shape {
     position: absolute;
     opacity: 0.05;

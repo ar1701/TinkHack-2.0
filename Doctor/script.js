@@ -45,7 +45,60 @@ document.addEventListener('DOMContentLoaded', function() {
         link.click();
         document.body.removeChild(link);
     });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
     
+        // Add new certification
+        document.querySelector('.add-certification button').addEventListener('click', function() {
+            const certificationsList = document.querySelector('.certifications-list');
+            const newCertification = document.createElement('div');
+            newCertification.classList.add('certification-item');
+            newCertification.innerHTML = `
+                <div class="certification-icon bg-primary">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="certification-details">
+                    <div class="certification-name">New Certification</div>
+                    <div class="certification-info">Details about the new certification</div>
+                </div>
+                <div class="certification-status valid">
+                    <i class="fas fa-check-circle"></i> Valid
+                </div>
+                <div class="certification-actions">
+                    <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            certificationsList.appendChild(newCertification);
+        });
+    
+        // Tab navigation and smooth scrolling
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Scroll to the corresponding section
+                const tab = this.getAttribute('data-tab');
+                scrollToSection(`${tab}-content`);
+            });
+        });
+    });
     // Notifications popup
     const notificationBell = document.getElementById('notificationBell');
     const notificationsPopup = document.getElementById('notificationsPopup');

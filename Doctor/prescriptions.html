@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription & Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #136179cc;
+            --secondary: #136179cc;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color:  #4ca4becc;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            background: #136179cc;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar h2 {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li.active a {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar ul li.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-description {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #136179cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #136179cc;
+        }
+
+        /* Tab System */
+        .tabs {
+            margin-top: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .tab-btn.active {
+            background-color: #136179cc;
+            color: white;
+        }
+
+        .tab-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Prescription Output */
+        .prescription-output {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+        }
+
+        .prescription-output h4 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .prescription-output p {
+            margin: 5px 0;
+        }
+
+        /* Footer & Misc */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2><i class="fas fa-user-md"></i> Doctor Portal</h2>
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+            <li><a href="medical-records.html"><i class="fas fa-file-medical"></i> Records</a></li>
+            <li><a href="prescriptions.html"><i class="fas fa-prescription"></i> Prescriptions</a></li>
+            <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <header>
+                <h1>Digital Prescriptions📝</h1>
+                <p>Manage your prescriptions and diagnostic reports in one place</p>
+            </header>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <h2 class="feature-title">📄 Digital Prescriptions</h2>
+                    <p class="feature-description">Generate and send digital prescriptions to patients securely. Access previous prescription history and renew with a single click.</p>
+                    <a href="#prescriptions" class="btn">Manage Prescriptions</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h2 class="feature-title">🔬 Diagnostic Reports</h2>
+                    <p class="feature-description">Upload and track diagnostic test results. Organize reports by date, type, and patient for quick reference.</p>
+                    <a href="#reports" class="btn">View Reports</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h2 class="feature-title">💊 Smart Recommendations</h2>
+                    <p class="feature-description">Get AI-powered medication recommendations based on patient history, test results, and best practices.</p>
+                    <a href="#recommendations" class="btn">See Recommendations</a>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="prescriptions">Prescriptions</button>
+                    <button class="tab-btn" data-tab="reports">Reports</button>
+                    <button class="tab-btn" data-tab="recommendations">Recommendations</button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Prescriptions Tab -->
+                    <div class="tab-pane active" id="prescriptions">
+                        <h3>Create New Prescription</h3>
+                        
+                        <form id="prescriptionForm">
+                            <div class="form-group">
+                                <label for="patient">Patient</label>
+                                <select id="patient">
+                                    <option value="">Select patient</option>
+                                    <option value="1">John Doe</option>
+                                    <option value="2">Jane Smith</option>
+                                    <option value="3">Michael Johnson</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="medication">Medication</label>
+                                <input type="text" id="medication" placeholder="Enter medication name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dosage">Dosage</label>
+                                <input type="text" id="dosage" placeholder="Enter dosage">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="frequency">Frequency</label>
+                                <select id="frequency">
+                                    <option value="">Select frequency</option>
+                                    <option value="daily">Once daily</option>
+                                    <option value="twice">Twice daily</option>
+                                    <option value="three">Three times daily</option>
+                                    <option value="four">Four times daily</option>
+                                    <option value="weekly">Once weekly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="duration">Duration</label>
+                                <input type="text" id="duration" placeholder="e.g., 7 days, 2 weeks">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notes">Special Instructions</label>
+                                <textarea id="notes" rows="3" placeholder="Any special instructions or notes"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn">Generate Prescription</button>
+                        </form>
+
+                        <!-- Prescription Output -->
+                        <div class="prescription-output" id="prescriptionOutput" style="display: none;">
+                            <h4>Generated Prescription</h4>
+                            <p><strong>Patient:</strong> <span id="outputPatient"></span></p>
+                            <p><strong>Medication:</strong> <span id="outputMedication"></span></p>
+                            <p><strong>Dosage:</strong> <span id="outputDosage"></span></p>
+                            <p><strong>Frequency:</strong> <span id="outputFrequency"></span></p>
+                            <p><strong>Duration:</strong> <span id="outputDuration"></span></p>
+                            <p><strong>Special Instructions:</strong> <span id="outputNotes"></span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Reports Tab -->
+                    <div class="tab-pane" id="reports">
+                        <h3>Upload New Report</h3>
+                        
+                        <div class="upload-area">
+                            <div>
+                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p>Drag and drop files here or click to upload</p>
+                                <p style="color: #777; font-size: 14px;">Supports PDF, JPG, PNG (Max 10MB)</p>
+                            </div>
+                        </div>
+                        
+                        <h3>Recent Reports</h3>
+                        
+                        <ul class="report-list">
+                            <li class="report-item">
+                                <div class="report-meta">
+                                    <span class="report-name">Blood Test Results</span>
+                                    <span class="report-date">March 15, 2025</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="btn">View</a>
+                                </div>
+                            </li>
+                            <li class="report-item">
+                                <div class="report-meta">
+                                    <span class="report-name">Chest X-Ray</span>
+                                    <span class="report-date">February 28, 2025</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="btn">View</a>
+                                </div>
+                            </li>
+                            <li class="report-item">
+                                <div class="report-meta">
+                                    <span class="report-name">Urine Analysis</span>
+                                    <span class="report-date">February 10, 2025</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="btn">View</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Recommendations Tab -->
+                    <div class="tab-pane" id="recommendations">
+                        <h3>Smart Medication Recommendations</h3>
+                        
+                        <div class="medication-suggestion">
+                            <div class="suggestion-header">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                Recommendation for John Doe
+                            </div>
+                            <p>Based on recent blood test results showing elevated cholesterol levels, consider prescribing Atorvastatin 10mg daily.</p>
+                        </div>
+                        
+                        <div class="medication-suggestion">
+                            <div class="suggestion-header">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                Recommendation for Jane Smith
+                            </div>
+                            <p>Patient's prior adverse reaction to penicillin suggests using azithromycin for current respiratory infection. Recommend 500mg on day 1, followed by 250mg daily for 4 days.</p>
+                        </div>
+                        
+                        <div class="medication-suggestion">
+                            <div class="suggestion-header">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                Recommendation for Michael Johnson
+                            </div>
+                            <p>Recent blood pressure readings consistently high (150/95). Consider initiating lisinopril 10mg daily with follow-up in 2 weeks to assess efficacy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 Healthcare Portal | Prescription & Reports Module</p>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and panes
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding tab pane
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Upload area functionality
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('click', () => {
+            alert('File upload functionality would be implemented here.');
+        });
+
+        // Generate Prescription
+        document.getElementById('prescriptionForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get form values
+            const patient = document.getElementById('patient').value;
+            const medication = document.getElementById('medication').value;
+            const dosage = document.getElementById('dosage').value;
+            const frequency = document.getElementById('frequency').value;
+            const duration = document.getElementById('duration').value;
+            const notes = document.getElementById('notes').value;
+
+            // Display the prescription
+            document.getElementById('outputPatient').textContent = patient;
+            document.getElementById('outputMedication').textContent = medication;
+            document.getElementById('outputDosage').textContent = dosage;
+            document.getElementById('outputFrequency').textContent = frequency;
+            document.getElementById('outputDuration').textContent = duration;
+            document.getElementById('outputNotes').textContent = notes;
+
+            // Show the prescription output
+            document.getElementById('prescriptionOutput').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
