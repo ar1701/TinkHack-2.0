@@ -127,16 +127,13 @@
 
   <!-- Records List Section -->
   <div class="col-md-8">
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h5 class="card-title mb-0">
-            <i class="fas fa-file-medical text-primary me-2"></i>My Medical
-            Records
+            <i class="fas fa-file-medical text-primary me-2"></i>My Medical Records
           </h5>
-          <span class="badge rounded-pill bg-primary" id="recordCount"
-            >0 Records</span
-          >
+          <span class="badge rounded-pill bg-primary" id="recordCount">0 Records</span>
         </div>
 
         <!-- Search Results Section (Initially Hidden) -->
@@ -148,10 +145,7 @@
           <div id="searchResults" class="list-group mb-4">
             <!-- Search results will be populated here -->
           </div>
-          <button
-            id="clearSearch"
-            class="btn btn-sm btn-outline-secondary mb-4"
-          >
+          <button id="clearSearch" class="btn btn-sm btn-outline-secondary mb-4">
             <i class="fas fa-times me-2"></i>Clear Search
           </button>
         </div>
@@ -164,6 +158,32 @@
             <p>No records found. Upload your first medical record!</p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Medical Records Chat Interface -->
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-robot me-2"></i>
+          <h5 class="mb-0">Medical Records Assistant</h5>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="mb-3 chat-container" style="height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 5px; padding: 15px;">
+          <div id="medicalRecordChatMessages">
+            <div class="p-3 bg-light rounded mb-3">
+              <i class="fas fa-robot text-primary me-2"></i>
+              <span>Hello! I can help answer questions about your medical records. Try asking things like "What medications am I taking?" or "What were the results of my last blood test?"</span>
+            </div>
+          </div>
+        </div>
+        <form id="medicalRecordChatForm" class="d-flex">
+          <input type="text" id="medicalRecordQuestion" class="form-control me-2" placeholder="Ask a question about your medical records...">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -896,6 +916,94 @@
           }
         }
       });
+
+    // Medical Records Chat functionality
+    const medicalRecordChatForm = document.getElementById("medicalRecordChatForm");
+    const medicalRecordQuestion = document.getElementById("medicalRecordQuestion");
+    const medicalRecordChatMessages = document.getElementById("medicalRecordChatMessages");
+
+    function addChatMessage(message, isUser = false) {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `${isUser ? 'text-end' : ''} mb-3`;
+      
+      const contentDiv = document.createElement("div");
+      contentDiv.className = `d-inline-block p-3 rounded ${
+        isUser ? 'bg-primary text-white' : 'bg-light'
+      }`;
+      contentDiv.style.maxWidth = '80%';
+      
+      if (!isUser) {
+        contentDiv.innerHTML = `<i class="fas fa-robot text-primary me-2"></i>`;
+      }
+      
+      contentDiv.innerHTML += message;
+      
+      messageDiv.appendChild(contentDiv);
+      medicalRecordChatMessages.appendChild(messageDiv);
+      
+      // Scroll to bottom
+      const chatContainer = medicalRecordChatMessages.parentElement;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    medicalRecordChatForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const question = medicalRecordQuestion.value.trim();
+      
+      if (!question) return;
+      
+      // Add user message
+      addChatMessage(question, true);
+      medicalRecordQuestion.value = "";
+      
+      // Add loading message
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "mb-3";
+      loadingDiv.innerHTML = `
+        <div class="d-inline-block p-3 rounded bg-light">
+          <i class="fas fa-robot text-primary me-2"></i>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Processing your question...
+        </div>
+      `;
+      medicalRecordChatMessages.appendChild(loadingDiv);
+      
+      // Scroll to bottom
+      const chatContainer = medicalRecordChatMessages.parentElement;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      
+      try {
+        const response = await fetch("/api/medical-records/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ question }),
+        });
+        
+        const data = await response.json();
+        
+        // Remove loading message
+        medicalRecordChatMessages.removeChild(loadingDiv);
+        
+        if (data.success) {
+          let answer = data.answer;
+          if (data.sources && data.sources.length > 0) {
+            answer += '<hr class="my-2">';
+            answer += '<small class="text-muted">Sources:</small><br>';
+            answer += '<small class="text-muted">' + data.sources.join('<br>') + '</small>';
+          }
+          addChatMessage(answer);
+        } else {
+          addChatMessage("I'm sorry, I encountered an error processing your question. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Remove loading message
+        medicalRecordChatMessages.removeChild(loadingDiv);
+        addChatMessage("I'm sorry, I encountered an error processing your question. Please try again.");
+      }
+    });
   });
 </script>
 

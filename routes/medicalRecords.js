@@ -6,6 +6,8 @@ const cloudinaryConfig = require("../config/cloudinary");
 const { uploader } = cloudinaryConfig;
 const MedicalRecord = require("../models/medicalRecord");
 const { isLoggedIn } = require("../middleware/auth");
+const axios = require("axios");
+const FormData = require("form-data");
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -67,21 +69,7 @@ router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
       folder: "medical_records",
     });
 
-    let textContent = "";
-    if (req.file.mimetype === "application/pdf") {
-      // Extract text from PDF for RAG
-      // This would use a PDF parsing library like pdf-parse
-      // For simplicity, we're skipping this step
-      textContent = description; // Use description as fallback
-    } else {
-      // For images, use the description as the text content
-      textContent = description;
-    }
-
-    // Generate embedding for the text content
-    const embedding = await generateEmbedding(textContent);
-
-    // Create record in database
+    // Create record in MongoDB first to get the ID
     const medicalRecord = new MedicalRecord({
       patient: req.user._id,
       title,
@@ -91,11 +79,53 @@ router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
       fileUrl: result.secure_url,
       cloudinaryPublicId: result.public_id,
       uploadDate: new Date(),
-      textContent,
-      vectorEmbedding: embedding,
     });
 
     await medicalRecord.save();
+
+    // Process record with Python server for RAG
+    const formData = new FormData();
+    formData.append("file", req.file.buffer, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+    });
+    formData.append(
+      "record_data",
+      JSON.stringify({
+        recordId: medicalRecord._id.toString(),
+        userId: req.user._id.toString(),
+        title,
+        description,
+        recordType,
+        recordDate,
+      })
+    );
+
+    try {
+      const pythonResponse = await axios.post(
+        "http://localhost:5000/process_record",
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+          },
+        }
+      );
+
+      if (pythonResponse.data.success) {
+        // Update record with text content and summary
+        medicalRecord.textContent = pythonResponse.data.text_length.toString();
+        medicalRecord.metadata = new Map([
+          ["chunks_count", pythonResponse.data.chunks_count.toString()],
+          ["summary", pythonResponse.data.summary],
+          ["vector_ids", JSON.stringify(pythonResponse.data.vector_ids || [])],
+        ]);
+        await medicalRecord.save();
+      }
+    } catch (err) {
+      console.error("Warning: RAG processing error:", err.message);
+      // Continue even if RAG processing fails - record is still saved
+    }
 
     res.status(201).json({
       success: true,
@@ -111,6 +141,42 @@ router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
   }
 });
 
+// Query medical records
+router.post("/query", isLoggedIn, async (req, res) => {
+  try {
+    const { question } = req.body;
+
+    if (!question) {
+      return res.status(400).json({
+        success: false,
+        message: "Question is required",
+      });
+    }
+
+    // Call Python server for RAG
+    try {
+      const response = await axios.post("http://localhost:5000/query_records", {
+        question,
+        userId: req.user._id.toString(),
+      });
+
+      res.json(response.data);
+    } catch (error) {
+      console.error("Error from RAG server:", error.message);
+      res.status(500).json({
+        success: false,
+        message: "Error processing your question",
+      });
+    }
+  } catch (error) {
+    console.error("Error querying records:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error processing your question",
+    });
+  }
+});
+
 // Search medical records
 router.get("/search", isLoggedIn, async (req, res) => {
   try {
@@ -119,7 +185,7 @@ router.get("/search", isLoggedIn, async (req, res) => {
     if (!query) {
       return res.status(400).json({
         success: false,
-        message: "No search query provided",
+        message: "Search query is required",
       });
     }
 
@@ -134,6 +200,36 @@ router.get("/search", isLoggedIn, async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error searching medical records",
+    });
+  }
+});
+
+// Get a specific record
+router.get("/:id", isLoggedIn, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const record = await MedicalRecord.findOne({
+      _id: id,
+      patient: req.user._id,
+    });
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Record not found or you don't have permission to view it",
+      });
+    }
+
+    res.json({
+      success: true,
+      record,
+    });
+  } catch (error) {
+    console.error("Error fetching record:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching medical record",
     });
   }
 });
@@ -175,6 +271,55 @@ router.put("/:id", isLoggedIn, upload.single("file"), async (req, res) => {
       // Update record with new file info
       record.fileUrl = result.secure_url;
       record.cloudinaryPublicId = result.public_id;
+
+      // Process new file with RAG server
+      const formData = new FormData();
+      formData.append("file", req.file.buffer, {
+        filename: req.file.originalname,
+        contentType: req.file.mimetype,
+      });
+      formData.append(
+        "record_data",
+        JSON.stringify({
+          recordId: record._id.toString(),
+          userId: req.user._id.toString(),
+          title,
+          description,
+          recordType,
+          recordDate,
+        })
+      );
+
+      try {
+        const pythonResponse = await axios.post(
+          "http://localhost:5000/process_record",
+          formData,
+          {
+            headers: {
+              ...formData.getHeaders(),
+            },
+          }
+        );
+
+        if (pythonResponse.data.success) {
+          // Update record with text content and summary
+          record.textContent = pythonResponse.data.text_length.toString();
+          record.metadata = new Map([
+            ["chunks_count", pythonResponse.data.chunks_count.toString()],
+            ["summary", pythonResponse.data.summary],
+            [
+              "vector_ids",
+              JSON.stringify(pythonResponse.data.vector_ids || []),
+            ],
+          ]);
+        }
+      } catch (err) {
+        console.error(
+          "Warning: RAG processing error during update:",
+          err.message
+        );
+        // Continue even if RAG processing fails
+      }
     }
 
     // Update other fields
@@ -182,13 +327,6 @@ router.put("/:id", isLoggedIn, upload.single("file"), async (req, res) => {
     record.description = description;
     record.recordType = recordType;
     record.recordDate = recordDate;
-
-    // If description changed, update the embedding
-    if (record.description !== description) {
-      record.textContent = description;
-      const newEmbedding = await generateEmbedding(description);
-      record.vectorEmbedding = newEmbedding;
-    }
 
     await record.save();
 

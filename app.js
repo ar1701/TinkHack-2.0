@@ -257,9 +257,13 @@ app.use(caregiverRoutes);
 app.use(baselineScreeningRoutes);
 app.use("/api/gemini", geminiRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on: http://localhost:${process.env.PORT}`);
+// Add a server listening section at the end of the file
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = app;
 
 app.get("*", (req, res) => {
   res.redirect("/login");
