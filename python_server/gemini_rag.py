@@ -315,7 +315,8 @@ if __name__ == '__main__':
     "doctor": "Dr Darshan Singh Bhakuni",
     "department": "Rheumatology MHD",
     "ageSex": "56 yrs/Female",
-    "consultationType": "Video consultation"
+    "consultationType": "Video consultation",
+    
 },
 
             {
@@ -323,21 +324,32 @@ if __name__ == '__main__':
                 "title": "Annual Physical Examination",
                 "description": "Patient is a 45-year-old male in good health. Blood pressure: 120/80 mmHg. Heart rate: 72 bpm. Currently taking Lisinopril 10mg daily for hypertension and Metformin 500mg twice daily for type 2 diabetes. Lab results show normal kidney function, cholesterol within normal limits. Recommended follow-up in 12 months.",
                 "recordType": "Physical Examination",
-                "recordDate": "2023-03-15"
+                "recordDate": "2023-03-15",
+                "doctor_name": "Dr Darshan Singh Bhakuni",
+                "hospital_name": "Medanta Hospital",
+                "hospital_no": "MH005990453",
+            
             },
             {
                 "recordId": "sample_record_2",
                 "title": "Cardiology Consultation",
                 "description": "Patient referred for evaluation of chest pain. ECG shows normal sinus rhythm. Stress test was negative for ischemia. Echo shows normal ejection fraction of 60%. Recommended to continue current medications: Aspirin 81mg daily and Atorvastatin 20mg at bedtime. Advised to exercise regularly and follow a low-salt diet.",
                 "recordType": "Specialist Consultation",
-                "recordDate": "2023-05-20"
+                "recordDate": "2023-05-20",
+                "doctor_name": "Dr Darshan Singh Bhakuni",
+                "hospital_name": "Medanta Hospital",
+                "hospital_no": "MH005990453",
+            
             },
             {
                 "recordId": "sample_record_3",
                 "title": "Lab Results",
                 "description": "Complete Blood Count: WBC 6.5, RBC 4.8, Hemoglobin 14.2, Hematocrit 42%, Platelets 250. Comprehensive Metabolic Panel: Sodium 140, Potassium 4.2, Glucose 110 (slightly elevated), A1C 6.4%. Lipid Panel: Total Cholesterol 185, LDL 110, HDL 45, Triglycerides 150. Thyroid Function: TSH 2.8, within normal range.",
                 "recordType": "Lab Report",
-                "recordDate": "2023-06-10"
+                "recordDate": "2023-06-10",
+                "doctor_name": "Dr Darshan Singh Bhakuni",
+                "hospital_name": "Medanta Hospital",
+                "hospital_no": "MH005990453",
             }
         ]
         
