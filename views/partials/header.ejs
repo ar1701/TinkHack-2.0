@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light-theme">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,17 +42,6 @@
           </div>
           <div class="d-flex align-items-center">
             <span class="me-3 user-welcome"><i class="fas fa-user-circle me-2"></i>Welcome, <%= user.fullName %></span>
-            <!-- Theme Toggle Switch -->
-            <div class="theme-switch-wrapper me-3">
-              <label class="theme-switch" for="theme-toggle">
-                <input type="checkbox" id="theme-toggle" />
-                <span class="slider"></span>
-              </label>
-              <span class="theme-icon">
-                <i class="fas fa-moon" id="dark-icon"></i>
-                <i class="fas fa-sun" id="light-icon" style="display: none;"></i>
-              </span>
-            </div>
             <a href="/logout" class="btn btn-logout">Logout</a>
           </div>
         </div>

@@ -12,44 +12,268 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <!-- Add Animation Library -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
     <style>
-      /* Same styles as login.html */
       :root {
         --primary-blue: #2a5c82;
         --secondary-blue: #5c9baf;
         --accent-teal: #4ecdc4;
+        --accent-purple: #b66dff;
+        --warm-pink: #ff7e92;
+        --light-gray: #f8f9fa;
+        --text-dark: #333333;
       }
 
       body {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background-image: url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"); /* Medical-themed background */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-dark);
+        position: relative;
       }
 
-      .medical-header {
-        background: var(--primary-blue);
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(42, 92, 130, 0.9) 0%,
+          rgba(92, 155, 175, 0.8) 100%
+        );
+        z-index: -1;
       }
 
-      .form-container {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-        max-width: 800px;
-        margin: 2rem auto;
-      }
-
-      .btn-medical {
-        background: var(--accent-teal);
+      .header-gradient {
+        background: rgba(42, 92, 130, 0.9);
         color: white;
-        padding: 12px 30px;
+        padding: 0.5rem 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .main-container {
+        padding: 2rem 0;
+      }
+
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.95);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        background: linear-gradient(
+          to right,
+          var(--primary-blue),
+          var(--secondary-blue)
+        );
+        color: white;
+        padding: 0.8rem;
+        border-bottom: none;
+      }
+
+      .form-control,
+      .input-group-text {
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      .input-group > .input-group-text {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: white;
+        border-right: none;
+      }
+
+      .input-group > .form-control {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--accent-teal) !important;
+        box-shadow: 0 0 0 0.25rem rgba(78, 205, 196, 0.25) !important;
+      }
+
+      label {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        color: var(--primary-blue);
+        font-size: 0.85rem;
+      }
+
+      .btn-primary {
+        background-color: var(--accent-teal);
+        border: none;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
         transition: all 0.3s ease;
       }
 
-      .btn-medical:hover {
-        background: var(--secondary-blue);
+      .btn-primary:hover {
+        background-color: var(--secondary-blue);
         transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 205, 196, 0.3);
+      }
+
+      .testimonial-card {
+        border-radius: 12px;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 0.8rem;
+        margin-top: 0.8rem;
+      }
+
+      .testimonial-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--accent-teal);
+      }
+
+      .support-badge {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background: var(--warm-pink);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(255, 126, 146, 0.4);
+        z-index: 1000;
+        font-size: 0.8rem;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .terms-link {
+        color: var(--accent-teal);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .features-list {
+        padding-left: 1.2rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .features-list li {
+        margin-bottom: 0.3rem;
+        position: relative;
+      }
+
+      .features-list li::before {
+        content: "\f058";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        color: var(--accent-teal);
+        position: absolute;
+        left: -1.2rem;
+      }
+
+      .logo-container {
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-check-label,
+      .form-check-input {
+        font-size: 0.85rem;
+      }
+
+      .card-body {
+        padding: 0.8rem;
+      }
+
+      .reduced-margin {
+        margin-bottom: 0.5rem;
+      }
+
+      .form-row {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Floating cancer awareness icons */
+      .floating-icon {
+        position: absolute;
+        opacity: 0.15;
+        z-index: -1;
+      }
+
+      .icon-1 {
+        top: 20%;
+        left: 10%;
+        animation: floating 8s ease-in-out infinite;
+      }
+
+      .icon-2 {
+        top: 40%;
+        right: 10%;
+        animation: floating 7s ease-in-out infinite;
+      }
+
+      .icon-3 {
+        bottom: 25%;
+        left: 20%;
+        animation: floating 9s ease-in-out infinite;
+      }
+
+      @keyframes floating {
+        0% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-15px) rotate(5deg);
+        }
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
       }
 
       .decorative-wave {
@@ -59,160 +283,405 @@
         width: 100%;
         height: 150px;
         background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%232A5C82" fill-opacity="0.1" d="M0,160L48,170.7C96,181,192,203,288,186.7C384,171,480,117,576,101.3C672,85,768,107,864,138.7C960,171,1056,213,1152,208C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        z-index: -1;
+      }
+
+      /* Styles for the animated video container */
+      .video-container {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        position: relative;
+        height: 100%;
+        min-height: 400px;
+        background: rgba(255, 255, 255, 0.95);
+      }
+
+      .video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .video-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(
+          to top,
+          rgba(42, 92, 130, 0.9),
+          transparent
+        );
+        color: white;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar medical-header">
-      <div class="container">
-        <a class="navbar-brand text-white" href="#">
-          <i class="fas fa-hospital me-2"></i>MedConnect
-        </a>
-      </div>
-    </nav>
-
-    <div class="container">
-      <div class="form-container p-5">
-        <h3 class="text-center mb-4">Create New Account</h3>
-        <form id="signupForm" action="/signup" method="POST">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Full Name</label>
-              <input
-                type="text"
-                name="fullName"
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" class="form-control" required />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Age</label>
-              <input type="number" name="age" class="form-control" required />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Phone</label>
-              <input type="tel" name="phone" class="form-control" required />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Sex</label>
-              <div class="d-flex gap-3">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="sex"
-                    value="Male"
-                    id="male"
-                    required
-                  />
-                  <label class="form-check-label" for="male">Male</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="sex"
-                    value="Female"
-                    id="female"
-                  />
-                  <label class="form-check-label" for="female">Female</label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Address</label>
-            <textarea
-              name="address"
-              class="form-control"
-              rows="2"
-              required
-            ></textarea>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Username</label>
-              <input
-                type="text"
-                name="username"
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Password</label>
-              <input
-                type="password"
-                name="password"
-                class="form-control"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label">User Type</label>
-            <select class="form-select" name="userType" required>
-              <option value="Patient">Patient</option>
-              <option value="Patient-Navigator">Patient Navigator</option>
-              <option value="Caregiver">Caregiver</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn btn-medical w-100">
-            Create Account
-          </button>
-          <p class="text-center mt-3">
-            Already have an account?
-            <a href="/login" class="text-decoration-none">Login Here</a>
-          </p>
-        </form>
-      </div>
+    <!-- Floating cancer awareness icons -->
+    <div class="floating-icon icon-1">
+      <i class="fas fa-ribbon fa-4x" style="color: var(--warm-pink)"></i>
+    </div>
+    <div class="floating-icon icon-2">
+      <i class="fas fa-heart fa-4x" style="color: var(--accent-purple)"></i>
+    </div>
+    <div class="floating-icon icon-3">
+      <i
+        class="fas fa-hand-holding-heart fa-4x"
+        style="color: var(--accent-teal)"
+      ></i>
     </div>
 
+    <!-- Header -->
+    <header class="header-gradient">
+      <div class="container">
+        <div class="d-flex align-items-center">
+          <a
+            class="navbar-brand text-white d-flex align-items-center animate__animated animate__fadeIn"
+            href="#"
+          >
+            <i class="fas fa-ribbon me-2"></i>
+            <span class="fw-bold">MedConnect</span>
+          </a>
+          <span
+            class="ms-3 text-white-50 d-none d-md-block animate__animated animate__fadeIn animate__delay-1s"
+            >Supporting cancer patients and their care network</span
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container main-container">
+      <div class="row g-3">
+        <!-- Left Column - Form (Reversed from original) -->
+        <div class="col-lg-8 animate__animated animate__fadeInLeft">
+          <div class="card">
+            <div class="card-header py-2">
+              <h5 class="text-center mb-0">Create New Account</h5>
+              <p
+                class="text-center text-white-50 mb-0"
+                style="font-size: 0.8rem"
+              >
+                Join our cancer support community
+              </p>
+            </div>
+            <div class="card-body p-3">
+              <form id="signupForm" action="/signup" method="POST">
+                <div class="row g-2">
+                  <div class="col-md-6 form-row">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-user"></i
+                      ></span>
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6 form-row">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-envelope"></i
+                      ></span>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 form-row">
+                    <label for="age" class="form-label">Age</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-birthday-cake"></i
+                      ></span>
+                      <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-4 form-row">
+                    <label for="phone" class="form-label">Phone</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-phone"></i
+                      ></span>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-4 form-row">
+                    <label class="form-label d-block mb-1">Sex</label>
+                    <div class="d-flex gap-4">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="sex"
+                          value="Male"
+                          id="male"
+                          required
+                        />
+                        <label class="form-check-label" for="male">Male</label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="sex"
+                          value="Female"
+                          id="female"
+                        />
+                        <label class="form-check-label" for="female"
+                          >Female</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12 form-row">
+                    <label for="address" class="form-label">Address</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-home"></i
+                      ></span>
+                      <textarea
+                        id="address"
+                        name="address"
+                        class="form-control"
+                        rows="2"
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-row">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-user-circle"></i
+                      ></span>
+                      <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-row">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-lock"></i
+                      ></span>
+                      <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-12 form-row">
+                    <label for="userType" class="form-label">User Type</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-users"></i
+                      ></span>
+                      <select
+                        class="form-select"
+                        id="userType"
+                        name="userType"
+                        required
+                      >
+                        <option value="">Select User Type</option>
+                        <option value="Patient">Patient</option>
+                        <option value="Patient-Navigator">
+                          Patient Navigator
+                        </option>
+                        <option value="Caregiver">Caregiver</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-12 mt-1">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="termsAgreement"
+                        id="termsAgreement"
+                        required
+                      />
+                      <label class="form-check-label" for="termsAgreement">
+                        I agree to the
+                        <a href="#" class="terms-link">Terms of Service</a> and
+                        <a href="#" class="terms-link">Privacy Policy</a>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="col-12 mt-2">
+                    <div class="d-grid gap-2">
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="createAccountBtn"
+                      >
+                        <i class="fas fa-user-plus me-2"></i> Create Account
+                      </button>
+                    </div>
+                    <p class="text-center mt-2 mb-0" style="font-size: 0.85rem">
+                      Already have an account?
+                      <a href="/login" class="terms-link">Login here</a>
+                    </p>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Medical Animation Video (Replacing the image) -->
+        <div class="col-lg-4 animate__animated animate__fadeInRight">
+          <div class="video-container">
+            <img
+              src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+              alt="Supportive Care"
+              class="img-fluid h-100"
+              style="object-fit: cover"
+            />
+            <div
+              class="video-overlay animate__animated animate__fadeIn animate__delay-1s"
+            >
+              <h5 class="mb-1">Supporting Your Journey</h5>
+              <p class="mb-0 small">
+                Connect with care providers and fellow patients
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="testimonial-card animate__animated animate__fadeIn animate__delay-1s mt-3"
+          >
+            <div class="d-flex mb-2">
+              <img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                alt="Patient"
+                class="testimonial-avatar me-3"
+              />
+              <div>
+                <h6 class="mb-1" style="font-size: 0.9rem">Robert Johnson</h6>
+                <p class="text-muted mb-0" style="font-size: 0.8rem">
+                  Lung Cancer Survivor
+                </p>
+              </div>
+            </div>
+            <p class="mb-0" style="font-size: 0.8rem">
+              <i class="fas fa-quote-left me-1 opacity-50"></i> MedConnect
+              helped me coordinate care between my oncologist and primary care
+              doctor. The support made all the difference.
+              <i class="fas fa-quote-right ms-1 opacity-50"></i>
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Support Badge -->
+    <div
+      class="support-badge animate__animated animate__fadeInUp animate__delay-1s"
+    >
+      <i class="fas fa-ribbon me-2"></i> Supporting Cancer Patients
+    </div>
+
+    <!-- Decorative wave -->
     <div class="decorative-wave"></div>
 
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Add SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       $(document).ready(function () {
+        // Add some animations when the page loads
+        setTimeout(function () {
+          $(".card").addClass("animate__pulse");
+          setTimeout(function () {
+            $(".card").removeClass("animate__pulse");
+          }, 1000);
+        }, 1500);
+
+        // Form submission
         $("#signupForm").submit(function (e) {
           e.preventDefault();
 
           // Show loading state
           Swal.fire({
-            title: 'Processing...',
-            text: 'Creating your account',
+            title: "Processing...",
+            text: "Creating your account",
             allowOutsideClick: false,
             didOpen: () => {
               Swal.showLoading();
-            }
+            },
           });
 
+          // Get form data
           const formData = {
-            username: $('input[name="username"]').val(),
-            password: $('input[name="password"]').val(),
-            fullName: $('input[name="fullName"]').val(),
-            email: $('input[name="email"]').val(),
-            age: $('input[name="age"]').val(),
-            phone: $('input[name="phone"]').val(),
+            username: $("#username").val(),
+            password: $("#password").val(),
+            fullName: $("#fullName").val(),
+            email: $("#email").val(),
+            age: $("#age").val(),
+            phone: $("#phone").val(),
             sex: $('input[name="sex"]:checked').val(),
-            address: $('textarea[name="address"]').val(),
-            userType: $('select[name="userType"]').val(),
+            address: $("#address").val(),
+            userType: $("#userType").val(),
           };
 
-          // Basic validation
+          // Simple validation
+          if (
+            !formData.username ||
+            !formData.password ||
+            !formData.fullName ||
+            !formData.email ||
+            !formData.userType
+          ) {
+            Swal.close();
+            Swal.fire({
+              icon: "error",
+              title: "Form Error",
+              text: "Please fill in all required fields correctly.",
+            });
+            return;
+          }
+
           if (!formData.sex) {
             Swal.close();
             Swal.fire({
@@ -223,27 +692,17 @@
             return;
           }
 
-          if (!formData.userType) {
+          if (!$("#termsAgreement").is(":checked")) {
             Swal.close();
             Swal.fire({
               icon: "error",
               title: "Error",
-              text: "Please select a user type",
+              text: "You must agree to the Terms of Service and Privacy Policy",
             });
             return;
           }
 
-          // Ensure password is not empty
-          if (!formData.password || formData.password.trim() === '') {
-            Swal.close();
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Password cannot be empty",
-            });
-            return;
-          }
-
+          // Send the data to the server
           $.ajax({
             type: "POST",
             url: "/signup",
@@ -254,7 +713,9 @@
                 Swal.fire({
                   icon: "success",
                   title: "Success!",
-                  text: response.message,
+                  text:
+                    response.message ||
+                    "Your account has been created successfully!",
                   timer: 1500,
                   showConfirmButton: false,
                 }).then(() => {
@@ -265,7 +726,8 @@
                 Swal.fire({
                   icon: "error",
                   title: "Registration Failed",
-                  text: response.message || "An error occurred during registration",
+                  text:
+                    response.message || "An error occurred during registration",
                 });
               }
             },
@@ -275,10 +737,12 @@
               Swal.fire({
                 icon: "error",
                 title: "Registration Failed",
-                text: response.message || "An error occurred during registration. Please try again.",
+                text:
+                  response.message ||
+                  "An error occurred during registration. Please try again.",
               });
               console.error("Registration error:", xhr);
-            }
+            },
           });
         });
       });

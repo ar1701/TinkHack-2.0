@@ -179,23 +179,24 @@ app.post("/signup", async (req, res) => {
     const registeredUser = await User.register(user, password);
 
     // Login user after successful registration
-    req.login(registeredUser, function(err) {
+    req.login(registeredUser, function (err) {
       if (err) {
-        console.error('Error during login after registration:', err);
+        console.error("Error during login after registration:", err);
         return res.status(500).json({
           success: false,
-          message: "Registration successful but login failed. Please log in manually.",
+          message:
+            "Registration successful but login failed. Please log in manually.",
         });
       }
-      
+
       return res.status(200).json({
         success: true,
         message: "Account created successfully!",
-        redirect: `/${userType.toLowerCase().replace('-', '')}/dashboard`,
+        redirect: `/${userType.toLowerCase().replace("-", "")}/dashboard`,
       });
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     res.status(500).json({
       success: false,
       message: error.message || "An error occurred during registration",
@@ -281,6 +282,6 @@ app.listen(PORT, () => {
 
 module.exports = app;
 
-app.get("*", (req, res) => {
-  res.redirect("/login");
+app.get("*", isLoggedIn, (req, res) => {
+  res.redirect("/patient/dashboard");
 });
