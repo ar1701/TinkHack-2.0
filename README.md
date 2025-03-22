@@ -4,7 +4,7 @@ A comprehensive healthcare platform that connects patients with navigators and c
 
 ## Features
 
-### Patient Features
+### Patient Features:
 
 - **Dashboard**: View health risk assessment, upcoming appointments, and care team information
 - **Medical Records**: Upload, view, update, and delete medical records
@@ -18,7 +18,7 @@ A comprehensive healthcare platform that connects patients with navigators and c
 
 - **Dashboard**: View assigned patients and relevant information
 
-## Technology Stack
+## Technology Stack:
 
 - **Frontend**: HTML, CSS, JavaScript, EJS templating, Bootstrap 5
 - **Backend**: Node.js, Express.js
