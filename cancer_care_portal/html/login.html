@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedConnect - Login</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Add SweetAlert2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <!-- Add Animation Library -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      :root {
+        --primary-blue: #2a5c82;
+        --secondary-blue: #5c9baf;
+        --accent-teal: #4ecdc4;
+        --accent-purple: #b66dff;
+        --warm-pink: #ff7e92;
+      }
+
+      body {
+        background-image: url('/api/placeholder/1920/1080'); /* Replace with an actual background image */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+      }
+
+      body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(42, 92, 130, 0.9) 0%, rgba(92, 155, 175, 0.8) 100%);
+        z-index: -1;
+      }
+
+      .medical-header {
+        background: rgba(42, 92, 130, 0.9);
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .main-container {
+        display: flex;
+        min-height: calc(100vh - 76px);
+        align-items: center;
+        padding: 2rem 0;
+      }
+
+      .image-side {
+        padding: 2rem;
+      }
+
+      .image-side img {
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 100%;
+        height: auto;
+        transition: transform 0.3s ease;
+      }
+
+      .image-side img:hover {
+        transform: scale(1.02);
+      }
+
+      .image-caption {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        max-width: 500px;
+        margin: 0 auto;
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .form-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-medical {
+        background: var(--accent-teal);
+        color: white;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-medical:hover {
+        background: var(--secondary-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 205, 196, 0.3);
+      }
+
+      .decorative-wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 150px;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%232A5C82" fill-opacity="0.1" d="M0,160L48,170.7C96,181,192,203,288,186.7C384,171,480,117,576,101.3C672,85,768,107,864,138.7C960,171,1056,213,1152,208C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        z-index: -1;
+      }
+
+      /* Fixed corner ribbon to match the design */
+      .corner-ribbon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .corner-ribbon-content {
+        position: absolute;
+        top: 25px;
+        right: -35px;
+        transform: rotate(45deg);
+        background: var(--warm-pink);
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+        width: 200px;
+        line-height: 30px;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 0.5);
+      }
+      
+      .form-header {
+        background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+        color: white;
+        padding: 20px;
+        margin: -20px -20px 20px -20px;
+        border-radius: 20px 20px 0 0;
+        position: relative;
+      }
+      
+      .form-header img {
+        display: block;
+        margin: 0 auto 15px auto;
+        width: 80px;
+        filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+      }
+      
+      input:focus, select:focus {
+        border-color: var(--accent-teal) !important;
+        box-shadow: 0 0 0 0.25rem rgba(78, 205, 196, 0.25) !important;
+      }
+      
+      .create-account-link {
+        color: var(--accent-teal);
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      
+      .create-account-link:hover {
+        color: var(--primary-blue);
+        text-decoration: underline !important;
+      }
+      
+      /* Support ribbon */
+      .support-ribbon {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: var(--warm-pink);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(255, 126, 146, 0.4);
+        z-index: 100;
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      /* Cancer awareness floating icons */
+      .floating-icon {
+        position: absolute;
+        opacity: 0.15;
+        z-index: -1;
+      }
+      
+      .icon-1 {
+        top: 20%;
+        left: 10%;
+        animation: floating 8s ease-in-out infinite;
+      }
+      
+      .icon-2 {
+        top: 40%;
+        right: 10%;
+        animation: floating 7s ease-in-out infinite;
+      }
+      
+      .icon-3 {
+        bottom: 25%;
+        left: 20%;
+        animation: floating 9s ease-in-out infinite;
+      }
+      
+      @keyframes floating {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(5deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+      }
+
+      /* Testimonial styles */
+      .testimonial {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent-teal);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 991.98px) {
+        .image-side {
+          margin-bottom: 2rem;
+        }
+        .main-container {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating cancer awareness icons -->
+    <div class="floating-icon icon-1">
+      <i class="fas fa-ribbon fa-4x" style="color: var(--warm-pink);"></i>
+    </div>
+    <div class="floating-icon icon-2">
+      <i class="fas fa-heart fa-4x" style="color: var(--accent-purple);"></i>
+    </div>
+    <div class="floating-icon icon-3">
+      <i class="fas fa-hand-holding-heart fa-4x" style="color: var(--accent-teal);"></i>
+    </div>
+
+    <nav class="navbar medical-header">
+      <div class="container">
+        <a class="navbar-brand text-white animate__animated animate__fadeIn" href="#">
+          <i class="fas fa-ribbon me-2"></i>MedConnect
+        </a>
+        <span class="text-white-50 d-none d-md-block animate__animated animate__fadeIn animate__delay-1s">Supporting cancer patients and their care network</span>
+      </div>
+    </nav>
+
+
+
+
+
+
+
+
+    <div class="container main-container">
+      <div class="row w-100">
+        <!-- Left side with images (will stack on mobile) -->
+        <div class="col-lg-6 image-side animate__animated animate__fadeInLeft">
+          <img src="../images/first.jpg" alt="Supportive Care" class="img-fluid mb-4" />
+          
+        
+          
+        
+        </div>
+        
+        <!-- Right side with form -->
+        <div class="col-lg-6 animate__animated animate__fadeInRight">
+          <div class="form-container p-5">
+            <!-- New corner ribbon matching your design -->
+           
+            
+            <div class="form-header text-center">
+              <img src="/api/placeholder/160/160" alt="Cancer Support Logo" class="rounded-circle" />
+              <h3 class="mb-0">Welcome Back!</h3>
+              <p class="text-white-50 mb-0">Login to your MedConnect account</p>
+            </div>
+            
+            <form id="loginForm">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" name="username" class="form-control" required />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" name="password" class="form-control" required />
+                </div>
+              </div>
+            
+              <button type="submit" class="btn btn-medical w-100 animate__animated animate__pulse animate__infinite animate__slower">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+              </button>
+              <p class="text-center mt-3">
+                Don't have an account?
+                <a href="signup.html" class="text-decoration-none create-account-link">Create Account</a>
+              </p>
+            </form>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    <div class="support-ribbon animate__animated animate__fadeInUp animate__delay-1s">
+      <i class="fas fa-ribbon me-2"></i> Supporting Cancer Patients
+    </div>
+
+    <div class="decorative-wave"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Add SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      $(document).ready(function () {
+        // Add some animations when the page loads
+        setTimeout(function() {
+          $('.form-container').addClass('animate__pulse');
+          setTimeout(function() {
+            $('.form-container').removeClass('animate__pulse');
+          }, 1000);
+        }, 1500);
+        
+        $("#loginForm").submit(function (e) {
+          e.preventDefault();
+
+          const formData = {
+            username: $('input[name="username"]').val(),
+            password: $('input[name="password"]').val(),
+            userType: $('select[name="userType"]').val(),
+          };
+
+        //   if (!formData.userType) {
+        //     Swal.fire({
+        //       icon: "error",
+        //       title: "Error",
+        //       text: "Please select a user type",
+        //     });
+        //     return;
+        //   }
+
+          $.ajax({
+            type: "POST",
+            url: "/login",
+            data: formData,
+            success: function (response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: "success",
+                  title: "Success!",
+                  text: "Login successful",
+                  timer: 1500,
+                  showConfirmButton: false,
+                }).then(() => {
+                  window.location.href = response.redirect;
+                });
+              }
+            },
+            error: function (xhr) {
+              const response = xhr.responseJSON;
+              Swal.fire({
+                icon: "error",
+                title: "Login Failed",
+                text: response.message || "An error occurred during login",
+              });
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
