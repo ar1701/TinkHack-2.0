@@ -11,6 +11,12 @@ const LocalStrategy = require("passport-local");
 const session = require("express-session");
 const User = require("./models/user");
 const medicalRecordsRoutes = require("./routes/medicalRecords");
+const authRoutes = require("./routes/auth");
+const patientRoutes = require("./routes/patient");
+const navigatorRoutes = require("./routes/navigator");
+const caregiverRoutes = require("./routes/caregiver");
+const baselineScreeningRoutes = require("./routes/baselineScreening");
+const geminiRoutes = require("./routes/gemini");
 
 var app = express();
 
@@ -232,6 +238,14 @@ app.get("/caregiver/dashboard", isLoggedIn, (req, res) => {
 
 // Add medical records routes
 app.use("/api/medical-records", medicalRecordsRoutes);
+
+// Use routes
+app.use(authRoutes);
+app.use(patientRoutes);
+app.use(navigatorRoutes);
+app.use(caregiverRoutes);
+app.use(baselineScreeningRoutes);
+app.use("/api/gemini", geminiRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on: http://localhost:${process.env.PORT}`);
