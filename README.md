@@ -144,3 +144,37 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Bootstrap for UI components
 - Cloudinary for file storage
 - Google for Gemini AI API
+
+# MedConnect Patient Portal
+
+A modern, interactive patient portal for healthcare management with colorful medical theme.
+
+## Features
+
+- **Dashboard**: View health risk assessments and upcoming appointments
+- **Medical Records**: Upload, manage, and search through medical records
+- **Interactive Chatbot**: AI assistant to help navigate health information
+- **Responsive Design**: Works on desktop and mobile devices
+- **Animated UI**: Engaging animations and interactive elements
+- **Theme Switching**: Toggle between light and dark themes
+
+## Theme Switching
+
+The portal now includes theme switching functionality:
+
+- **Light Theme**: Default colorful medical theme with a bright, cheerful interface
+- **Dark Theme**: Dark mode with adjusted colors for reduced eye strain, especially in low-light environments
+
+Users can toggle between themes using the switch in the header. The theme preference is saved in the browser's local storage, so it persists between sessions.
+
+### Theme Features
+
+- **Automatic Detection**: System preference for dark/light mode is detected on first visit
+- **Persistent Settings**: Theme choice is remembered between sessions
+- **Optimized Visuals**: Each theme has carefully balanced colors for readability
+- **Animated Transition**: Smooth transitions between themes
+- **Adaptive Elements**: Interface elements adapt their appearance based on the selected theme
+
+## Technical Implementation
+
+The theme system uses CSS variables and JavaScript to switch between themes, providing a consistent experience across all pages of the application. The implementation follows best practices for accessibility and performance.
