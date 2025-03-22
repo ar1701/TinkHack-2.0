@@ -145,6 +145,14 @@ app.post("/signup", async (req, res) => {
       userType,
     } = req.body;
 
+    // Validate required fields
+    if (!username || !password || !fullName || !email || !userType) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be filled",
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
@@ -168,21 +176,29 @@ app.post("/signup", async (req, res) => {
       userType,
     });
 
-    await User.register(user, password);
+    const registeredUser = await User.register(user, password);
 
-    // Log the user in after registration
-    passport.authenticate("local")(req, res, function () {
-      res.status(200).json({
+    // Login user after successful registration
+    req.login(registeredUser, function(err) {
+      if (err) {
+        console.error('Error during login after registration:', err);
+        return res.status(500).json({
+          success: false,
+          message: "Registration successful but login failed. Please log in manually.",
+        });
+      }
+      
+      return res.status(200).json({
         success: true,
         message: "Account created successfully!",
-        redirect: `/${userType.toLowerCase()}/dashboard`,
+        redirect: `/${userType.toLowerCase().replace('-', '')}/dashboard`,
       });
     });
   } catch (error) {
-    console.error(error);
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: "An error occurred during registration",
+      message: error.message || "An error occurred during registration",
     });
   }
 });

@@ -53,120 +53,327 @@
     </style>
   </head>
   <body>
-    <header class="dashboard-header py-3">
-      <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <i class="fas fa-hospital me-2"></i>
-            <h4 class="mb-0">MedConnect</h4>
+    <%- include('../../partials/navigator-header') %>
+
+    <div class="welcome-card p-4 rounded mb-4" data-aos="fade-up">
+      <h2>Welcome to Your Patient Navigator Dashboard</h2>
+      <p class="mb-0">
+        Monitor patient progress, manage appointments, and coordinate care
+        services.
+      </p>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row mb-4">
+      <div
+        class="col-md-6 col-lg-3 mb-4"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <div class="stat-card">
+          <div class="stat-icon stat-patients-icon">
+            <i class="fas fa-users"></i>
           </div>
-          <div class="d-flex align-items-center">
-            <span class="me-3">Welcome, <%= user.fullName %></span>
-            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+          <div class="stat-content">
+            <h2 class="stat-number" data-target="12">0</h2>
+            <div class="stat-label">Active Patients</div>
           </div>
         </div>
       </div>
-    </header>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-3 col-lg-2 sidebar py-3">
-          <div class="nav flex-column">
-            <a href="#" class="nav-link active">
-              <i class="fas fa-home me-2"></i> Dashboard
-            </a>
-            <a href="#" class="nav-link">
-              <i class="fas fa-users me-2"></i> My Patients
-            </a>
-            <a href="#" class="nav-link">
-              <i class="fas fa-calendar me-2"></i> Appointments
-            </a>
-            <a href="#" class="nav-link">
-              <i class="fas fa-chart-line me-2"></i> Patient Progress
-            </a>
-            <a href="#" class="nav-link">
-              <i class="fas fa-comments me-2"></i> Messages
-            </a>
-            <a href="#" class="nav-link">
-              <i class="fas fa-file-medical me-2"></i> Resources
-            </a>
+      <div
+        class="col-md-6 col-lg-3 mb-4"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <div class="stat-card">
+          <div class="stat-icon stat-appointments-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="stat-content">
+            <h2 class="stat-number" data-target="5">0</h2>
+            <div class="stat-label">Today's Appointments</div>
           </div>
         </div>
+      </div>
 
-        <main class="col-md-9 col-lg-10 py-3">
-          <div class="welcome-card p-4 rounded mb-4">
-            <h2>Welcome to Your Patient Navigator Dashboard</h2>
-            <p class="mb-0">
-              Monitor patient progress, manage appointments, and coordinate care
-              services.
-            </p>
+      <div
+        class="col-md-6 col-lg-3 mb-4"
+        data-aos="fade-up"
+        data-aos-delay="300"
+      >
+        <div class="stat-card">
+          <div class="stat-icon stat-messages-icon">
+            <i class="fas fa-comments"></i>
           </div>
-
-          <div class="row">
-            <div class="col-md-6 col-lg-4 mb-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-users text-primary me-2"></i>
-                    Active Patients
-                  </h5>
-                  <p class="card-text">
-                    You currently have no active patients.
-                  </p>
-                  <a href="#" class="btn btn-sm btn-outline-primary"
-                    >View Patients</a
-                  >
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4 mb-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-calendar text-success me-2"></i>
-                    Today's Appointments
-                  </h5>
-                  <p class="card-text">No appointments scheduled for today.</p>
-                  <a href="#" class="btn btn-sm btn-outline-success"
-                    >Manage Appointments</a
-                  >
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4 mb-4">
-              <div class="card h-100">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-comments text-info me-2"></i>
-                    Messages
-                  </h5>
-                  <p class="card-text">You have no unread messages.</p>
-                  <a href="#" class="btn btn-sm btn-outline-info"
-                    >Open Messages</a
-                  >
-                </div>
-              </div>
-            </div>
+          <div class="stat-content">
+            <h2 class="stat-number" data-target="8">0</h2>
+            <div class="stat-label">Unread Messages</div>
           </div>
+        </div>
+      </div>
 
-          <div class="row">
-            <div class="col-12">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-tasks text-warning me-2"></i>
-                    Recent Activities
-                  </h5>
-                  <p class="card-text">No recent activities to display.</p>
-                </div>
-              </div>
-            </div>
+      <div
+        class="col-md-6 col-lg-3 mb-4"
+        data-aos="fade-up"
+        data-aos-delay="400"
+      >
+        <div class="stat-card">
+          <div class="stat-icon stat-tasks-icon">
+            <i class="fas fa-tasks"></i>
           </div>
-        </main>
+          <div class="stat-content">
+            <h2 class="stat-number" data-target="10">0</h2>
+            <div class="stat-label">Pending Tasks</div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="row">
+      <!-- Patient Overview Section -->
+      <div class="col-lg-7 mb-4">
+        <div class="card h-100" data-aos="fade-up">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fas fa-users"></i>
+              My Patients
+            </h5>
+
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="patientSearch"
+                placeholder="Search patients..."
+                onkeyup="filterPatients()"
+              />
+            </div>
+
+            <div class="row">
+              <!-- High Risk Patient -->
+              <div class="col-md-6 mb-3 patient-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="patient-info">
+                      <div class="patient-avatar">JD</div>
+                      <div>
+                        <h6 class="patient-name">John Doe</h6>
+                        <div class="patient-details">42 years • Male</div>
+                      </div>
+                    </div>
+
+                    <div class="status-badge status-high-risk">
+                      <i class="fas fa-exclamation-triangle me-2"></i>High Risk
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                      <i class="fas fa-stethoscope me-1"></i> Last Screened: 3
+                      days ago
+                    </div>
+
+                    <div class="patient-action-buttons">
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-user-md me-1"></i> Profile
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-phone-alt me-1"></i> Contact
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Medium Risk Patient -->
+              <div class="col-md-6 mb-3 patient-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="patient-info">
+                      <div class="patient-avatar">JS</div>
+                      <div>
+                        <h6 class="patient-name">Jane Smith</h6>
+                        <div class="patient-details">35 years • Female</div>
+                      </div>
+                    </div>
+
+                    <div class="status-badge status-medium-risk">
+                      <i class="fas fa-exclamation-circle me-2"></i>Medium Risk
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                      <i class="fas fa-stethoscope me-1"></i> Last Screened: 5
+                      days ago
+                    </div>
+
+                    <div class="patient-action-buttons">
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-user-md me-1"></i> Profile
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-phone-alt me-1"></i> Contact
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- More patients can be added here -->
+            </div>
+
+            <div class="text-center mt-3">
+              <a href="/navigator/patient-management" class="btn btn-primary"
+                >View All Patients</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks & Reminders Section -->
+      <div class="col-lg-5 mb-4">
+        <div class="card h-100" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fas fa-clipboard-check"></i>
+              Upcoming Tasks
+            </h5>
+
+            <ul class="task-list">
+              <li class="task-item">
+                <div class="task-icon">
+                  <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="task-content">
+                  <div class="task-title">Follow-up call with John Doe</div>
+                  <div class="task-meta">
+                    <div class="task-patient">
+                      <i class="fas fa-user me-1"></i>John Doe
+                    </div>
+                    <div class="task-due overdue">
+                      <i class="fas fa-clock me-1"></i>Today, 2:00 PM
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="task-item">
+                <div class="task-icon">
+                  <i class="fas fa-file-medical"></i>
+                </div>
+                <div class="task-content">
+                  <div class="task-title">Review medical records</div>
+                  <div class="task-meta">
+                    <div class="task-patient">
+                      <i class="fas fa-user me-1"></i>Jane Smith
+                    </div>
+                    <div class="task-due">
+                      <i class="fas fa-clock me-1"></i>Tomorrow, 10:00 AM
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="task-item">
+                <div class="task-icon">
+                  <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="task-content">
+                  <div class="task-title">Schedule follow-up appointment</div>
+                  <div class="task-meta">
+                    <div class="task-patient">
+                      <i class="fas fa-user me-1"></i>Robert Johnson
+                    </div>
+                    <div class="task-due">
+                      <i class="fas fa-clock me-1"></i>Jun 24, 9:00 AM
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="task-item">
+                <div class="task-icon">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="task-content">
+                  <div class="task-title">Update care plan</div>
+                  <div class="task-meta">
+                    <div class="task-patient">
+                      <i class="fas fa-user me-1"></i>Maria Rodriguez
+                    </div>
+                    <div class="task-due">
+                      <i class="fas fa-clock me-1"></i>Jun 25, 11:00 AM
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="text-center mt-3">
+              <button class="btn btn-primary">View All Tasks</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Recent Activities -->
+      <div class="col-12 mb-4">
+        <div class="card" data-aos="fade-up">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fas fa-history"></i>
+              Recent Activities
+            </h5>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Patient</th>
+                    <th>Activity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Today, 10:30 AM</td>
+                    <td>John Doe</td>
+                    <td>Baseline health screening completed</td>
+                    <td><span class="badge bg-success">Completed</span></td>
+                  </tr>
+                  <tr>
+                    <td>Today, 9:15 AM</td>
+                    <td>Jane Smith</td>
+                    <td>New medical record uploaded</td>
+                    <td><span class="badge bg-info">New</span></td>
+                  </tr>
+                  <tr>
+                    <td>Yesterday, 3:45 PM</td>
+                    <td>Robert Johnson</td>
+                    <td>Appointment scheduled</td>
+                    <td><span class="badge bg-primary">Scheduled</span></td>
+                  </tr>
+                  <tr>
+                    <td>Yesterday, 11:20 AM</td>
+                    <td>Maria Rodriguez</td>
+                    <td>Care plan updated</td>
+                    <td><span class="badge bg-success">Completed</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="text-center mt-3">
+              <button class="btn btn-primary">View All Activities</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../../partials/navigator-footer') %>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

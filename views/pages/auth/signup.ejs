@@ -190,6 +190,16 @@
         $("#signupForm").submit(function (e) {
           e.preventDefault();
 
+          // Show loading state
+          Swal.fire({
+            title: 'Processing...',
+            text: 'Creating your account',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
           const formData = {
             username: $('input[name="username"]').val(),
             password: $('input[name="password"]').val(),
@@ -204,6 +214,7 @@
 
           // Basic validation
           if (!formData.sex) {
+            Swal.close();
             Swal.fire({
               icon: "error",
               title: "Error",
@@ -213,10 +224,22 @@
           }
 
           if (!formData.userType) {
+            Swal.close();
             Swal.fire({
               icon: "error",
               title: "Error",
               text: "Please select a user type",
+            });
+            return;
+          }
+
+          // Ensure password is not empty
+          if (!formData.password || formData.password.trim() === '') {
+            Swal.close();
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Password cannot be empty",
             });
             return;
           }
@@ -226,6 +249,7 @@
             url: "/signup",
             data: formData,
             success: function (response) {
+              Swal.close();
               if (response.success) {
                 Swal.fire({
                   icon: "success",
@@ -236,17 +260,25 @@
                 }).then(() => {
                   window.location.href = response.redirect;
                 });
+              } else {
+                // Handle server success but with error message
+                Swal.fire({
+                  icon: "error",
+                  title: "Registration Failed",
+                  text: response.message || "An error occurred during registration",
+                });
               }
             },
             error: function (xhr) {
-              const response = xhr.responseJSON;
+              Swal.close();
+              const response = xhr.responseJSON || {};
               Swal.fire({
                 icon: "error",
                 title: "Registration Failed",
-                text:
-                  response.message || "An error occurred during registration",
+                text: response.message || "An error occurred during registration. Please try again.",
               });
-            },
+              console.error("Registration error:", xhr);
+            }
           });
         });
       });
