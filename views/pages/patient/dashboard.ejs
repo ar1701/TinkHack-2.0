@@ -164,7 +164,7 @@
           <i class="fas fa-home me-2"></i> Dashboard
         </a>
         <a
-          href="#"
+          href="/patient/appointments"
           class="nav-link <%= locals.path === '/patient/appointments' ? 'active' : '' %>"
         >
           <i class="fas fa-calendar me-2"></i> Appointments
@@ -481,5 +481,9 @@
           });
       });
     </script>
+
+    <!-- Chatbot CSS and JavaScript -->
+    <link href="/css/chatbot-styles.css" rel="stylesheet" />
+    <script src="/js/chatbot.js"></script>
   </body>
 </html>

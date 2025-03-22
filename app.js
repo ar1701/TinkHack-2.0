@@ -216,6 +216,16 @@ app.get("/patient/medical-records", isLoggedIn, (req, res) => {
   });
 });
 
+app.get("/patient/appointments", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/patient/appointments.ejs", {
+    user: req.user,
+    path: "/patient/appointments",
+  });
+});
+
 app.get("/navigator/dashboard", isLoggedIn, (req, res) => {
   if (req.user.userType !== "Patient-Navigator") {
     return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);

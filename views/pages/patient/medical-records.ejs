@@ -338,8 +338,10 @@
   </div>
 </div>
 
+<!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const uploadForm = document.getElementById("uploadForm");
@@ -738,8 +740,8 @@
     function updateRecord(id, title, description, recordType, recordDate) {
       // Show loading indicator
       Swal.fire({
-        title: 'Updating...',
-        text: 'Please wait while we update your record.',
+        title: "Updating...",
+        text: "Please wait while we update your record.",
         allowOutsideClick: false,
         showConfirmButton: false,
         willOpen: () => {
@@ -818,8 +820,8 @@
     function deleteRecord(id) {
       // Show loading indicator
       Swal.fire({
-        title: 'Deleting...',
-        text: 'Please wait while we delete your record.',
+        title: "Deleting...",
+        text: "Please wait while we delete your record.",
         allowOutsideClick: false,
         showConfirmButton: false,
         willOpen: () => {
@@ -897,54 +899,8 @@
   });
 </script>
 
-<style>
-  .form-control,
-  .form-select {
-    max-width: 100%;
-    transition: all 0.3s ease;
-  }
-
-  .form-control:focus,
-  .form-select:focus {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .card {
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-  }
-
-  .card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .btn {
-    transition: all 0.3s ease;
-  }
-
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  #currentFilePreview {
-    background: #f8f9fa;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-
-  #currentFilePreview:hover {
-    background: #e9ecef;
-  }
-
-  #filePreviewContent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-  }
-</style>
-
-<%- include('../../partials/footer') %>
+<!-- Chatbot CSS and JavaScript -->
+<link href="/css/chatbot-styles.css" rel="stylesheet" />
+<script src="/js/chatbot.js"></script>
+</body>
+</html>
