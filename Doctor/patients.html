@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancer Patients - Doctor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="icons-container">
+            <i class="icon fas fa-heartbeat"></i>
+            <i class="icon fas fa-pills"></i>
+            <i class="icon fas fa-stethoscope"></i>
+            <i class="icon fas fa-user-md"></i>
+            <i class="icon fas fa-hospital"></i>
+            <i class="icon fas fa-notes-medical"></i>
+            <i class="icon fas fa-syringe"></i>
+            <i class="icon fas fa-ambulance"></i>
+        </div>
+    </div>
+
+    <!-- Menu Toggle for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2><i class="fas fa-user-md"></i> Doctor Portal</h2>
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li class="active"><a href="patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+            <li><a href="medical-records.html"><i class="fas fa-file-medical"></i> Medical Records</a></li>
+            <li><a href="prescriptions.html"><i class="fas fa-prescription"></i> Prescription & Reports</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings & Profile</a></li>
+        </ul>
+        <div class="logout">
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Cancer Patients</h1>
+            <div class="user-profile">
+                <img src="profile-placeholder.jpg" alt="Doctor Profile" class="profile-image">
+                <div class="notification-bell" id="notificationBell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Popup -->
+        <div class="notifications-popup" id="notificationsPopup">
+            <div class="notifications-header">
+                <h3>Notifications</h3>
+                <button class="mark-all-read">Mark all as read</button>
+            </div>
+            <div class="notifications-list">
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-primary">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Appointment Request</div>
+                        <div class="notification-message">John Doe requested an urgent appointment.</div>
+                        <div class="notification-time">10 minutes ago</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-info">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Lab Results</div>
+                        <div class="notification-message">Lab results for Maria Garcia are now available.</div>
+                        <div class="notification-time">1 hour ago</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon bg-success">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">New Message</div>
+                        <div class="notification-message">Patient Robert Smith has sent you a message.</div>
+                        <div class="notification-time">3 hours ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon bg-warning">
+                        <i class="fas fa-prescription"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Prescription Refill</div>
+                        <div class="notification-message">Emily Johnson requested a prescription refill.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon bg-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Urgent Follow-up</div>
+                        <div class="notification-message">Urgent follow-up required for patient Michael Brown.</div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+            <div class="notifications-footer">
+                <a href="notifications.html">View all notifications</a>
+            </div>
+        </div>
+
+        <!-- Patients Section -->
+        <div class="patients-section">
+            <!-- Patients Header with Actions -->
+            <div class="section-header patients-header">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="patientSearch" placeholder="Search patients...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="cancerTypeFilter" class="filter-select">
+                            <option value="all">All Cancer Types</option>
+                            <option value="breast">Breast Cancer</option>
+                            <option value="lung">Lung Cancer</option>
+                            <option value="prostate">Prostate Cancer</option>
+                            <option value="colorectal">Colorectal Cancer</option>
+                            <option value="leukemia">Leukemia</option>
+                            <option value="lymphoma">Lymphoma</option>
+                            <option value="melanoma">Melanoma</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="addPatientBtn">
+                        <i class="fas fa-user-plus"></i> Add New Patient
+                    </button>
+                    <button class="btn btn-secondary" id="exportBtn">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Patient Stats -->
+            <div class="summary-container">
+                <div class="summary-card bg-primary-light">
+                    <div class="summary-icon bg-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Total Patients</h3>
+                        <div class="summary-count">248</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 12%</span> vs last month
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-info-light">
+                    <div class="summary-icon bg-info">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>New Patients</h3>
+                        <div class="summary-count">32</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 8%</span> vs last month
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-success-light">
+                    <div class="summary-icon bg-success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Appointments</h3>
+                        <div class="summary-count">42</div>
+                        <div class="summary-status">
+                            <span class="up"><i class="fas fa-arrow-up"></i> 5%</span> vs last month
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card bg-warning-light">
+                    <div class="summary-icon bg-warning">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="summary-details">
+                        <h3>Pending Reports</h3>
+                        <div class="summary-count">15</div>
+                        <div class="summary-status">
+                            <span class="down"><i class="fas fa-arrow-down"></i> 3%</span> vs last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Table -->
+            <div class="card patients-card">
+                <div class="card-header">
+                    <div class="d-flex">
+                        <div class="card-icon bg-primary">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                        <div>
+                            <h3>Patients List</h3>
+                        </div>
+                    </div>
+                    <div class="table-actions">
+                        <span class="results-count">Showing <strong>1-10</strong> of <strong>248</strong> patients</span>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" disabled><i class="fas fa-angle-left"></i></button>
+                            <span class="pagination-info">Page 1 of 25</span>
+                            <button class="pagination-btn"><i class="fas fa-angle-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="responsive-table">
+                        <table class="patients-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" id="selectAll">
+                                            <label for="selectAll"></label>
+                                        </div>
+                                    </th>
+                                    <th>Patient</th>
+                                    <th>Contact</th>
+                                    <th>Age/Gender</th>
+                                    <th>Blood</th>
+                                    <th>Cancer Type</th>
+                                    <th>Last Visit</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" id="patient1">
+                                            <label for="patient1"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-info">
+                                            <img src="patient-placeholder.jpg" alt="Patient" class="patient-image">
+                                            <div>
+                                                <div class="patient-name">John Doe</div>
+                                                <div class="patient-id">PT-0025</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-contact">
+                                            <div><i class="fas fa-phone"></i> (555) 123-4567</div>
+                                            <div><i class="fas fa-envelope"></i> john.doe@example.com</div>
+                                        </div>
+                                    </td>
+                                    <td>42 / Male</td>
+                                    <td>A+</td>
+                                    <td>
+                                        <div class="conditions-list">
+                                            <span class="condition breast">Breast Cancer</span>
+                                        </div>
+                                    </td>
+                                    <td>Mar 18, 2025</td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="icon-btn view-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn edit-btn" title="Edit Patient"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn message-btn" title="Send Message"><i class="fas fa-comment-medical"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" id="patient2">
+                                            <label for="patient2"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-info">
+                                            <img src="patient-placeholder.jpg" alt="Patient" class="patient-image">
+                                            <div>
+                                                <div class="patient-name">Maria Garcia</div>
+                                                <div class="patient-id">PT-0042</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-contact">
+                                            <div><i class="fas fa-phone"></i> (555) 987-6543</div>
+                                            <div><i class="fas fa-envelope"></i> maria.g@example.com</div>
+                                        </div>
+                                    </td>
+                                    <td>35 / Female</td>
+                                    <td>O-</td>
+                                    <td>
+                                        <div class="conditions-list">
+                                            <span class="condition lung">Lung Cancer</span>
+                                        </div>
+                                    </td>
+                                    <td>Mar 20, 2025</td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="icon-btn view-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn edit-btn" title="Edit Patient"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn message-btn" title="Send Message"><i class="fas fa-comment-medical"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" id="patient3">
+                                            <label for="patient3"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-info">
+                                            <img src="patient-placeholder.jpg" alt="Patient" class="patient-image">
+                                            <div>
+                                                <div class="patient-name">Robert Smith</div>
+                                                <div class="patient-id">PT-0078</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="patient-contact">
+                                            <div><i class="fas fa-phone"></i> (555) 456-7890</div>
+                                            <div><i class="fas fa-envelope"></i> robert.s@example.com</div>
+                                        </div>
+                                    </td>
+                                    <td>28 / Male</td>
+                                    <td>B+</td>
+                                    <td>
+                                        <div class="conditions-list">
+                                            <span class="condition leukemia">Leukemia</span>
+                                        </div>
+                                    </td>
+                                    <td>Mar 15, 2025</td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="icon-btn view-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                            <button class="icon-btn edit-btn" title="Edit Patient"><i class="fas fa-edit"></i></button>
+                                            <button class="icon-btn message-btn" title="Send Message"><i class="fas fa-comment-medical"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div class="modal" id="patientDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Patient Details</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="patient-profile">
+                    <div class="patient-profile-header">
+                        <img src="patient-placeholder.jpg" alt="Patient" class="patient-profile-image">
+                        <div class="patient-profile-info">
+                            <h3>John Doe</h3>
+                            <div class="patient-meta">
+                                <span class="patient-id">PT-0025</span>
+                                <span class="patient-since">Patient since: Jan 2023</span>
+                            </div>
+                            <div class="patient-badges">
+                                <span class="status-badge active">Active</span>
+                                <span class="condition breast">Breast Cancer</span>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn btn-primary"><i class="fas fa-calendar-plus"></i> Schedule</button>
+                            <button class="btn btn-secondary"><i class="fas fa-file-medical"></i> Records</button>
+                        </div>
+                    </div>
+
+                    <div class="patient-details-tabs">
+                        <div class="tab active" data-tab="basic-info">Basic Info</div>
+                        <div class="tab" data-tab="medical-history">Medical History</div>
+                        <div class="tab" data-tab="appointments">Appointments</div>
+                        <div class="tab" data-tab="prescriptions">Prescriptions</div>
+                        <div class="tab" data-tab="vitals">Vitals</div>
+                    </div>
+
+                    <div class="tab-content active" id="basic-info">
+                        <div class="info-grid">
+                            <div class="info-section">
+                                <h4>Personal Information</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Full Name:</span>
+                                    <span class="info-value">John William Doe</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Date of Birth:</span>
+                                    <span class="info-value">July 15, 1983 (42 years)</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Gender:</span>
+                                    <span class="info-value">Male</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Blood Type:</span>
+                                    <span class="info-value">A+</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Occupation:</span>
+                                    <span class="info-value">Software Engineer</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <h4>Contact Information</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Phone:</span>
+                                    <span class="info-value">(555) 123-4567</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value">john.doe@example.com</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Address:</span>
+                                    <span class="info-value">123 Main St, Anytown, CA 12345</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Emergency Contact:</span>
+                                    <span class="info-value">Jane Doe (Wife) - (555) 987-6543</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <h4>Insurance Information</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Provider:</span>
+                                    <span class="info-value">HealthPlus Insurance</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Policy Number:</span>
+                                    <span class="info-value">HP78901234</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Group Number:</span>
+                                    <span class="info-value">GRP5678</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Effective Date:</span>
+                                    <span class="info-value">January 1, 2023</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="medical-history">
+                        <div class="info-grid">
+                            <div class="info-section">
+                                <h4>Medical Conditions</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Breast Cancer:</span>
+                                    <span class="info-value">Diagnosed in 2022, undergoing chemotherapy.</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <h4>Allergies</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Medications:</span>
+                                    <span class="info-value">Penicillin, Sulfa Drugs</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <h4>Surgeries</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Mastectomy:</span>
+                                    <span class="info-value">2023</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <h4>Family History</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Mother:</span>
+                                    <span class="info-value">Breast Cancer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="appointments">
+                        <div class="appointments-list">
+                            <div class="appointment-item">
+                                <div class="appointment-date">Mar 18, 2025</div>
+                                <div class="appointment-details">
+                                    <div class="appointment-time">2:30 PM</div>
+                                    <div class="appointment-reason">Chemotherapy Session</div>
+                                    <div class="appointment-status">Completed</div>
+                                </div>
+                            </div>
+                            <div class="appointment-item">
+                                <div class="appointment-date">Feb 10, 2025</div>
+                                <div class="appointment-details">
+                                    <div class="appointment-time">10:00 AM</div>
+                                    <div class="appointment-reason">Follow-up for Treatment</div>
+                                    <div class="appointment-status">Completed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="prescriptions">
+                        <div class="prescriptions-list">
+                            <div class="prescription-item">
+                                <div class="prescription-name">Paclitaxel</div>
+                                <div class="prescription-details">
+                                    <div class="prescription-dosage">175 mg/m²</div>
+                                    <div class="prescription-frequency">Every 3 weeks</div>
+                                    <div class="prescription-status">Active</div>
+                                </div>
+                            </div>
+                            <div class="prescription-item">
+                                <div class="prescription-name">Tamoxifen</div>
+                                <div class="prescription-details">
+                                    <div class="prescription-dosage">20 mg</div>
+                                    <div class="prescription-frequency">Once daily</div>
+                                    <div class="prescription-status">Active</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="vitals">
+                        <div class="vitals-grid">
+                            <div class="vital-item">
+                                <div class="vital-label">Blood Pressure</div>
+                                <div class="vital-value">130/85 mmHg</div>
+                                <div class="vital-status">Normal</div>
+                            </div>
+                            <div class="vital-item">
+                                <div class="vital-label">Heart Rate</div>
+                                <div class="vital-value">72 bpm</div>
+                                <div class="vital-status">Normal</div>
+                            </div>
+                            <div class="vital-item">
+                                <div class="vital-label">Weight</div>
+                                <div class="vital-value">185 lbs</div>
+                                <div class="vital-status">Overweight</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Close</button>
+                <button class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div class="modal" id="addPatientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Patient</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPatientForm">
+                    <div class="form-group">
+                        <label for="patientName">Full Name</label>
+                        <input type="text" id="patientName" name="patientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientEmail">Email</label>
+                        <input type="email" id="patientEmail" name="patientEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientPhone">Phone</label>
+                        <input type="tel" id="patientPhone" name="patientPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientDOB">Date of Birth</label>
+                        <input type="date" id="patientDOB" name="patientDOB" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientGender">Gender</label>
+                        <select id="patientGender" name="patientGender" required>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientBloodType">Blood Type</label>
+                        <select id="patientBloodType" name="patientBloodType" required>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cancerType">Cancer Type</label>
+                        <select id="cancerType" name="cancerType" required>
+                            <option value="breast">Breast Cancer</option>
+                            <option value="lung">Lung Cancer</option>
+                            <option value="prostate">Prostate Cancer</option>
+                            <option value="colorectal">Colorectal Cancer</option>
+                            <option value="leukemia">Leukemia</option>
+                            <option value="lymphoma">Lymphoma</option>
+                            <option value="melanoma">Melanoma</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button class="btn btn-primary" type="submit" form="addPatientForm">Add Patient</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
