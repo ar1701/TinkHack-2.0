@@ -199,8 +199,11 @@ def query_records():
         # Generate embedding for the question
         query_embedding = generate_embedding(question)
         
-        # Search for relevant chunks
-        results = search_chunks(user_id, query_embedding, limit=5)
+        # TEMPORARY SOLUTION: Use hardcoded sample user ID for testing
+        sample_user_id = "123456789"
+        
+        # Search for relevant chunks (using sample user id for testing)
+        results = search_chunks(sample_user_id, query_embedding, limit=5)
         
         if not results:
             return jsonify({
@@ -280,5 +283,111 @@ def debug_chunks():
         print(f"Error debugging chunks: {str(e)}")
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/debug/add_sample_data', methods=['GET'])
+def add_sample_data_route():
+    """Add sample medical record data for testing."""
+    try:
+        from test_add_data import add_sample_data
+        result = add_sample_data()
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error adding sample data: {str(e)}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == '__main__':
+    # Add sample data
+    try:
+        print("Adding sample data...")
+        # Sample user ID
+        user_id = "123456789"
+        
+        # Sample medical records
+        sample_records = [
+            {
+    "recordId": "sample_record_2",
+    "title": "Outpatient Rheumatology Summary",
+    "description": "Patient is a 56-year-old female with a known case of systemic lupus erythematosus and scleroderma overlap with interstitial lung disease on medication. Presenting with tightness of skin on the fists and ulcers on the pulp of the fingers. Treatment includes multiple medications such as Linezolid, Clopidogrel, Amlodipine, Domperidone, Omeprazole, Bosentan, Sildenafil Citrate, Prednisolone, Mycophenolate Mofetil, L-methylfolate calcium, and Ciprofloxacin. Review advised after 4 weeks.",
+    "recordType": "Rheumatology Outpatient Summary",
+    "recordDate": "2021-07-02",
+    "patientName": "Ms Rukhsana Shaheen",
+    "hospitalNo": "MH005990453",
+    "episodeNo": "03000582270",
+    "doctor": "Dr Darshan Singh Bhakuni",
+    "department": "Rheumatology MHD",
+    "ageSex": "56 yrs/Female",
+    "consultationType": "Video consultation"
+},
+
+            {
+                "recordId": "sample_record_1",
+                "title": "Annual Physical Examination",
+                "description": "Patient is a 45-year-old male in good health. Blood pressure: 120/80 mmHg. Heart rate: 72 bpm. Currently taking Lisinopril 10mg daily for hypertension and Metformin 500mg twice daily for type 2 diabetes. Lab results show normal kidney function, cholesterol within normal limits. Recommended follow-up in 12 months.",
+                "recordType": "Physical Examination",
+                "recordDate": "2023-03-15"
+            },
+            {
+                "recordId": "sample_record_2",
+                "title": "Cardiology Consultation",
+                "description": "Patient referred for evaluation of chest pain. ECG shows normal sinus rhythm. Stress test was negative for ischemia. Echo shows normal ejection fraction of 60%. Recommended to continue current medications: Aspirin 81mg daily and Atorvastatin 20mg at bedtime. Advised to exercise regularly and follow a low-salt diet.",
+                "recordType": "Specialist Consultation",
+                "recordDate": "2023-05-20"
+            },
+            {
+                "recordId": "sample_record_3",
+                "title": "Lab Results",
+                "description": "Complete Blood Count: WBC 6.5, RBC 4.8, Hemoglobin 14.2, Hematocrit 42%, Platelets 250. Comprehensive Metabolic Panel: Sodium 140, Potassium 4.2, Glucose 110 (slightly elevated), A1C 6.4%. Lipid Panel: Total Cholesterol 185, LDL 110, HDL 45, Triglycerides 150. Thyroid Function: TSH 2.8, within normal range.",
+                "recordType": "Lab Report",
+                "recordDate": "2023-06-10"
+            }
+        ]
+        
+        # Initialize user's chunks store
+        chunks_db[user_id] = []
+        
+        total_chunks = 0
+        
+        for record in sample_records:
+            # Create full text
+            full_text = f"{record['title']}. {record['description']}"
+            
+            # Chunk text
+            chunks = chunk_text(full_text)
+            total_chunks += len(chunks)
+            
+            # Create metadata
+            metadata = {
+                "recordId": record["recordId"],
+                "title": record["title"],
+                "description": record["description"],
+                "recordType": record["recordType"],
+                "recordDate": record["recordDate"]
+            }
+            
+            # Store chunks with embeddings
+            for i, chunk_text_content in enumerate(chunks):
+                chunk_id = f"{record['recordId']}_chunk_{i}"
+                
+                # Generate embedding
+                embedding = generate_embedding(chunk_text_content)
+                
+                # Store chunk
+                chunk_data = {
+                    'id': chunk_id,
+                    'text': chunk_text_content,
+                    'embedding': embedding,
+                    'metadata': {
+                        **metadata,
+                        "chunk_index": i,
+                        "total_chunks": len(chunks)
+                    }
+                }
+                
+                chunks_db[user_id].append(chunk_data)
+        
+        print(f"Added {len(sample_records)} sample records with {total_chunks} chunks for user {user_id}")
+        
+    except Exception as e:
+        print(f"Error adding sample data: {str(e)}")
+    
+    # Start the server
     app.run(debug=True, port=5000) 
