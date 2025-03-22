@@ -736,6 +736,17 @@
 
     // Update record function
     function updateRecord(id, title, description, recordType, recordDate) {
+      // Show loading indicator
+      Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update your record.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
@@ -805,6 +816,17 @@
 
     // Delete record function
     function deleteRecord(id) {
+      // Show loading indicator
+      Swal.fire({
+        title: 'Deleting...',
+        text: 'Please wait while we delete your record.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       fetch(`/api/medical-records/${id}`, {
         method: "DELETE",
       })
