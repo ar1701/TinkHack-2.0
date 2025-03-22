@@ -1,4 +1,5 @@
-/* Chatbot Styles */
+/* Chatbot Styles - Updated to match the colorful medical theme */
+
 .chatbot-container {
   position: fixed;
   bottom: 20px;
@@ -10,18 +11,32 @@
 .chatbot-icon {
   width: 70px;
   height: 70px;
-  background-color: #e74c3c; /* Medical red color */
+  background: linear-gradient(135deg, #1a91ff, #7d5fff);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
+  box-shadow: 0 6px 16px rgba(26, 145, 255, 0.3);
+  transition: all 0.3s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .chatbot-icon:hover {
-  transform: scale(1.1);
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 8px 20px rgba(26, 145, 255, 0.4);
 }
 
 .chatbot-icon i {
@@ -36,8 +51,8 @@
   width: 400px;
   height: 550px;
   background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -54,26 +69,37 @@
 }
 
 .chatbot-header {
-  background-color: #e74c3c; /* Medical red color */
+  background: linear-gradient(to right, #1a91ff, #7d5fff);
   color: white;
-  padding: 15px;
+  padding: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .header-content i {
-  font-size: 20px;
+  font-size: 24px;
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .chatbot-header h5 {
   margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .close-btn {
@@ -81,32 +107,60 @@
   border: none;
   color: white;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
 }
 
 .chatbot-messages {
   flex-grow: 1;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  background-color: #f8faff;
 }
 
 .message {
-  padding: 10px 15px;
+  padding: 12px 18px;
   border-radius: 18px;
-  max-width: 80%;
+  max-width: 85%;
   word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bot-message {
-  background-color: #f0f2f5;
-  color: #333;
+  background-color: white;
+  color: #2d3748;
   align-self: flex-start;
   border-bottom-left-radius: 5px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
+  border-left: 3px solid #1a91ff;
 }
 
 .bot-message p {
@@ -118,69 +172,89 @@
 }
 
 .bot-message .list-item {
-  margin: 5px 0;
+  margin: 8px 0;
   display: flex;
   align-items: flex-start;
 }
 
 .bot-message .list-number {
   font-weight: bold;
-  margin-right: 5px;
+  margin-right: 8px;
   min-width: 20px;
+  color: #1a91ff;
 }
 
 .bot-message .bullet-point {
-  margin-right: 5px;
+  margin-right: 8px;
   min-width: 15px;
+  color: #1a91ff;
 }
 
 .bot-message strong {
-  font-weight: bold;
-  color: #e74c3c; /* Emphasize important health information */
+  font-weight: 600;
+  color: #1a91ff;
+  background-color: rgba(26, 145, 255, 0.1);
+  padding: 2px 5px;
+  border-radius: 4px;
 }
 
 .user-message {
-  background-color: #3498db; /* Changed from teal to a medical blue */
+  background: linear-gradient(to right, #1a91ff, #00c4b4);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 5px;
+  font-weight: 500;
 }
 
 .chatbot-input {
-  padding: 15px;
+  padding: 16px;
   display: flex;
-  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  border-top: 1px solid #eef2f7;
 }
 
 .chatbot-input input {
   flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  padding: 12px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 25px;
   outline: none;
   margin-right: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
 .chatbot-input input:focus {
-  border-color: #e74c3c; /* Medical red focus */
+  border-color: #1a91ff;
+  box-shadow: 0 0 0 3px rgba(26, 145, 255, 0.15);
 }
 
 .chatbot-input button {
-  background-color: #e74c3c; /* Medical red */
+  background: linear-gradient(to right, #1a91ff, #7d5fff);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(26, 145, 255, 0.25);
 }
 
 .chatbot-input button:hover {
-  background-color: #c0392b; /* Darker medical red */
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(26, 145, 255, 0.35);
+}
+
+.chatbot-input button i {
+  transition: all 0.3s ease;
+}
+
+.chatbot-input button:hover i {
+  transform: rotate(15deg);
 }
 
 /* Typing indicator */
@@ -188,15 +262,19 @@
   display: flex;
   align-items: center;
   padding: 15px;
+  background-color: rgba(248, 250, 255, 0.8);
+  border-radius: 15px;
+  width: fit-content;
+  margin-top: 5px;
 }
 
 .typing-indicator span {
   height: 8px;
   width: 8px;
-  background-color: #bbb;
+  background: linear-gradient(to right, #1a91ff, #7d5fff);
   border-radius: 50%;
   display: inline-block;
-  margin: 0 1px;
+  margin: 0 2px;
   animation: typing 1.4s infinite both;
 }
 
