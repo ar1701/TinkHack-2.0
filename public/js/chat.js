@@ -57,16 +57,22 @@ class ChatManager {
       this.socket.on("new-message", (data) => {
         console.log("New message received:", data);
 
+        // Check if this is a message sent by current user
+        const isSent = data.sender._id === this.userId;
+
         // If we have a callback, use it
         if (
           this.onMessageReceived &&
           typeof this.onMessageReceived === "function"
         ) {
-          this.onMessageReceived({
-            content: data.message.message,
-            timestamp: data.message.createdAt,
-            sender: data.sender._id,
-          });
+          this.onMessageReceived(
+            {
+              content: data.message.message,
+              timestamp: data.message.createdAt,
+              sender: data.sender._id,
+            },
+            isSent
+          );
         }
 
         document.dispatchEvent(
@@ -125,17 +131,12 @@ class ChatManager {
           const loadingIndicator = document.getElementById("loadingMessages");
 
           if (loadingIndicator) {
-            loadingIndicator.style.display = "none";
+            loadingIndicator.remove(); // Remove loading indicator completely
           }
 
           if (chatMessages) {
-            // Clear existing messages (except for loading indicator)
-            while (
-              chatMessages.firstChild &&
-              chatMessages.firstChild.id !== "loadingMessages"
-            ) {
-              chatMessages.removeChild(chatMessages.firstChild);
-            }
+            // Clear existing messages
+            chatMessages.innerHTML = "";
 
             // Add messages to chat
             data.messages.forEach((msg) => {
@@ -155,13 +156,18 @@ class ChatManager {
                 // Fallback implementation
                 const msgElement = document.createElement("div");
                 msgElement.className = `message ${
-                  isSent ? "sent" : "received"
+                  isSent ? "outgoing" : "incoming"
                 }`;
                 msgElement.innerHTML = `
-                  <div class="message-content">${msg.message}</div>
-                  <small class="text-muted">${new Date(
-                    msg.createdAt
-                  ).toLocaleTimeString()}</small>
+                  <div class="message-content">
+                    <div class="message-text">${msg.message}</div>
+                    <div class="message-time">${new Date(
+                      msg.createdAt
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}</div>
+                  </div>
                 `;
                 chatMessages.appendChild(msgElement);
               }
@@ -170,19 +176,25 @@ class ChatManager {
             // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
           }
+        } else {
+          // Handle no messages or error
+          const chatMessages = document.getElementById("chatMessages");
+          if (chatMessages) {
+            chatMessages.innerHTML = `
+              <div class="text-center p-3">
+                <p class="text-muted">No messages yet. Start a conversation!</p>
+              </div>
+            `;
+          }
         }
       })
       .catch((error) => {
         console.error("Error loading chat history:", error);
-        const loadingIndicator = document.getElementById("loadingMessages");
-        if (loadingIndicator) {
-          loadingIndicator.style.display = "none";
-        }
-
+        // Remove loading indicator and show error
         const chatMessages = document.getElementById("chatMessages");
         if (chatMessages) {
-          chatMessages.innerHTML += `
-            <div class="alert alert-danger">Error loading messages. Please try again.</div>
+          chatMessages.innerHTML = `
+            <div class="alert alert-danger m-3">Error loading messages. Please try again.</div>
           `;
         }
       });
@@ -249,11 +261,12 @@ class ChatManager {
 // Initialize chat when DOM is loaded
 let chatManager = null;
 
-function initializeChat(userId) {
-  chatManager = new ChatManager(userId);
+function initializeChat(options) {
+  // Create chat manager with options
+  chatManager = new ChatManager(options);
+  window.chatManager = chatManager;
 
-  // Setup event listeners for chat UI if needed
-  setupChatEventListeners();
+  console.log("Chat initialized with user ID:", options.userId);
 }
 
 function setupChatEventListeners() {
@@ -290,11 +303,12 @@ function setupChatEventListeners() {
     // Update UI with new message
     const chatContainer = document.getElementById("chatMessages");
     if (chatContainer) {
-      appendNewMessage(chatContainer, data.message, data.sender);
+      const isOutgoing = data.sender._id === chatManager.userId;
+      appendNewMessage(chatContainer, data.message, isOutgoing);
     }
 
     // Show notification if needed
-    if (document.hidden) {
+    if (document.hidden && data.sender._id !== chatManager.userId) {
       showNotification(data.sender.fullName, data.message.message);
     }
   });
@@ -315,10 +329,7 @@ function setupChatEventListeners() {
 }
 
 // Helper function to append a new message to the chat
-function appendNewMessage(container, message, sender) {
-  const currentUserId = chatManager.userId;
-  const isOutgoing = message.sender.toString() === currentUserId;
-
+function appendNewMessage(container, message, isOutgoing) {
   const messageDiv = document.createElement("div");
   messageDiv.className = isOutgoing ? "message outgoing" : "message incoming";
 
@@ -359,16 +370,15 @@ function showNotification(senderName, messageContent) {
   }
 }
 
-// Create and show notification
 function createNotification(title, body) {
   const notification = new Notification(title, {
     body: body,
-    icon: "/img/logo.png", // Update with your logo path
+    icon: "/favicon.ico",
   });
 
   notification.onclick = function () {
     window.focus();
-    this.close();
+    notification.close();
   };
 
   // Auto close after 5 seconds

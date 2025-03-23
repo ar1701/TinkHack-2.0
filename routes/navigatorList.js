@@ -240,15 +240,14 @@ router.put(
 // Get active connections for patient
 router.get("/api/patient/active-navigators", isLoggedIn, async (req, res) => {
   try {
-    // Check if user is a patient
     if (req.user.userType !== "Patient") {
       return res.status(403).json({
         success: false,
-        message: "Access denied",
+        message: "Only patients can access this resource",
       });
     }
 
-    // Find accepted requests
+    // Find accepted connection requests where the current user is the patient
     const connections = await NavigatorRequest.find({
       patient: req.user._id,
       status: "accepted",
@@ -260,25 +259,30 @@ router.get("/api/patient/active-navigators", isLoggedIn, async (req, res) => {
       .populate("navigatorProfile")
       .sort({ updatedAt: -1 });
 
-    res.json({ success: true, connections });
+    res.json({
+      success: true,
+      connections,
+    });
   } catch (error) {
     console.error("Error fetching active navigators:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 // Get active patients for navigator
 router.get("/api/navigator/active-patients", isLoggedIn, async (req, res) => {
   try {
-    // Check if user is a navigator
     if (req.user.userType !== "Patient-Navigator") {
       return res.status(403).json({
         success: false,
-        message: "Access denied",
+        message: "Only navigators can access this resource",
       });
     }
 
-    // Find accepted requests
+    // Find accepted connection requests where the current user is the navigator
     const connections = await NavigatorRequest.find({
       navigator: req.user._id,
       status: "accepted",
@@ -289,10 +293,190 @@ router.get("/api/navigator/active-patients", isLoggedIn, async (req, res) => {
       })
       .sort({ updatedAt: -1 });
 
-    res.json({ success: true, connections });
+    res.json({
+      success: true,
+      connections,
+    });
   } catch (error) {
     console.error("Error fetching active patients:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+// API to get connection requests for a navigator
+router.get(
+  "/api/navigator/connection-requests",
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      if (req.user.userType !== "Patient-Navigator") {
+        return res.status(403).json({
+          success: false,
+          message: "Only navigators can access this resource",
+        });
+      }
+
+      // Find pending connection requests where the current user is the navigator
+      const requests = await NavigatorRequest.find({
+        navigator: req.user._id,
+        status: "pending",
+      })
+        .populate({
+          path: "patient",
+          select: "fullName email",
+        })
+        .sort({ createdAt: -1 });
+
+      res.json({
+        success: true,
+        requests,
+      });
+    } catch (error) {
+      console.error("Error fetching connection requests:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  }
+);
+
+// API to handle connection request status update
+router.put(
+  "/api/navigator/connection-requests/:requestId",
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      if (req.user.userType !== "Patient-Navigator") {
+        return res.status(403).json({
+          success: false,
+          message: "Only navigators can update connection requests",
+        });
+      }
+
+      const { requestId } = req.params;
+      const { status } = req.body;
+
+      if (!["accepted", "rejected"].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status value",
+        });
+      }
+
+      // Find the request and ensure it belongs to the current navigator
+      const request = await NavigatorRequest.findOne({
+        _id: requestId,
+        navigator: req.user._id,
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          message: "Connection request not found",
+        });
+      }
+
+      // Update request status
+      request.status = status;
+      await request.save();
+
+      res.json({
+        success: true,
+        message: `Request ${status}`,
+        request,
+      });
+    } catch (error) {
+      console.error("Error updating connection request:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  }
+);
+
+// API for patients to retract connection requests
+router.delete(
+  "/api/patient/connection-requests/:requestId",
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      if (req.user.userType !== "Patient") {
+        return res.status(403).json({
+          success: false,
+          message: "Only patients can retract connection requests",
+        });
+      }
+
+      const { requestId } = req.params;
+
+      // Find the request and ensure it belongs to the current patient
+      const request = await NavigatorRequest.findOne({
+        _id: requestId,
+        patient: req.user._id,
+        status: "pending", // Can only retract pending requests
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          message: "Connection request not found or already processed",
+        });
+      }
+
+      // Delete the request
+      await NavigatorRequest.deleteOne({ _id: requestId });
+
+      res.json({
+        success: true,
+        message: "Connection request retracted successfully",
+      });
+    } catch (error) {
+      console.error("Error retracting connection request:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  }
+);
+
+// API to get pending requests for a patient
+router.get("/api/patient/pending-requests", isLoggedIn, async (req, res) => {
+  try {
+    if (req.user.userType !== "Patient") {
+      return res.status(403).json({
+        success: false,
+        message: "Only patients can access this resource",
+      });
+    }
+
+    // Find pending connection requests where the current user is the patient
+    const requests = await NavigatorRequest.find({
+      patient: req.user._id,
+      status: "pending",
+    })
+      .populate({
+        path: "navigator",
+        select: "fullName email",
+      })
+      .populate("navigatorProfile")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      requests,
+    });
+  } catch (error) {
+    console.error("Error fetching pending requests:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 

@@ -6,12 +6,17 @@ const NavigatorRequest = require("../models/navigatorRequest");
 const userSockets = new Map(); // userId -> socketId
 
 module.exports = function (io) {
+  // Store connected users
+  const connectedUsers = new Map();
+
   // Socket middleware to authenticate users
   io.use((socket, next) => {
     const userId = socket.handshake.auth.userId;
 
     if (!userId) {
-      return next(new Error("Authentication error"));
+      console.log("Socket connection rejected: No user ID provided");
+      socket.disconnect();
+      return;
     }
 
     // Store user connection
@@ -19,103 +24,116 @@ module.exports = function (io) {
     next();
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
     const userId = socket.userId;
 
-    console.log(`User connected: ${userId}`);
+    try {
+      // Get user from database
+      const user = await User.findById(userId);
 
-    // Store user's socket id
-    userSockets.set(userId, socket.id);
-
-    // Handle private message
-    socket.on("private-message", async (data) => {
-      try {
-        const { receiverId, message } = data;
-
-        // Verify connection between users
-        const connection = await NavigatorRequest.findOne({
-          $or: [
-            { patient: userId, navigator: receiverId, status: "accepted" },
-            { navigator: userId, patient: receiverId, status: "accepted" },
-          ],
-        });
-
-        if (!connection) {
-          return socket.emit("error", {
-            message: "You don't have an active connection with this user",
-          });
-        }
-
-        // Create and save the message
-        const newMessage = new ChatMessage({
-          sender: userId,
-          receiver: receiverId,
-          message: message.trim(),
-        });
-
-        await newMessage.save();
-
-        // Get the sender's name for displaying in the notification
-        const sender = await User.findById(userId).select("fullName");
-
-        // Emit to receiver if online
-        const receiverSocketId = userSockets.get(receiverId);
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit("new-message", {
-            message: newMessage,
-            sender: {
-              _id: userId,
-              fullName: sender.fullName,
-            },
-          });
-        }
-
-        // Confirm to sender
-        socket.emit("message-sent", { success: true, message: newMessage });
-      } catch (error) {
-        console.error("Error sending private message:", error);
-        socket.emit("error", { message: "Error sending message" });
+      if (!user) {
+        console.log(
+          `Socket connection rejected: User not found (ID: ${userId})`
+        );
+        socket.disconnect();
+        return;
       }
-    });
 
-    // Handle typing indicators
-    socket.on("typing", (data) => {
-      const { receiverId, isTyping } = data;
+      console.log(`User connected: ${user.fullName} (${userId})`);
 
-      const receiverSocketId = userSockets.get(receiverId);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("user-typing", {
+      // Store user connection
+      connectedUsers.set(userId, {
+        socket: socket.id,
+        user,
+      });
+
+      // Join a room with the user's ID to receive private messages
+      socket.join(userId);
+
+      // Handle disconnect
+      socket.on("disconnect", () => {
+        console.log(`User disconnected: ${user.fullName} (${userId})`);
+        connectedUsers.delete(userId);
+      });
+
+      // Handle private message
+      socket.on("private-message", async (data) => {
+        try {
+          const { receiverId, message } = data;
+
+          if (!receiverId || !message) {
+            console.log("Invalid message data:", data);
+            return;
+          }
+
+          // Create message in database
+          const newMessage = new ChatMessage({
+            sender: userId,
+            receiver: receiverId,
+            message: message,
+            read: false,
+          });
+
+          await newMessage.save();
+
+          // Emit the message to sender (for immediate feedback)
+          io.to(userId).emit("new-message", {
+            message: newMessage,
+            sender: user,
+          });
+
+          // Emit to receiver if they are connected
+          io.to(receiverId).emit("new-message", {
+            message: newMessage,
+            sender: user,
+          });
+
+          console.log(`Message sent from ${userId} to ${receiverId}`);
+        } catch (error) {
+          console.error("Error sending message:", error);
+          socket.emit("error", { message: "Error sending message" });
+        }
+      });
+
+      // Handle typing indicator
+      socket.on("typing", (data) => {
+        const { receiverId, isTyping } = data;
+
+        if (!receiverId) return;
+
+        // Emit typing status to receiver
+        io.to(receiverId).emit("user-typing", {
           userId,
           isTyping,
         });
-      }
-    });
+      });
 
-    // Handle reading messages
-    socket.on("mark-read", async (data) => {
-      try {
-        const { senderId } = data;
+      // Handle marking messages as read
+      socket.on("mark-read", async (data) => {
+        try {
+          const { senderId } = data;
 
-        // Mark messages as read
-        await ChatMessage.updateMany(
-          { sender: senderId, receiver: userId, read: false },
-          { read: true }
-        );
+          if (!senderId) return;
 
-        // Notify sender if online
-        const senderSocketId = userSockets.get(senderId);
-        if (senderSocketId) {
-          io.to(senderSocketId).emit("messages-read", { by: userId });
+          // Update messages in database
+          await ChatMessage.updateMany(
+            { sender: senderId, receiver: userId, read: false },
+            { read: true }
+          );
+
+          // Emit read status to sender
+          io.to(senderId).emit("messages-read", {
+            by: userId,
+          });
+        } catch (error) {
+          console.error("Error marking messages as read:", error);
         }
-      } catch (error) {
-        console.error("Error marking messages as read:", error);
-      }
-    });
-
-    // Handle disconnect
-    socket.on("disconnect", () => {
-      console.log(`User disconnected: ${userId}`);
-      userSockets.delete(userId);
-    });
+      });
+    } catch (error) {
+      console.error("Socket connection error:", error);
+      socket.disconnect();
+    }
   });
+
+  return io;
 };

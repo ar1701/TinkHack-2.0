@@ -9,35 +9,61 @@ const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).json({ success: false, message: "Please log in first" });
+  return res.status(401).json({ success: false, message: "Not logged in" });
 };
 
 // Verify users have an active connection
 const verifyConnection = async (req, res, next) => {
   try {
-    const { userId } = req.params;
+    const currentUserId = req.user._id;
+    const otherUserId = req.params.userId;
 
-    // Check if the users have an active connection
-    const connection = await NavigatorRequest.findOne({
-      $or: [
-        // Check if current user is patient and target is navigator
-        { patient: req.user._id, navigator: userId, status: "accepted" },
-        // Check if current user is navigator and target is patient
-        { navigator: req.user._id, patient: userId, status: "accepted" },
-      ],
-    });
+    // Skip verification for development/testing
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.SKIP_CHAT_VERIFICATION === "true"
+    ) {
+      return next();
+    }
 
-    if (!connection) {
-      return res.status(403).json({
-        success: false,
-        message: "You don't have an active connection with this user",
+    // For patient users, check if they have an accepted connection with the navigator
+    if (req.user.userType === "Patient") {
+      const connectionExists = await NavigatorRequest.exists({
+        patient: currentUserId,
+        navigator: otherUserId,
+        status: "accepted",
       });
+
+      if (!connectionExists) {
+        return res.status(403).json({
+          success: false,
+          message: "No connection exists with this navigator",
+        });
+      }
+    }
+    // For navigators, check if they have an accepted connection with the patient
+    else if (req.user.userType === "Patient-Navigator") {
+      const connectionExists = await NavigatorRequest.exists({
+        navigator: currentUserId,
+        patient: otherUserId,
+        status: "accepted",
+      });
+
+      if (!connectionExists) {
+        return res.status(403).json({
+          success: false,
+          message: "No connection exists with this patient",
+        });
+      }
     }
 
     next();
   } catch (error) {
     console.error("Error verifying connection:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Error verifying connection",
+    });
   }
 };
 
@@ -48,27 +74,35 @@ router.get(
   verifyConnection,
   async (req, res) => {
     try {
-      const { userId } = req.params;
       const currentUserId = req.user._id;
+      const otherUserId = req.params.userId;
 
-      // Find messages between the two users
+      // Fetch messages between these users
       const messages = await ChatMessage.find({
         $or: [
-          { sender: currentUserId, receiver: userId },
-          { sender: userId, receiver: currentUserId },
+          { sender: currentUserId, receiver: otherUserId },
+          { sender: otherUserId, receiver: currentUserId },
         ],
-      }).sort({ createdAt: 1 });
+      })
+        .sort({ createdAt: 1 })
+        .limit(100); // Limit to last 100 messages
 
-      // Mark received messages as read
+      // Mark all messages from other user as read
       await ChatMessage.updateMany(
-        { sender: userId, receiver: currentUserId, read: false },
+        { sender: otherUserId, receiver: currentUserId, read: false },
         { read: true }
       );
 
-      res.json({ success: true, messages });
+      res.json({
+        success: true,
+        messages,
+      });
     } catch (error) {
-      console.error("Error fetching chat messages:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      console.error("Error fetching chat history:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching chat history",
+      });
     }
   }
 );
@@ -115,18 +149,21 @@ router.post(
 // Get unread message count
 router.get("/api/chat/unread/count", isLoggedIn, async (req, res) => {
   try {
-    const currentUserId = req.user._id;
-
-    // Count unread messages
     const unreadCount = await ChatMessage.countDocuments({
-      receiver: currentUserId,
+      receiver: req.user._id,
       read: false,
     });
 
-    res.json({ success: true, unreadCount });
+    res.json({
+      success: true,
+      unreadCount,
+    });
   } catch (error) {
-    console.error("Error counting unread messages:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error fetching unread count:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching unread count",
+    });
   }
 });
 

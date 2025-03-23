@@ -1031,13 +1031,15 @@
       }
 
       // Show empty state when no data
-      function showEmptyState(containerId, title, message) {
+      function showEmptyState(containerId, title, subtitle) {
         const container = document.getElementById(containerId);
         container.innerHTML = `
           <div class="empty-state">
-            <i class="fas fa-info-circle"></i>
-            <h6>${title}</h6>
-            <p class="text-muted">${message}</p>
+            <i class="fas fa-${
+              containerId === "requestsContainer" ? "user-plus" : "users"
+            } mb-3"></i>
+            <h5>${title}</h5>
+            <p class="text-muted">${subtitle}</p>
           </div>
         `;
       }
@@ -1048,7 +1050,6 @@
         let html = "";
 
         requests.forEach((request) => {
-          // Extract patient information
           const patient = request.patient;
 
           // Create initials for avatar
@@ -1058,7 +1059,7 @@
               ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
               : patient.fullName.charAt(0);
 
-          // Format date
+          // Format request date
           const requestDate = new Date(request.createdAt).toLocaleDateString(
             "en-US",
             {
@@ -1069,31 +1070,24 @@
           );
 
           html += `
-            <div class="card mb-3">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <div class="patient-avatar">${initials}</div>
-                  <div>
-                    <h6 class="patient-name mb-0">${patient.fullName}</h6>
-                    <small class="text-muted">${requestDate}</small>
-                  </div>
+            <div class="request-card mb-3" id="request-${request._id}">
+              <div class="d-flex align-items-center mb-2">
+                <div class="patient-avatar me-3">${initials}</div>
+                <div>
+                  <h6 class="mb-0">${patient.fullName}</h6>
+                  <small class="text-muted">${patient.email}</small>
                 </div>
-                
-                <p class="message-preview">"${
-                  request.message.length > 60
-                    ? request.message.substring(0, 60) + "..."
-                    : request.message
-                }"</p>
-                
-                <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-accent-teal" onclick="handleRequest('${
-                    request._id
-                  }', 'accepted')">
+              </div>
+              <div class="message-preview">"${request.message}"</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  <i class="fas fa-clock me-1"></i> ${requestDate}
+                </small>
+                <div>
+                  <button class="btn btn-sm btn-success me-2" onclick="handleRequest('${request._id}', 'accepted')">
                     <i class="fas fa-check me-1"></i> Accept
                   </button>
-                  <button class="btn btn-sm btn-outline-danger" onclick="handleRequest('${
-                    request._id
-                  }', 'rejected')">
+                  <button class="btn btn-sm btn-outline-danger" onclick="handleRequest('${request._id}', 'rejected')">
                     <i class="fas fa-times me-1"></i> Reject
                   </button>
                 </div>
@@ -1111,7 +1105,6 @@
         let html = "";
 
         connections.forEach((connection) => {
-          // Extract patient information
           const patient = connection.patient;
 
           // Create initials for avatar
@@ -1121,25 +1114,31 @@
               ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
               : patient.fullName.charAt(0);
 
+          // Format connection date
+          const connectionDate = new Date(
+            connection.updatedAt
+          ).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
           html += `
-            <div class="card mb-3">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <div class="patient-avatar">${initials}</div>
-                  <div>
-                    <h6 class="patient-name mb-0">${patient.fullName}</h6>
-                    <small class="text-muted">${patient.email}</small>
-                  </div>
+            <div class="patient-card mb-3">
+              <div class="d-flex align-items-center mb-2">
+                <div class="patient-avatar me-3">${initials}</div>
+                <div>
+                  <h6 class="patient-name mb-0">${patient.fullName}</h6>
+                  <small class="text-muted">${patient.email}</small>
                 </div>
-                
-                <div class="d-flex gap-2">
-                  <a href="/navigator/messages" class="btn btn-sm btn-primary">
-                    <i class="fas fa-comments me-1"></i> Message
-                  </a>
-                  <a href="/navigator/patient-detail/${patient._id}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-user-md me-1"></i> View Profile
-                  </a>
-                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <small class="text-muted">
+                  <i class="fas fa-calendar-check me-1"></i> Connected since ${connectionDate}
+                </small>
+                <a href="/navigator/messages" class="btn btn-sm btn-outline-primary">
+                  <i class="fas fa-comments me-1"></i> Message
+                </a>
               </div>
             </div>
           `;
@@ -1148,8 +1147,19 @@
         container.innerHTML = html;
       }
 
-      // Handle accept/reject request
+      // Handle request acceptance/rejection
       function handleRequest(requestId, status) {
+        // Get the request card element
+        const requestCard = document.getElementById(`request-${requestId}`);
+
+        // Disable buttons
+        const buttons = requestCard.querySelectorAll("button");
+        buttons.forEach((button) => {
+          button.disabled = true;
+          button.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
+        });
+
         // Send update request to server
         fetch(`/api/navigator/connection-requests/${requestId}`, {
           method: "PUT",
@@ -1162,29 +1172,65 @@
           .then((data) => {
             if (!data.success) {
               alert(data.message || "Error updating request");
+              buttons.forEach((button) => (button.disabled = false));
               return;
             }
 
-            // Reload data
-            loadConnectionRequests();
-            if (status === "accepted") {
-              loadActivePatients();
+            // Show success message
+            requestCard.innerHTML = `
+            <div class="alert alert-${
+              status === "accepted" ? "success" : "info"
+            } mb-0">
+              <i class="fas fa-${
+                status === "accepted" ? "check-circle" : "info-circle"
+              } me-2"></i>
+              Request ${
+                status === "accepted" ? "accepted" : "rejected"
+              } successfully
+            </div>
+          `;
 
-              // Show success notification
-              const notification = document.createElement("div");
-              notification.className =
-                "alert alert-success alert-dismissible fade show";
-              notification.innerHTML = `
-                <i class="fas fa-check-circle me-2"></i>
-                Connection accepted! You can now message this patient in the <a href="/navigator/messages">Messages</a> section.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              `;
-              document.querySelector(".main-content").prepend(notification);
-            }
+            // Remove request after 3 seconds
+            setTimeout(() => {
+              requestCard.style.opacity = "0";
+              requestCard.style.height = "0";
+              requestCard.style.margin = "0";
+              requestCard.style.padding = "0";
+              requestCard.style.transition = "all 0.5s ease";
+
+              setTimeout(() => {
+                requestCard.remove();
+
+                // Check if there are no more requests
+                const remainingRequests = document.querySelectorAll(
+                  "#requestsContainer .request-card"
+                ).length;
+
+                if (remainingRequests === 0) {
+                  showEmptyState(
+                    "requestsContainer",
+                    "No Connection Requests",
+                    "You don't have any pending connection requests from patients"
+                  );
+
+                  // Update badge count
+                  updateRequestBadge(0);
+                } else {
+                  // Update badge count
+                  updateRequestBadge(remainingRequests);
+                }
+
+                // If request was accepted, reload active patients
+                if (status === "accepted") {
+                  loadActivePatients();
+                }
+              }, 500);
+            }, 3000);
           })
           .catch((error) => {
             console.error("Error updating request:", error);
             alert("An error occurred. Please try again.");
+            buttons.forEach((button) => (button.disabled = false));
           });
       }
     </script>
