@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { isAuthenticated, isPatient } = require("../middleware/auth");
 const { isLoggedIn } = require("../middleware/auth");
 const { getRecommendations } = require("../utils/recommendationEngine");
 
