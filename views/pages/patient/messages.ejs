@@ -454,11 +454,30 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/chat.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         // Initialize chat with the current user's ID
-        initializeChat("<%= user._id %>");
+        initializeChat({
+          userId: "<%= user._id %>",
+          userType: "Patient",
+          onMessageReceived: function (messageData, isSent) {
+            // Add message to chat
+            appendMessage(messageData, isSent);
+          },
+          onTypingStarted: function (userId) {
+            if (userId === document.getElementById("chatReceiverId").value) {
+              document.getElementById("typingIndicator").style.display =
+                "block";
+            }
+          },
+          onTypingStopped: function (userId) {
+            if (userId === document.getElementById("chatReceiverId").value) {
+              document.getElementById("typingIndicator").style.display = "none";
+            }
+          },
+        });
 
         // Load contacts
         loadChatContacts();
@@ -475,7 +494,94 @@
               document.getElementById("sendMessage").click();
             }
           });
+
+        // Send message button
+        document
+          .getElementById("sendMessage")
+          .addEventListener("click", function () {
+            sendMessage();
+          });
+
+        // Typing indicator
+        document
+          .getElementById("messageInput")
+          .addEventListener("input", function () {
+            const receiverId = document.getElementById("chatReceiverId").value;
+            if (receiverId && window.chatManager) {
+              window.chatManager.sendTypingStatus(receiverId, true);
+
+              // Clear previous timeout
+              if (window.typingTimeout) {
+                clearTimeout(window.typingTimeout);
+              }
+
+              // Set timeout to stop typing indicator
+              window.typingTimeout = setTimeout(function () {
+                window.chatManager.sendTypingStatus(receiverId, false);
+              }, 2000);
+            }
+          });
       });
+
+      // Function to append message to the chat
+      function appendMessage(messageData, isSent) {
+        const chatMessages = document.getElementById("chatMessages");
+        if (!chatMessages) return;
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = isSent ? "message outgoing" : "message incoming";
+
+        const time = new Date(messageData.timestamp).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        messageDiv.innerHTML = `
+          <div class="message-content">
+            <div class="message-text">${messageData.content}</div>
+            <div class="message-time">${time}</div>
+          </div>
+        `;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Send a new message
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const receiverId = document.getElementById("chatReceiverId").value;
+
+        if (receiverId && messageInput.value.trim() && window.chatManager) {
+          const success = window.chatManager.sendMessage(
+            receiverId,
+            messageInput.value.trim()
+          );
+
+          if (success) {
+            // Create a temporary message element (will be replaced by the actual message from socket)
+            appendMessage(
+              {
+                content: messageInput.value.trim(),
+                timestamp: new Date(),
+                sender: "<%= user._id %>",
+              },
+              true
+            );
+
+            // Clear input field
+            messageInput.value = "";
+
+            // Stop typing indicator
+            window.chatManager.sendTypingStatus(receiverId, false);
+            if (window.typingTimeout) {
+              clearTimeout(window.typingTimeout);
+            }
+          } else {
+            alert("Unable to send message. Please try again.");
+          }
+        }
+      }
 
       // Load chat contacts
       function loadChatContacts() {
@@ -605,7 +711,8 @@
 
         // Set contact info in header
         document.getElementById("chatContactName").textContent = contactName;
-        document.getElementById("chatContactType").textContent = contactType;
+        document.getElementById("chatContactType").textContent =
+          contactType || "Navigator";
 
         // Create initials for avatar
         const nameParts = contactName.split(" ");
@@ -618,170 +725,22 @@
         // Store current chat receiver ID
         document.getElementById("chatReceiverId").value = contactId;
 
-        // Set active chat partner in ChatManager
+        // Set active chat partner in ChatManager and load messages
         if (window.chatManager) {
-          chatManager.setChatPartner(contactId);
+          window.chatManager.setChatPartner(contactId);
+          window.chatManager.loadChatHistory(contactId);
         }
 
         // Show loading state
         document.getElementById("chatMessages").innerHTML = `
-          <div class="text-center py-4">
+          <div id="loadingMessages" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
             <p class="mt-2 text-muted">Loading messages...</p>
           </div>
         `;
-
-        // Load chat messages
-        fetch(`/api/chat/${contactId}`)
-          .then((response) => response.json())
-          .then((data) => {
-            if (!data.success) {
-              document.getElementById("chatMessages").innerHTML = `
-                <div class="alert alert-danger m-3">
-                  ${data.message || "Error loading messages"}
-                </div>
-              `;
-              return;
-            }
-
-            renderChatMessages(data.messages);
-          })
-          .catch((error) => {
-            console.error("Error loading messages:", error);
-            document.getElementById("chatMessages").innerHTML = `
-              <div class="alert alert-danger m-3">
-                Error loading messages. Please try again.
-              </div>
-            `;
-          });
       }
-
-      // Render chat messages
-      function renderChatMessages(messages) {
-        const chatMessages = document.getElementById("chatMessages");
-        const currentUserId = "<%= user._id %>";
-
-        if (!messages || messages.length === 0) {
-          chatMessages.innerHTML = `
-            <div class="text-center py-4">
-              <img src="https://img.icons8.com/color/96/000000/chat--v1.png" width="60" class="mb-3">
-              <h6>No messages yet</h6>
-              <p class="text-muted">Start the conversation by sending a message</p>
-            </div>
-          `;
-          return;
-        }
-
-        let html = "";
-
-        messages.forEach((message) => {
-          const isOutgoing = message.sender.toString() === currentUserId;
-          const time = new Date(message.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          html += `
-            <div class="message ${isOutgoing ? "outgoing" : "incoming"}">
-              <div class="message-content">
-                <div class="message-text">${message.message}</div>
-                <div class="message-time">${time}</div>
-              </div>
-            </div>
-          `;
-        });
-
-        chatMessages.innerHTML = html;
-
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-
-      // Listen for chat events
-      document.addEventListener("chat:newMessage", function (event) {
-        const data = event.detail;
-        const currentChatPartner =
-          document.getElementById("chatReceiverId").value;
-
-        // Only add message to current chat if it's from the active contact
-        if (data.sender._id === currentChatPartner) {
-          const chatMessages = document.getElementById("chatMessages");
-
-          const messageDiv = document.createElement("div");
-          messageDiv.className = "message incoming";
-
-          const time = new Date(data.message.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          messageDiv.innerHTML = `
-            <div class="message-content">
-              <div class="message-text">${data.message.message}</div>
-              <div class="message-time">${time}</div>
-            </div>
-          `;
-
-          chatMessages.appendChild(messageDiv);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-
-          // Hide typing indicator
-          document.getElementById("typingIndicator").style.display = "none";
-        } else {
-          // Update unread count for non-active chats
-          // This would require additional UI elements to show unread counts
-        }
-      });
-
-      // Listen for message sent confirmation
-      document.addEventListener("chat:messageSent", function (event) {
-        const data = event.detail;
-
-        if (data.success) {
-          const chatMessages = document.getElementById("chatMessages");
-
-          const messageDiv = document.createElement("div");
-          messageDiv.className = "message outgoing";
-
-          const time = new Date(data.message.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          messageDiv.innerHTML = `
-            <div class="message-content">
-              <div class="message-text">${data.message.message}</div>
-              <div class="message-time">${time}</div>
-            </div>
-          `;
-
-          chatMessages.appendChild(messageDiv);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-      });
-
-      // Listen for typing indicators
-      document.addEventListener("chat:typing", function (event) {
-        const data = event.detail;
-        const currentChatPartner =
-          document.getElementById("chatReceiverId").value;
-
-        if (data.userId === currentChatPartner) {
-          const typingIndicator = document.getElementById("typingIndicator");
-
-          if (data.isTyping) {
-            typingIndicator.style.display = "block";
-
-            // Scroll to show the typing indicator
-            const chatMessages = document.getElementById("chatMessages");
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-          } else {
-            typingIndicator.style.display = "none";
-          }
-        }
-      });
     </script>
   </body>
 </html>

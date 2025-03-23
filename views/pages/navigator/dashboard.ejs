@@ -553,6 +553,70 @@
           </div>
 
           <div class="row">
+            <!-- Connection Requests Section -->
+            <div class="col-lg-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Connection Requests
+                    <span
+                      class="badge bg-danger ms-2"
+                      id="requestBadge"
+                      style="display: none"
+                      >0</span
+                    >
+                  </h5>
+
+                  <div id="requestsContainer">
+                    <div class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">
+                        Loading connection requests...
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="text-center mt-3">
+                    <a href="/navigator/requests" class="btn btn-primary">
+                      <i class="fas fa-user-plus me-2"></i>View All Requests
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Patients Section -->
+            <div class="col-lg-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <i class="fas fa-users me-2"></i>
+                    Active Patients
+                  </h5>
+
+                  <div id="activePatientsContainer">
+                    <div class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">Loading active patients...</p>
+                    </div>
+                  </div>
+
+                  <div class="text-center mt-3">
+                    <a href="/navigator/messages" class="btn btn-primary">
+                      <i class="fas fa-comments me-2"></i>Message Patients
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
             <!-- Patient Overview Section -->
             <div class="col-lg-7 mb-4">
               <div class="card h-100">
@@ -833,8 +897,19 @@
         }
       }
 
-      // Counter animation for stats
       document.addEventListener("DOMContentLoaded", function () {
+        // Counter animation for stats
+        animateStatNumbers();
+
+        // Load connection requests
+        loadConnectionRequests();
+
+        // Load active patients
+        loadActivePatients();
+      });
+
+      // Animate stat counters
+      function animateStatNumbers() {
         const statNumbers = document.querySelectorAll(".stat-number");
 
         statNumbers.forEach((number) => {
@@ -855,7 +930,263 @@
 
           updateCount();
         });
-      });
+      }
+
+      // Load connection requests from API
+      function loadConnectionRequests() {
+        fetch("/api/navigator/connection-requests")
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.success) {
+              showErrorMessage("requestsContainer", "Error loading requests");
+              return;
+            }
+
+            // Update badge count
+            updateRequestBadge(data.requests ? data.requests.length : 0);
+
+            if (!data.requests || data.requests.length === 0) {
+              showEmptyState(
+                "requestsContainer",
+                "No Connection Requests",
+                "You don't have any pending connection requests from patients"
+              );
+              return;
+            }
+
+            // Only show up to 2 requests on dashboard
+            const displayRequests = data.requests.slice(0, 2);
+            renderRequests(displayRequests);
+          })
+          .catch((error) => {
+            console.error("Error loading requests:", error);
+            showErrorMessage("requestsContainer", "Error loading requests");
+          });
+      }
+
+      // Load active patients from API
+      function loadActivePatients() {
+        fetch("/api/navigator/active-patients")
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.success) {
+              showErrorMessage(
+                "activePatientsContainer",
+                "Error loading patients"
+              );
+              return;
+            }
+
+            if (!data.connections || data.connections.length === 0) {
+              showEmptyState(
+                "activePatientsContainer",
+                "No Active Patients",
+                "You don't have any active patients connected with you yet"
+              );
+              return;
+            }
+
+            // Only show up to 2 patients on dashboard
+            const displayPatients = data.connections.slice(0, 2);
+            renderActivePatients(displayPatients);
+
+            // Update active patients stat
+            document
+              .querySelector(".stat-patients-icon")
+              .parentNode.querySelector(".stat-number").textContent =
+              data.connections.length;
+            document
+              .querySelector(".stat-patients-icon")
+              .parentNode.querySelector(".stat-number")
+              .setAttribute("data-target", data.connections.length);
+          })
+          .catch((error) => {
+            console.error("Error loading active patients:", error);
+            showErrorMessage(
+              "activePatientsContainer",
+              "Error loading patients"
+            );
+          });
+      }
+
+      // Update request badge count
+      function updateRequestBadge(count) {
+        const requestBadge = document.getElementById("requestBadge");
+        if (count > 0) {
+          requestBadge.textContent = count;
+          requestBadge.style.display = "inline-block";
+        } else {
+          requestBadge.style.display = "none";
+        }
+      }
+
+      // Show error message
+      function showErrorMessage(containerId, message) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = `
+          <div class="alert alert-danger">
+            ${message}
+          </div>
+        `;
+      }
+
+      // Show empty state when no data
+      function showEmptyState(containerId, title, message) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-info-circle"></i>
+            <h6>${title}</h6>
+            <p class="text-muted">${message}</p>
+          </div>
+        `;
+      }
+
+      // Render connection requests
+      function renderRequests(requests) {
+        const container = document.getElementById("requestsContainer");
+        let html = "";
+
+        requests.forEach((request) => {
+          // Extract patient information
+          const patient = request.patient;
+
+          // Create initials for avatar
+          const nameParts = patient.fullName.split(" ");
+          const initials =
+            nameParts.length > 1
+              ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
+              : patient.fullName.charAt(0);
+
+          // Format date
+          const requestDate = new Date(request.createdAt).toLocaleDateString(
+            "en-US",
+            {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }
+          );
+
+          html += `
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="patient-avatar">${initials}</div>
+                  <div>
+                    <h6 class="patient-name mb-0">${patient.fullName}</h6>
+                    <small class="text-muted">${requestDate}</small>
+                  </div>
+                </div>
+                
+                <p class="message-preview">"${
+                  request.message.length > 60
+                    ? request.message.substring(0, 60) + "..."
+                    : request.message
+                }"</p>
+                
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-accent-teal" onclick="handleRequest('${
+                    request._id
+                  }', 'accepted')">
+                    <i class="fas fa-check me-1"></i> Accept
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="handleRequest('${
+                    request._id
+                  }', 'rejected')">
+                    <i class="fas fa-times me-1"></i> Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      // Render active patients
+      function renderActivePatients(connections) {
+        const container = document.getElementById("activePatientsContainer");
+        let html = "";
+
+        connections.forEach((connection) => {
+          // Extract patient information
+          const patient = connection.patient;
+
+          // Create initials for avatar
+          const nameParts = patient.fullName.split(" ");
+          const initials =
+            nameParts.length > 1
+              ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
+              : patient.fullName.charAt(0);
+
+          html += `
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="patient-avatar">${initials}</div>
+                  <div>
+                    <h6 class="patient-name mb-0">${patient.fullName}</h6>
+                    <small class="text-muted">${patient.email}</small>
+                  </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                  <a href="/navigator/messages" class="btn btn-sm btn-primary">
+                    <i class="fas fa-comments me-1"></i> Message
+                  </a>
+                  <a href="/navigator/patient-detail/${patient._id}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-user-md me-1"></i> View Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      // Handle accept/reject request
+      function handleRequest(requestId, status) {
+        // Send update request to server
+        fetch(`/api/navigator/connection-requests/${requestId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.success) {
+              alert(data.message || "Error updating request");
+              return;
+            }
+
+            // Reload data
+            loadConnectionRequests();
+            if (status === "accepted") {
+              loadActivePatients();
+
+              // Show success notification
+              const notification = document.createElement("div");
+              notification.className =
+                "alert alert-success alert-dismissible fade show";
+              notification.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                Connection accepted! You can now message this patient in the <a href="/navigator/messages">Messages</a> section.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+              document.querySelector(".main-content").prepend(notification);
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating request:", error);
+            alert("An error occurred. Please try again.");
+          });
+      }
     </script>
   </body>
 </html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Messages - Navigator Dashboard</title>
+    <title>Messages - MedConnect</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,329 +12,689 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-    <link href="/css/navigator-theme.css" rel="stylesheet" />
     <style>
+      :root {
+        --primary-blue: #2a5c82;
+        --secondary-blue: #5c9baf;
+        --accent-teal: #4ecdc4;
+        --light-gray: #f8f9fa;
+        --border-color: #dee2e6;
+      }
+
+      body {
+        background-color: var(--light-gray);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .dashboard-header {
+        background: var(--primary-blue);
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .sidebar {
+        background: white;
+        min-height: calc(100vh - 60px);
+        border-right: 1px solid var(--border-color);
+        padding-top: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-link {
+        color: #333;
+        padding: 0.8rem 1rem;
+        border-radius: 0.5rem;
+        margin: 0.3rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link.active {
+        background-color: var(--accent-teal);
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-link:hover:not(.active) {
+        background: rgba(76, 205, 196, 0.1);
+        color: var(--accent-teal);
+      }
+
+      /* Chat specific styles */
       .chat-container {
-        height: calc(100vh - 150px);
         display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+      }
+
+      .contacts-panel {
+        width: 320px;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: #f8f9fa;
+      }
+
+      .contacts-header {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+        background-color: #fff;
+      }
+
+      .contacts-search {
+        padding: 10px 15px;
+        border-bottom: 1px solid #dee2e6;
       }
 
       .contacts-list {
-        width: 300px;
-        border-right: 1px solid #dee2e6;
+        flex: 1;
         overflow-y: auto;
+        padding: 0;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .contact-item:hover {
+        background-color: #e9ecef;
+      }
+
+      .contact-item.active {
+        background-color: #e2f3fc;
+        border-left: 3px solid var(--primary-blue);
+      }
+
+      .contact-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--primary-blue);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 15px;
+      }
+
+      .contact-info {
+        flex: 1;
+      }
+
+      .contact-name {
+        font-weight: bold;
+        margin-bottom: 3px;
+      }
+
+      .contact-last-message {
+        font-size: 13px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+      }
+
+      .contact-time {
+        font-size: 12px;
+        color: #999;
+        white-space: nowrap;
+      }
+
+      .contact-status {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .unread-badge {
+        background-color: var(--accent-teal);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      .empty-contacts {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 20px;
+        text-align: center;
+        color: #666;
       }
 
       .chat-area {
         flex: 1;
         display: flex;
         flex-direction: column;
+        height: 100%;
+      }
+
+      .chat-header {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
       }
 
       .chat-messages {
         flex: 1;
         overflow-y: auto;
         padding: 20px;
-      }
-
-      .message-input {
-        border-top: 1px solid #dee2e6;
-        padding: 15px;
-        background: #fff;
-      }
-
-      .contact-item {
-        padding: 15px;
-        border-bottom: 1px solid #dee2e6;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-
-      .contact-item:hover {
-        background-color: #f8f9fa;
-      }
-
-      .contact-item.active {
-        background-color: #e9ecef;
+        background-color: #f5f5f5;
       }
 
       .message {
         margin-bottom: 15px;
-        max-width: 70%;
+        display: flex;
       }
 
-      .message.sent {
-        margin-left: auto;
+      .message.outgoing {
+        justify-content: flex-end;
       }
 
       .message-content {
-        padding: 10px 15px;
-        border-radius: 15px;
-        background-color: #f8f9fa;
+        max-width: 80%;
       }
 
-      .message.sent .message-content {
-        background-color: #007bff;
+      .message-text {
+        padding: 10px 15px;
+        border-radius: 18px;
+        display: inline-block;
+        position: relative;
+        margin-bottom: 5px;
+      }
+
+      .message.incoming .message-text {
+        background-color: white;
+        border: 1px solid #e1e1e1;
+        border-bottom-left-radius: 3px;
+      }
+
+      .message.outgoing .message-text {
+        background-color: var(--primary-blue);
         color: white;
+        border-bottom-right-radius: 3px;
+      }
+
+      .message-time {
+        font-size: 12px;
+        color: #999;
+        text-align: right;
+      }
+
+      .message.outgoing .message-time {
+        text-align: right;
+      }
+
+      .message.incoming .message-time {
+        text-align: left;
       }
 
       .typing-indicator {
+        padding: 8px 15px;
+        background-color: #f5f5f5;
+        border-radius: 18px;
+        display: inline-block;
+        margin-bottom: 15px;
         font-style: italic;
-        color: #6c757d;
-        margin: 5px 0;
+        color: #666;
         display: none;
       }
 
-      .unread-badge {
-        background-color: #dc3545;
-        color: white;
+      .chat-input {
+        padding: 15px;
+        border-top: 1px solid #dee2e6;
+        background-color: #fff;
+      }
+
+      .chat-input-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .chat-input-container textarea {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 10px 15px;
+        resize: none;
+      }
+
+      .chat-input-container button {
+        margin-left: 10px;
         border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 12px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .no-messages {
+      .empty-chat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 20px;
         text-align: center;
-        color: #6c757d;
-        margin-top: 20px;
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: #6c757d;
+        color: #666;
+        background-color: #f8f9fa;
       }
     </style>
   </head>
   <body>
-    <!-- Header -->
-    <header class="dashboard-header py-2">
+    <div class="dashboard-header py-2">
       <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <i class="fas fa-hospital me-2"></i>
-            <h4 class="mb-0">MedConnect</h4>
+          <div>
+            <h1 class="h4 mb-0">
+              <i class="fas fa-hospital me-2"></i>MedConnect
+            </h1>
           </div>
           <div class="d-flex align-items-center">
-            <span class="me-3">Welcome, <%= user.fullName %></span>
-            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <div class="container-fluid mt-4">
-      <div class="chat-container bg-white rounded shadow">
-        <!-- Contacts List -->
-        <div class="contacts-list" id="contactsList">
-          <div class="p-3 bg-light border-bottom">
-            <h5 class="mb-0">Connected Patients</h5>
-          </div>
-          <div id="loadingContacts" class="p-4 text-center">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          <div id="noContacts" class="empty-state" style="display: none">
-            <i class="fas fa-users fa-3x mb-3"></i>
-            <h6>No Connected Patients</h6>
-            <p class="text-muted small">
-              Check your requests page for pending connections.
-            </p>
-          </div>
-          <div id="contactsContainer"></div>
-        </div>
-
-        <!-- Chat Area -->
-        <div class="chat-area">
-          <div id="emptyChatState" class="empty-state">
-            <i class="fas fa-comments fa-3x mb-3"></i>
-            <h6>Select a Patient to Start Chatting</h6>
-            <p class="text-muted small">
-              Choose from your connected patients on the left.
-            </p>
-          </div>
-
-          <div id="chatInterface" style="display: none; height: 100%">
-            <div class="chat-header p-3 bg-light border-bottom">
-              <h6 class="mb-0" id="currentContactName"></h6>
-            </div>
-
-            <div class="chat-messages" id="chatMessages">
-              <div
-                id="loadingMessages"
-                class="text-center p-4"
-                style="display: none"
+            <div class="dropdown">
+              <button
+                class="btn btn-link text-white dropdown-toggle"
+                type="button"
+                id="userDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">Loading messages...</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="typing-indicator ms-3" id="typingIndicator">
-              Patient is typing...
-            </div>
-
-            <div class="message-input">
-              <form id="messageForm" class="d-flex gap-2">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="messageInput"
-                  placeholder="Type your message..."
-                  required
-                />
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </form>
+                <i class="fas fa-user-circle me-1"></i>
+                <%= user.fullName %>
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end shadow-sm"
+                aria-labelledby="userDropdown"
+              >
+                <li>
+                  <a class="dropdown-item" href="/profile">
+                    <i class="fas fa-user me-2"></i>Profile
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/settings">
+                    <i class="fas fa-cog me-2"></i>Settings
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="/logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 col-md-3 sidebar">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/profile">
+                <i class="fas fa-user-circle me-2"></i>My Profile
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/patient-management">
+                <i class="fas fa-users me-2"></i>Patients
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/appointments">
+                <i class="fas fa-calendar-alt me-2"></i>Appointments
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/tasks">
+                <i class="fas fa-tasks me-2"></i>Tasks
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/navigator/messages">
+                <i class="fas fa-envelope me-2"></i>Messages
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/requests">
+                <i class="fas fa-user-plus me-2"></i>Requests
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/reports">
+                <i class="fas fa-chart-bar me-2"></i>Reports
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10 col-md-9 p-0">
+          <div class="chat-container">
+            <!-- Contacts Panel -->
+            <div class="contacts-panel">
+              <div class="contacts-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-comments me-2"></i> Messages
+                </h5>
+              </div>
+              <div class="contacts-search">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search contacts..."
+                    id="contactSearch"
+                  />
+                </div>
+              </div>
+              <div class="contacts-list" id="contactsList">
+                <div class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-2 text-muted">Loading contacts...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area" id="chatArea">
+              <!-- Empty state when no chat is selected -->
+              <div class="empty-chat" id="emptyChat">
+                <img
+                  src="https://img.icons8.com/color/96/000000/chat--v1.png"
+                  width="80"
+                  class="mb-3"
+                />
+                <h5>No conversation selected</h5>
+                <p class="text-muted">
+                  Select a patient from the left to start messaging
+                </p>
+              </div>
+
+              <!-- Active chat components (hidden by default) -->
+              <div class="chat-header" id="chatHeader" style="display: none">
+                <div class="contact-avatar me-3" id="chatContactAvatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <h5 class="mb-0" id="chatContactName">Contact Name</h5>
+                  <small class="text-muted">Patient</small>
+                </div>
+              </div>
+
+              <div
+                class="chat-messages"
+                id="chatMessages"
+                style="display: none"
+              ></div>
+
+              <div class="typing-indicator" id="typingIndicator">
+                <i>Your contact is typing...</i>
+              </div>
+
+              <div class="chat-input" id="chatInput" style="display: none">
+                <div class="chat-input-container">
+                  <textarea
+                    class="form-control"
+                    placeholder="Type a message..."
+                    rows="1"
+                    id="messageInput"
+                  ></textarea>
+                  <button class="btn btn-primary" id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+                <!-- Hidden input to store current chat receiver ID -->
+                <input type="hidden" id="chatReceiverId" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/chat.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Initialize chat manager
-        const chatManager = new ChatManager({
+        // Initialize chat with the current user's ID
+        initializeChat({
           userId: "<%= user._id %>",
-          userType: "navigator",
-          onMessageReceived: (message) => {
-            appendMessage(message, false);
-          },
-          onTypingStarted: (userId) => {
-            document.getElementById("typingIndicator").style.display = "block";
-          },
-          onTypingStopped: (userId) => {
-            document.getElementById("typingIndicator").style.display = "none";
-          },
+          userType: "Patient-Navigator",
         });
-
-        let currentContactId = null;
 
         // Load active patients
-        function loadContacts() {
-          fetch("/api/navigator/active-patients")
-            .then((response) => response.json())
-            .then((data) => {
-              const loadingEl = document.getElementById("loadingContacts");
-              const noContactsEl = document.getElementById("noContacts");
-              const containerEl = document.getElementById("contactsContainer");
+        loadActivePatients();
 
-              loadingEl.style.display = "none";
-
-              if (!data.success || !data.connections.length) {
-                noContactsEl.style.display = "block";
-                return;
-              }
-
-              containerEl.innerHTML = data.connections
-                .map(
-                  (conn) => `
-                            <div class="contact-item" data-user-id="${conn.patient._id}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">${conn.patient.fullName}</h6>
-                                        <small class="text-muted">${conn.patient.email}</small>
-                                    </div>
-                                    <span class="unread-badge" style="display: none;">0</span>
-                                </div>
-                            </div>
-                        `
-                )
-                .join("");
-
-              // Add click handlers
-              document.querySelectorAll(".contact-item").forEach((item) => {
-                item.addEventListener("click", () => {
-                  const userId = item.dataset.userId;
-                  selectContact(userId, item.querySelector("h6").textContent);
-                });
-              });
-            })
-            .catch((error) => {
-              console.error("Error loading contacts:", error);
-              document.getElementById("loadingContacts").style.display = "none";
-              document.getElementById("noContacts").style.display = "block";
-            });
-        }
-
-        function selectContact(userId, name) {
-          // Update UI
-          document.querySelectorAll(".contact-item").forEach((item) => {
-            item.classList.remove("active");
-            if (item.dataset.userId === userId) {
-              item.classList.add("active");
+        // Set up event listeners
+        document
+          .getElementById("contactSearch")
+          .addEventListener("input", filterContacts);
+        document
+          .getElementById("messageInput")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              document.getElementById("sendMessage").click();
             }
           });
+      });
 
-          currentContactId = userId;
-          document.getElementById("currentContactName").textContent = name;
-          document.getElementById("emptyChatState").style.display = "none";
-          document.getElementById("chatInterface").style.display = "flex";
-          document.getElementById("chatMessages").innerHTML = "";
-          document.getElementById("loadingMessages").style.display = "block";
+      // Load active patients for chat
+      function loadActivePatients() {
+        fetch("/api/navigator/active-patients")
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.success) {
+              showEmptyContactsList("Error loading contacts");
+              return;
+            }
 
-          // Load chat history
-          chatManager.loadChatHistory(userId);
-        }
+            if (!data.connections || data.connections.length === 0) {
+              showEmptyContactsList();
+              return;
+            }
 
-        function appendMessage(message, isSent) {
-          const messagesContainer = document.getElementById("chatMessages");
-          const messageElement = document.createElement("div");
-          messageElement.className = `message ${isSent ? "sent" : "received"}`;
-          messageElement.innerHTML = `
-                    <div class="message-content">
-                        ${message.content}
-                    </div>
-                    <small class="text-muted">${new Date(
-                      message.timestamp
-                    ).toLocaleTimeString()}</small>
-                `;
-          messagesContainer.appendChild(messageElement);
-          messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Handle message form submission
-        document
-          .getElementById("messageForm")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-            if (!currentContactId) return;
-
-            const input = document.getElementById("messageInput");
-            const content = input.value.trim();
-            if (!content) return;
-
-            chatManager.sendMessage(currentContactId, content);
-            appendMessage({ content, timestamp: new Date() }, true);
-            input.value = "";
+            renderContacts(data.connections);
+          })
+          .catch((error) => {
+            console.error("Error loading active patients:", error);
+            showEmptyContactsList("Error loading contacts");
           });
+      }
 
-        // Handle typing indicator
-        const messageInput = document.getElementById("messageInput");
-        let typingTimeout;
+      // Show empty contacts list with optional message
+      function showEmptyContactsList(errorMsg) {
+        const contactsList = document.getElementById("contactsList");
 
-        messageInput.addEventListener("input", () => {
-          if (!currentContactId) return;
+        if (errorMsg) {
+          contactsList.innerHTML = `
+            <div class="alert alert-danger m-3">
+              ${errorMsg}
+            </div>
+          `;
+        } else {
+          contactsList.innerHTML = `
+            <div class="empty-contacts">
+              <img src="https://img.icons8.com/color/96/000000/user-group-man-man.png" width="60" class="mb-3">
+              <h6>No patients yet</h6>
+              <p>Accept connection requests to start chatting with patients</p>
+              <a href="/navigator/requests" class="btn btn-outline-primary btn-sm mt-2">
+                <i class="fas fa-user-plus me-1"></i> View Requests
+              </a>
+            </div>
+          `;
+        }
+      }
 
-          chatManager.sendTypingStatus(currentContactId, true);
-          clearTimeout(typingTimeout);
+      // Render contacts list
+      function renderContacts(connections) {
+        const contactsList = document.getElementById("contactsList");
+        let html = "";
 
-          typingTimeout = setTimeout(() => {
-            chatManager.sendTypingStatus(currentContactId, false);
-          }, 1000);
+        connections.forEach((connection) => {
+          const patient = connection.patient;
+
+          // Create initials for avatar
+          const nameParts = patient.fullName.split(" ");
+          const initials =
+            nameParts.length > 1
+              ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
+              : patient.fullName.charAt(0);
+
+          html += `
+            <div class="contact-item" data-contact-id="${patient._id}" data-contact-name="${patient.fullName}">
+              <div class="contact-avatar">${initials}</div>
+              <div class="contact-info">
+                <div class="contact-name">${patient.fullName}</div>
+                <div class="contact-last-message">Click to start messaging</div>
+              </div>
+              <div class="contact-status">
+                <div class="contact-time">Just now</div>
+              </div>
+            </div>
+          `;
         });
 
-        // Load initial contacts
-        loadContacts();
-      });
+        contactsList.innerHTML = html;
+
+        // Add click event to contact items
+        document.querySelectorAll(".contact-item").forEach((item) => {
+          item.addEventListener("click", function () {
+            // Remove active class from all contacts
+            document.querySelectorAll(".contact-item").forEach((el) => {
+              el.classList.remove("active");
+            });
+
+            // Add active class to clicked contact
+            this.classList.add("active");
+
+            // Load chat with this contact
+            const contactId = this.getAttribute("data-contact-id");
+            const contactName = this.getAttribute("data-contact-name");
+
+            loadChatWithContact(contactId, contactName);
+          });
+        });
+      }
+
+      // Filter contacts based on search input
+      function filterContacts() {
+        const searchTerm = document
+          .getElementById("contactSearch")
+          .value.toLowerCase();
+        const contacts = document.querySelectorAll(".contact-item");
+
+        contacts.forEach((contact) => {
+          const name = contact.getAttribute("data-contact-name").toLowerCase();
+
+          if (name.includes(searchTerm)) {
+            contact.style.display = "flex";
+          } else {
+            contact.style.display = "none";
+          }
+        });
+      }
+
+      // Load chat with a specific contact
+      function loadChatWithContact(contactId, contactName) {
+        // Show chat area and hide empty state
+        document.getElementById("emptyChat").style.display = "none";
+        document.getElementById("chatHeader").style.display = "flex";
+        document.getElementById("chatMessages").style.display = "block";
+        document.getElementById("chatInput").style.display = "block";
+
+        // Set contact info in header
+        document.getElementById("chatContactName").textContent = contactName;
+
+        // Create initials for avatar
+        const nameParts = contactName.split(" ");
+        const initials =
+          nameParts.length > 1
+            ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`
+            : contactName.charAt(0);
+        document.getElementById("chatContactAvatar").textContent = initials;
+
+        // Store current chat receiver ID
+        document.getElementById("chatReceiverId").value = contactId;
+
+        // Set active chat partner in ChatManager
+        if (window.chatManager) {
+          chatManager.setChatPartner(contactId);
+          chatManager.loadChatHistory(contactId);
+        }
+
+        // Show loading state
+        document.getElementById("chatMessages").innerHTML = `
+          <div id="loadingMessages" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading messages...</p>
+          </div>
+        `;
+      }
+
+      // Send a new message
+      document
+        .getElementById("sendMessage")
+        .addEventListener("click", function () {
+          const messageInput = document.getElementById("messageInput");
+          const receiverId = document.getElementById("chatReceiverId").value;
+
+          if (receiverId && messageInput.value.trim() && window.chatManager) {
+            const success = window.chatManager.sendMessage(
+              receiverId,
+              messageInput.value.trim()
+            );
+
+            if (success) {
+              // Clear input field
+              messageInput.value = "";
+              messageInput.focus();
+            } else {
+              alert("Unable to send message. Please try again.");
+            }
+          }
+        });
     </script>
   </body>
 </html>
