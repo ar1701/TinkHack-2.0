@@ -22,37 +22,60 @@ Arogyam was born from a vision to change this. Inspired by the struggles of real
 
 --------
 
-### Patient Features:
+## Key Features:
 
-- **Dashboard**: View health risk assessment, upcoming appointments, and care team information
-- **Medical Records**: Upload, view, update, and delete medical records
-  - Filter by record type
-  - Search functionality using AI-powered semantic search
-- **Baseline Health Screening**: Complete comprehensive health assessment
-  - AI-powered risk stratification using Google's Gemini 1.5 Flash
-  - Analysis of medication history, personal health history, family history, and social determinants of health
+### **🏥 AI-Powered Medical Record Management**
+Navigating unstructured medical records is a nightmare for patients and caregivers. Our AI-driven Retrieval-Augmented Generation (RAG) system organizes and indexes medical reports, prescriptions, and diagnostics, enabling instant access to critical information. This eliminates delays, enhances treatment accuracy, and ensures patients receive the right care at the right time.
 
-### Navigator & Caregiver Features
+### **🤝 Intelligent Patient Navigator**
+Cancer treatment is more than just medical procedures—it’s a complex journey. Our AI-powered patient navigator connects individuals with certified professionals—nurses, social workers, and survivors—who provide step-by-step guidance, appointment tracking, reminders, and personalized support. With multilingual chatbot & voice assistance, we break language barriers and ensure no patient feels lost or alone.
 
-- **Dashboard**: View assigned patients and relevant information
+### **🔍 AI-Driven Treatment Insights**
+Every second counts in cancer care. Our platform analyzes medical records and offers personalized treatment insights by cross-referencing global best practices. By leveraging AI, we help doctors and patients make informed decisions faster, leading to better outcomes and optimized care plans.
 
-## Technology Stack:
+### **🌐 Seamless Doctor-Patient Connection**
+Eliminating long hospital wait times, our platform creates a verified doctor network that enables direct teleconsultations, follow-ups, and real-time treatment tracking. Patients can access trusted professionals instantly, reducing treatment delays and ensuring continuity of care.
 
-- **Frontend**: HTML, CSS, JavaScript, EJS templating, Bootstrap 5
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB with Mongoose
-- **Authentication**: Passport.js
-- **File Storage**: Cloudinary for medical record file storage
-- **AI Integration**: Google Gemini 1.5 Flash for health risk assessment and record search
+### **💬 AI-Powered Mental Health & Community Support**
+Cancer is a battle fought on both physical and emotional fronts. Our AI-driven mental health check-ins provide early intervention and personalized well-being programs. Patients can join peer support groups, interact with counselors, and find strength in shared experiences—because healing goes beyond medicine.
 
-## Getting Started
 
-### Prerequisites
+------------
 
-- Node.js (v14+)
-- MongoDB
-- Cloudinary account
-- Google AI API key for Gemini
+
+## Technology Stack
+
+**Frontend 🎨**:
+✅ EJS – Dynamic templating engine for rendering views.
+
+✅ HTML, CSS, JavaScript – Core web technologies for structure, styling, and interactivity.
+
+✅ Bootstrap 5 – Modern, responsive UI framework for styling.
+
+**Backend ⚙️**:
+✅ Node.js + Express.js – Scalable backend framework for APIs and server-side logic.
+
+**Database & Storage 📂**:
+✅ MongoDB Atlas – Cloud-based NoSQL database for efficient data management.
+
+✅ Mongoose – ODM (Object Data Modeling) library for MongoDB.
+
+✅ Cloudinary – Secure cloud storage for medical records and patient files.
+
+**AI Integration 🤖**:
+✅ Google Gemini 1.5 Flash – AI-powered health risk assessment and smart record search.
+
+✅ GroqLLaMa – NLP model for processing and understanding patient queries.
+
+✅ LangChain – AI workflow management for advanced decision-making and automation.
+
+**Authentication & Security 🔐**:
+✅ Passport.js – Secure authentication system for user login and session management.
+
+**Deployment & Hosting 🚀**:
+✅ Render – Cloud hosting for frontend, backend, and database services.
+
+-------------
 
 ### Installation
 
