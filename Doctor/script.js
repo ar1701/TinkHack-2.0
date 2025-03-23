@@ -16,17 +16,19 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('active');
         }
     });
+
+    // Export button functionality for patients data
     document.getElementById('exportBtn').addEventListener('click', function () {
         const rows = document.querySelectorAll('.patients-table tbody tr');
         let csvContent = "data:text/csv;charset=utf-8,";
-    
+
         // Add headers
         const headers = [];
         document.querySelectorAll('.patients-table thead th').forEach(header => {
             headers.push(header.innerText.trim());
         });
         csvContent += headers.join(',') + '\n';
-    
+
         // Add rows
         rows.forEach(row => {
             const rowData = [];
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             csvContent += rowData.join(',') + '\n';
         });
-    
+
         // Create a downloadable file
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement('a');
@@ -45,60 +47,148 @@ document.addEventListener('DOMContentLoaded', function() {
         link.click();
         document.body.removeChild(link);
     });
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mobile menu toggle
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
+
+    // View Record Modal
+    const viewButtons = document.querySelectorAll('.action-btn.view');
+    const viewRecordModal = document.getElementById('viewRecordModal');
+    const closeViewModalBtn = document.getElementById('closeViewModal');
+    const closeViewModalBtnFooter = document.getElementById('closeViewModalBtn');
+
+    viewButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            viewRecordModal.classList.add('active');
         });
-    
-        // Add new certification
-        document.querySelector('.add-certification button').addEventListener('click', function() {
-            const certificationsList = document.querySelector('.certifications-list');
-            const newCertification = document.createElement('div');
-            newCertification.classList.add('certification-item');
-            newCertification.innerHTML = `
-                <div class="certification-icon bg-primary">
-                    <i class="fas fa-award"></i>
-                </div>
-                <div class="certification-details">
-                    <div class="certification-name">New Certification</div>
-                    <div class="certification-info">Details about the new certification</div>
-                </div>
-                <div class="certification-status valid">
-                    <i class="fas fa-check-circle"></i> Valid
-                </div>
-                <div class="certification-actions">
-                    <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
-                </div>
-            `;
-            certificationsList.appendChild(newCertification);
+    });
+
+    closeViewModalBtn.addEventListener('click', () => {
+        viewRecordModal.classList.remove('active');
+    });
+
+    closeViewModalBtnFooter.addEventListener('click', () => {
+        viewRecordModal.classList.remove('active');
+    });
+
+    // Edit Record Modal
+    const editButtons = document.querySelectorAll('.action-btn.edit');
+    const editRecordModal = document.getElementById('editRecordModal');
+    const closeEditModalBtn = document.getElementById('closeEditModal');
+    const cancelEditModalBtn = document.getElementById('cancelEditModal');
+    const saveEditRecordBtn = document.getElementById('saveEditRecord');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            editRecordModal.classList.add('active');
         });
-    
-        // Tab navigation and smooth scrolling
-        function scrollToSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                document.querySelectorAll('.tab-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Scroll to the corresponding section
-                const tab = this.getAttribute('data-tab');
-                scrollToSection(`${tab}-content`);
+    });
+
+    closeEditModalBtn.addEventListener('click', () => {
+        editRecordModal.classList.remove('active');
+    });
+
+    cancelEditModalBtn.addEventListener('click', () => {
+        editRecordModal.classList.remove('active');
+    });
+
+    saveEditRecordBtn.addEventListener('click', () => {
+        alert('Record updated successfully!');
+        editRecordModal.classList.remove('active');
+    });
+
+    // Share Button
+    document.querySelectorAll('.action-btn.share').forEach(button => {
+        button.addEventListener('click', () => {
+            const recordLink = "https://example.com/record/123"; // Replace with actual link
+            navigator.clipboard.writeText(recordLink).then(() => {
+                alert('Record link copied to clipboard: ' + recordLink);
+            }).catch(() => {
+                alert('Failed to copy link to clipboard.');
             });
         });
     });
+
+    // Add new certification
+    document.querySelector('.add-certification button').addEventListener('click', function() {
+        const certificationsList = document.querySelector('.certifications-list');
+        const newCertification = document.createElement('div');
+        newCertification.classList.add('certification-item');
+        newCertification.innerHTML = `
+            <div class="certification-icon bg-primary">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="certification-details">
+                <div class="certification-name">New Certification</div>
+                <div class="certification-info">Details about the new certification</div>
+            </div>
+            <div class="certification-status valid">
+                <i class="fas fa-check-circle"></i> Valid
+            </div>
+            <div class="certification-actions">
+                <button class="btn-icon edit-btn"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon delete-btn"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+        certificationsList.appendChild(newCertification);
+    });
+
+    // Tab navigation and smooth scrolling
+    function scrollToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Scroll to the corresponding section
+            const tab = this.getAttribute('data-tab');
+            scrollToSection(`${tab}-content`);
+        });
+    });
+
+    // Export button functionality for appointments
+    document.getElementById('exportBtn').addEventListener('click', function () {
+        // Get the appointment data
+        const appointments = [];
+        document.querySelectorAll('.appointment-row').forEach(row => {
+            const appointment = {
+                time: row.querySelector('.time-display').textContent.trim(),
+                patient: row.querySelector('.patient-name').textContent.trim(),
+                type: row.querySelector('.appointment-type').textContent.trim(),
+                status: row.querySelector('.status-badge').textContent.trim(),
+            };
+            appointments.push(appointment);
+        });
+
+        // Convert data to CSV format
+        const csvContent = "data:text/csv;charset=utf-8," 
+            + "Time,Patient,Type,Status\n" // CSV header
+            + appointments.map(appointment => 
+                `${appointment.time},${appointment.patient},${appointment.type},${appointment.status}`
+            ).join("\n");
+
+        // Create a downloadable link
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "appointments.csv");
+        document.body.appendChild(link);
+
+        // Trigger the download
+        link.click();
+
+        // Clean up
+        document.body.removeChild(link);
+    });
+
     // Notifications popup
     const notificationBell = document.getElementById('notificationBell');
     const notificationsPopup = document.getElementById('notificationsPopup');
