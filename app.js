@@ -17,6 +17,11 @@ const navigatorRoutes = require("./routes/navigator");
 const caregiverRoutes = require("./routes/caregiver");
 const baselineScreeningRoutes = require("./routes/baselineScreening");
 const geminiRoutes = require("./routes/gemini");
+const navigatorListRoutes = require("./routes/navigatorList");
+const chatRoutes = require("./routes/chat");
+const fileUpload = require("express-fileupload");
+const http = require("http");
+const socketIO = require("socket.io");
 
 var app = express();
 
@@ -35,6 +40,14 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
+// Configure file upload middleware
+app.use(
+  fileUpload({
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+    createParentPath: true, // Create upload directory if it doesn't exist
+  })
+);
 
 // Configure session
 app.use(
@@ -243,6 +256,28 @@ app.get("/patient/appointments", isLoggedIn, (req, res) => {
   });
 });
 
+// Add patient navigator page
+app.get("/patient/navigator", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/patient/navigator.ejs", {
+    user: req.user,
+    path: "/patient/navigator",
+  });
+});
+
+// Add patient chat page
+app.get("/patient/messages", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/patient/messages.ejs", {
+    user: req.user,
+    path: "/patient/messages",
+  });
+});
+
 app.get("/navigator/dashboard", isLoggedIn, (req, res) => {
   if (req.user.userType !== "Patient-Navigator") {
     return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
@@ -251,6 +286,160 @@ app.get("/navigator/dashboard", isLoggedIn, (req, res) => {
     user: req.user,
     path: "/navigator/dashboard",
   });
+});
+
+// Navigator profile routes
+app.get("/navigator/profile", isLoggedIn, async (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  try {
+    // Load NavigatorProfile model
+    const NavigatorProfile = require("./models/navigatorProfile");
+
+    // Check if profile exists
+    const profile = await NavigatorProfile.findOne({ user: req.user._id });
+
+    res.render("pages/navigator/profile.ejs", {
+      user: req.user,
+      profile: profile,
+      profileExists: !!profile,
+      path: "/navigator/profile",
+    });
+  } catch (error) {
+    console.error("Error loading navigator profile:", error);
+    res.status(500).send("Error loading profile");
+  }
+});
+
+// Add navigator requests page
+app.get("/navigator/requests", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/navigator/requests.ejs", {
+    user: req.user,
+    path: "/navigator/requests",
+  });
+});
+
+// Add navigator patients page
+app.get("/navigator/patients", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/navigator/patients.ejs", {
+    user: req.user,
+    path: "/navigator/patients",
+  });
+});
+
+// Add navigator messages page
+app.get("/navigator/messages", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/navigator/messages.ejs", {
+    user: req.user,
+    path: "/navigator/messages",
+  });
+});
+
+app.post("/navigator/profile", isLoggedIn, async (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  try {
+    // Load NavigatorProfile model
+    const NavigatorProfile = require("./models/navigatorProfile");
+
+    // Get form data
+    const {
+      location,
+      navigatorType,
+      bio,
+      yearsOfExperience,
+      wantToBeCertified,
+      specialties,
+    } = req.body;
+
+    // Handle languages (multiple select)
+    const languages = Array.isArray(req.body.languages)
+      ? req.body.languages
+      : [req.body.languages];
+
+    // Convert wantToBeCertified to boolean
+    const wantCertification =
+      wantToBeCertified === "on" || wantToBeCertified === true;
+
+    // Handle file upload for proof document
+    let proofDocumentURL = null;
+    if (req.files && req.files.proofDocument) {
+      const file = req.files.proofDocument;
+      const fileName = `${Date.now()}-${file.name}`; // Add timestamp to prevent filename conflicts
+      const uploadPath = path.join(
+        __dirname,
+        "public/uploads/navigator_docs/",
+        fileName
+      );
+
+      await file.mv(uploadPath);
+      proofDocumentURL = `/uploads/navigator_docs/${fileName}`;
+    }
+
+    // Check if profile exists
+    let profile = await NavigatorProfile.findOne({ user: req.user._id });
+
+    if (profile) {
+      // Update existing profile
+      profile.location = location;
+      profile.languages = languages;
+      profile.navigatorType = navigatorType;
+      profile.bio = bio;
+      profile.yearsOfExperience = yearsOfExperience;
+      profile.wantToBeCertified = wantCertification;
+
+      // Only update specialties if provided
+      if (specialties) {
+        profile.specialties = Array.isArray(specialties)
+          ? specialties
+          : [specialties];
+      }
+
+      // Only update proofDocumentURL if a new file was uploaded
+      if (proofDocumentURL) {
+        profile.proofDocumentURL = proofDocumentURL;
+      }
+
+      await profile.save();
+    } else {
+      // Create new profile
+      const newProfile = new NavigatorProfile({
+        user: req.user._id,
+        location,
+        languages,
+        navigatorType,
+        bio,
+        yearsOfExperience,
+        wantToBeCertified: wantCertification,
+        specialties: specialties
+          ? Array.isArray(specialties)
+            ? specialties
+            : [specialties]
+          : [],
+        proofDocumentURL,
+      });
+
+      await newProfile.save();
+    }
+
+    res.redirect("/navigator/profile");
+  } catch (error) {
+    console.error("Error saving navigator profile:", error);
+    res.status(500).send("Error saving profile");
+  }
 });
 
 app.get("/caregiver/dashboard", isLoggedIn, (req, res) => {
@@ -273,10 +462,26 @@ app.use(navigatorRoutes);
 app.use(caregiverRoutes);
 app.use(baselineScreeningRoutes);
 app.use("/api/gemini", geminiRoutes);
+app.use(navigatorListRoutes);
+app.use(chatRoutes);
+
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.io
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+// Configure Socket.io for chat
+require("./socket/chat")(io);
 
 // Add a server listening section at the end of the file
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 

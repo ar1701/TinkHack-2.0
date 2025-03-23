@@ -100,6 +100,46 @@
         margin-bottom: 20px;
       }
 
+      /* Badge styles */
+      .request-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #dc3545;
+        color: white;
+        font-size: 12px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+      }
+
+      /* Connection request styles */
+      .request-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+      }
+
+      .request-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .message-preview {
+        font-style: italic;
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
       /* Stat card styles */
       .stat-card {
         background: white;
@@ -416,6 +456,11 @@
             <li class="nav-item">
               <a class="nav-link active" href="/navigator/dashboard">
                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/navigator/profile">
+                <i class="fas fa-user-circle me-2"></i>My Profile
               </a>
             </li>
             <li class="nav-item">
