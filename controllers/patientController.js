@@ -272,6 +272,104 @@ exports.getPrescriptionAnalysis = async (req, res) => {
   }
 };
 
+// Get request caregiver page
+exports.getRequestCaregiverPage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the patient
+    const patient = await Patient.findOne({ user: req.user._id });
+    if (!patient) {
+      return res.redirect("/patient/caregivers");
+    }
+
+    // Find the caregiver
+    const caregiver = await Caregiver.findById(id).populate(
+      "user",
+      "fullName email"
+    );
+    if (!caregiver) {
+      return res.redirect("/patient/caregivers");
+    }
+
+    res.render("pages/patient/request-caregiver", {
+      title: "Request Caregiver",
+      user: req.user,
+      patient,
+      caregiver,
+      path: "/patient/caregivers",
+    });
+  } catch (error) {
+    console.error("Error loading request caregiver page:", error);
+    res.status(500).render("error", {
+      message: "Failed to load request page",
+      error,
+    });
+  }
+};
+
+// Handle caregiver request form submission
+exports.requestCaregiver = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!reason) {
+      return res.status(400).send("Reason for request is required");
+    }
+
+    // Find the patient
+    const patient = await Patient.findOne({ user: req.user._id });
+    if (!patient) {
+      return res.status(404).send("Patient not found");
+    }
+
+    // Find the caregiver
+    const caregiver = await Caregiver.findById(id);
+    if (!caregiver) {
+      return res.status(404).send("Caregiver not found");
+    }
+
+    // Check if request already exists
+    const existingRequest = await PatientRequest.findOne({
+      patient: patient._id,
+      caregiver: caregiver._id,
+    });
+
+    if (existingRequest) {
+      if (existingRequest.status === "pending") {
+        return res.status(400).send("Request already sent and pending");
+      } else if (existingRequest.status === "accepted") {
+        return res.status(400).send("This caregiver is already your doctor");
+      } else {
+        // If rejected, allow to send again
+        existingRequest.status = "pending";
+        existingRequest.reason = reason;
+        await existingRequest.save();
+        return res.redirect(
+          "/patient/caregiver-requests?message=Request+sent+successfully"
+        );
+      }
+    }
+
+    // Create new request
+    const newRequest = new PatientRequest({
+      patient: patient._id,
+      caregiver: caregiver._id,
+      reason,
+    });
+
+    await newRequest.save();
+
+    res.redirect(
+      "/patient/caregiver-requests?message=Request+sent+successfully"
+    );
+  } catch (error) {
+    console.error("Error requesting caregiver:", error);
+    res.status(500).send("Error processing your request");
+  }
+};
+
 // Request caregiver via recommendations
 exports.requestCaregiverFromRecommendation = async (req, res) => {
   try {
