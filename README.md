@@ -1,4 +1,5 @@
 # MedConnect – Bridging the Gap, Connecting Care.
+![Logo](Logo.jpeg)
 
 MedConnect is not just a platform—it’s a revolution in cancer care. By harnessing AI-driven medical intelligence, we dismantle barriers to treatment, transforming chaos into clarity for underprivileged patients. With cutting-edge medical record organization, intelligent patient navigation, and automated financial aid discovery, we empower patients with swift diagnoses, structured guidance, and unwavering support. Arogyam redefines healthcare accessibility, ensuring no patient is lost in complexity—because every life deserves a fighting chance.
 
