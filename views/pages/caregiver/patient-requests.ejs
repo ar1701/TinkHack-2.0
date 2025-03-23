@@ -13,139 +13,456 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
+      :root {
+        --primary: #136179cc;
+        --primary-light: #eef2ff;
+        --info: #36b9cc;
+        --info-light: #e3f8fb;
+        --success: #1cc88a;
+        --success-light: #e6fff7;
+        --warning: #f6c23e;
+        --warning-light: #fff8e6;
+        --danger: #e74a3b;
+        --danger-light: #ffe6e4;
+        --gray: #858796;
+        --gray-light: #f8f9fc;
+        --dark: #5a5c69;
+        --sidebar-width: 250px;
+        --transition-speed: 0.3s;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
       body {
-        background-color: #f8f9fa;
+        background-color: #4ca4becc;
+        color: #333;
+        min-height: 100vh;
       }
+
+      /* Background Elements */
+      .background-container {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .shape {
+        position: absolute;
+        opacity: 0.05;
+        border-radius: 50%;
+      }
+
+      .shape1 {
+        width: 500px;
+        height: 500px;
+        background: var(--primary);
+        top: -150px;
+        right: -100px;
+      }
+
+      .shape2 {
+        width: 300px;
+        height: 300px;
+        background: var(--info);
+        bottom: -100px;
+        left: -50px;
+      }
+
+      .icons-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .icon {
+        position: absolute;
+        color: var(--gray);
+        opacity: 0.05;
+        font-size: 40px;
+      }
+
+      .icon:nth-child(1) {
+        top: 20%;
+        left: 10%;
+      }
+      .icon:nth-child(2) {
+        top: 40%;
+        left: 25%;
+      }
+      .icon:nth-child(3) {
+        top: 60%;
+        left: 15%;
+      }
+      .icon:nth-child(4) {
+        top: 80%;
+        left: 30%;
+      }
+      .icon:nth-child(5) {
+        top: 15%;
+        right: 20%;
+      }
+      .icon:nth-child(6) {
+        top: 35%;
+        right: 10%;
+      }
+      .icon:nth-child(7) {
+        top: 55%;
+        right: 25%;
+      }
+      .icon:nth-child(8) {
+        top: 75%;
+        right: 15%;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: var(--sidebar-width);
+        height: 100%;
+        background: #167997cc;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        z-index: 100;
+        transition: all var(--transition-speed);
+        overflow-y: auto;
+      }
+
+      .sidebar h2 {
+        padding: 1.5rem;
+        color: white;
+        font-size: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar ul {
+        list-style: none;
+        padding: 1rem 0;
+      }
+
+      .sidebar ul li {
+        position: relative;
+      }
+
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .sidebar ul li a i {
+        margin-right: 0.8rem;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .sidebar ul li.active a,
+      .sidebar ul li a:hover {
+        color: var(--primary);
+        background: var(--primary-light);
+        border-left: 4px solid var(--primary);
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 1.5rem;
+        transition: all var(--transition-speed);
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.7rem;
+        color: var(--dark);
+        font-weight: 500;
+      }
+
       .card {
-        border-radius: 10px;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        margin-bottom: 1.5rem;
+        border: none;
       }
+
+      .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: white;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+      }
+
+      .card-title {
+        margin-bottom: 0;
+        color: var(--dark);
+        font-weight: 500;
+      }
+
       .table {
         margin-bottom: 0;
       }
-      .action-btns .btn {
-        margin-right: 5px;
+
+      .table th {
+        border-top: none;
+        color: var(--gray);
+        font-weight: 500;
       }
-      .page-header {
-        margin-bottom: 1.5rem;
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 0.5rem;
-      }
+
       .badge-pending {
-        background-color: #ffc107;
-        color: #212529;
+        background-color: var(--warning);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+      }
+
+      .btn-action {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+        border-radius: 8px;
+      }
+
+      .btn-success {
+        background-color: var(--success);
+        border-color: var(--success);
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        border-color: var(--danger);
+      }
+
+      .btn-info {
+        background-color: var(--info);
+        border-color: var(--info);
+        color: white;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--gray);
+        margin-bottom: 1rem;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+      }
+
+      /* Menu Toggle */
+      .menu-toggle {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 200;
+        background: var(--primary);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .menu-toggle {
+          display: flex;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- Include header and navigation -->
-    <%- include('../../partials/header') %>
+    <!-- Background Elements -->
+    <div class="background-container">
+      <div class="shape shape1"></div>
+      <div class="shape shape2"></div>
+      <div class="icons-container">
+        <i class="icon fas fa-heartbeat"></i>
+        <i class="icon fas fa-pills"></i>
+        <i class="icon fas fa-stethoscope"></i>
+        <i class="icon fas fa-user-md"></i>
+        <i class="icon fas fa-hospital"></i>
+        <i class="icon fas fa-notes-medical"></i>
+        <i class="icon fas fa-syringe"></i>
+        <i class="icon fas fa-ambulance"></i>
+      </div>
+    </div>
 
-    <div class="container my-4">
-      <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-          <%- include('../../partials/sidebar', {path}) %>
-        </div>
+    <!-- Menu Toggle for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </div>
 
-        <!-- Main Content -->
-        <div class="col-md-9">
-          <div class="page-header">
-            <h2>
-              <i class="fas fa-user-plus me-2"></i>Patient Connection Requests
-            </h2>
-            <p class="text-muted">
-              Manage patient connection requests to provide care
-            </p>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2><i class="fas fa-user-md"></i> Caregiver Portal</h2>
+      <ul>
+        <li>
+          <a href="/caregiver/dashboard">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="/caregiver/appointments">
+            <i class="fas fa-calendar-check"></i> Appointments
+          </a>
+        </li>
+        <li class="active">
+          <a href="/caregiver/patient-requests">
+            <i class="fas fa-user-plus"></i> Patient Requests
+          </a>
+        </li>
+        <li>
+          <a href="/caregiver/profile">
+            <i class="fas fa-user-md"></i> Profile
+          </a>
+        </li>
+      </ul>
+      <ul class="logout">
+        <li>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1>Patient Connection Requests</h1>
+      </div>
+
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title">
+            <i class="fas fa-user-plus me-2"></i> Pending Requests
+          </h5>
+          <div>
+            <button class="btn btn-sm btn-outline-primary" id="refreshRequests">
+              <i class="fas fa-sync-alt me-1"></i> Refresh
+            </button>
           </div>
-
+        </div>
+        <div class="card-body p-0">
           <% if (pendingRequests && pendingRequests.length > 0) { %>
-          <div class="card">
-            <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Patient</th>
-                      <th>Request Date</th>
-                      <th>Reason</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% pendingRequests.forEach(function(request) { %>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div
-                            class="avatar me-2"
-                            style="
-                              width: 40px;
-                              height: 40px;
-                              border-radius: 50%;
-                              background-color: #e9ecef;
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                            "
-                          >
-                            <i class="fas fa-user"></i>
-                          </div>
-                          <div>
-                            <div>
-                              <%= request.patient ? request.patient.fullName :
-                              'Patient' %>
-                            </div>
-                            <span class="badge badge-pending">Pending</span>
-                          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Request Date</th>
+                  <th>Reason</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% pendingRequests.forEach(function(request) { %>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">
+                          <%= request.patient ? request.patient.fullName :
+                          'Patient' %>
                         </div>
-                      </td>
-                      <td>
-                        <%= new Date(request.createdAt).toLocaleDateString() %>
-                      </td>
-                      <td>
-                        <% if (request.reason && request.reason.length > 50) {
-                        %>
-                        <span title="<%= request.reason %>"
-                          ><%= request.reason.substring(0, 50) %>...</span
-                        >
-                        <% } else { %> <%= request.reason %> <% } %>
-                      </td>
-                      <td class="action-btns">
-                        <button
-                          class="btn btn-sm btn-success accept-btn"
-                          data-request-id="<%= request._id %>"
-                        >
-                          <i class="fas fa-check"></i> Accept
-                        </button>
-                        <button
-                          class="btn btn-sm btn-danger reject-btn"
-                          data-request-id="<%= request._id %>"
-                        >
-                          <i class="fas fa-times"></i> Reject
-                        </button>
-                        <button
-                          class="btn btn-sm btn-info view-details-btn"
-                          data-request-id="<%= request._id %>"
-                          data-bs-toggle="modal"
-                          data-bs-target="#requestDetailsModal"
-                          data-reason="<%= request.reason %>"
-                          data-patient="<%= request.patient ? request.patient.fullName : 'Patient' %>"
-                        >
-                          <i class="fas fa-eye"></i> View
-                        </button>
-                      </td>
-                    </tr>
-                    <% }); %>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        <span class="badge badge-pending">Pending</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <%= new Date(request.createdAt).toLocaleDateString() %>
+                  </td>
+                  <td>
+                    <% if (request.reason && request.reason.length > 50) { %>
+                    <span title="<%= request.reason %>"
+                      ><%= request.reason.substring(0, 50) %>...</span
+                    >
+                    <% } else { %> <%= request.reason %> <% } %>
+                  </td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-sm btn-success accept-btn"
+                      data-request-id="<%= request._id %>"
+                    >
+                      <i class="fas fa-check me-1"></i> Accept
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger reject-btn"
+                      data-request-id="<%= request._id %>"
+                    >
+                      <i class="fas fa-times me-1"></i> Reject
+                    </button>
+                    <button
+                      class="btn btn-sm btn-info view-details-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#requestDetailsModal"
+                      data-request-id="<%= request._id %>"
+                      data-reason="<%= request.reason %>"
+                      data-patient="<%= request.patient ? request.patient.fullName : 'Patient' %>"
+                    >
+                      <i class="fas fa-eye me-1"></i> View
+                    </button>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
           </div>
           <% } else { %>
-          <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i> You don't have any pending
-            patient requests at the moment.
+          <div class="empty-state">
+            <i class="fas fa-user-plus"></i>
+            <h4>No Pending Requests</h4>
+            <p class="text-muted">
+              You don't have any pending patient requests at the moment.
+            </p>
           </div>
           <% } %>
         </div>
@@ -174,10 +491,26 @@
             ></button>
           </div>
           <div class="modal-body">
-            <h6>Patient</h6>
-            <p id="modalPatientName"></p>
-            <h6>Reason for Request</h6>
-            <p id="modalRequestReason"></p>
+            <div class="mb-4">
+              <div class="d-flex align-items-center mb-3">
+                <div
+                  class="avatar me-3"
+                  style="width: 50px; height: 50px; font-size: 1.2rem"
+                >
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <h5 class="mb-0" id="modalPatientName"></h5>
+                  <span class="badge badge-pending">Pending Request</span>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <h6 class="text-primary mb-2">
+                <i class="fas fa-info-circle me-2"></i>Reason for Request
+              </h6>
+              <div class="p-3 bg-light rounded" id="modalRequestReason"></div>
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -187,17 +520,38 @@
             >
               Close
             </button>
+            <button type="button" class="btn btn-success" id="modalAcceptBtn">
+              Accept Request
+            </button>
+            <button type="button" class="btn btn-danger" id="modalRejectBtn">
+              Reject Request
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Include footer -->
-    <%- include('../../partials/footer') %>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        // Menu toggle for mobile
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.querySelector(".sidebar");
+
+        if (menuToggle) {
+          menuToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("active");
+          });
+        }
+
+        // Refresh button
+        const refreshBtn = document.getElementById("refreshRequests");
+        if (refreshBtn) {
+          refreshBtn.addEventListener("click", function () {
+            window.location.reload();
+          });
+        }
+
         // Handle accept request buttons
         const acceptButtons = document.querySelectorAll(".accept-btn");
         acceptButtons.forEach((button) => {
@@ -206,30 +560,7 @@
               confirm("Are you sure you want to accept this patient request?")
             ) {
               const requestId = this.getAttribute("data-request-id");
-
-              try {
-                const response = await fetch(
-                  `/caregiver/patient-requests/${requestId}/accept`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
-
-                const data = await response.json();
-
-                if (response.ok) {
-                  alert("Request accepted successfully");
-                  window.location.reload();
-                } else {
-                  alert(data.message || "Failed to accept request");
-                }
-              } catch (error) {
-                console.error("Error accepting request:", error);
-                alert("An error occurred. Please try again later.");
-              }
+              await acceptRequest(requestId);
             }
           });
         });
@@ -242,38 +573,17 @@
               confirm("Are you sure you want to reject this patient request?")
             ) {
               const requestId = this.getAttribute("data-request-id");
-
-              try {
-                const response = await fetch(
-                  `/caregiver/patient-requests/${requestId}/reject`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
-
-                const data = await response.json();
-
-                if (response.ok) {
-                  alert("Request rejected successfully");
-                  window.location.reload();
-                } else {
-                  alert(data.message || "Failed to reject request");
-                }
-              } catch (error) {
-                console.error("Error rejecting request:", error);
-                alert("An error occurred. Please try again later.");
-              }
+              await rejectRequest(requestId);
             }
           });
         });
 
-        // Handle request details modal
+        // Modal functionality
         const requestDetailsModal = document.getElementById(
           "requestDetailsModal"
         );
+        let currentRequestId = null;
+
         if (requestDetailsModal) {
           requestDetailsModal.addEventListener(
             "show.bs.modal",
@@ -281,12 +591,89 @@
               const button = event.relatedTarget;
               const patient = button.getAttribute("data-patient");
               const reason = button.getAttribute("data-reason");
+              currentRequestId = button.getAttribute("data-request-id");
 
               document.getElementById("modalPatientName").textContent = patient;
               document.getElementById("modalRequestReason").textContent =
                 reason;
             }
           );
+
+          // Modal accept and reject buttons
+          const modalAcceptBtn = document.getElementById("modalAcceptBtn");
+          if (modalAcceptBtn) {
+            modalAcceptBtn.addEventListener("click", async function () {
+              if (currentRequestId) {
+                await acceptRequest(currentRequestId);
+                const modal = bootstrap.Modal.getInstance(requestDetailsModal);
+                modal.hide();
+              }
+            });
+          }
+
+          const modalRejectBtn = document.getElementById("modalRejectBtn");
+          if (modalRejectBtn) {
+            modalRejectBtn.addEventListener("click", async function () {
+              if (currentRequestId) {
+                await rejectRequest(currentRequestId);
+                const modal = bootstrap.Modal.getInstance(requestDetailsModal);
+                modal.hide();
+              }
+            });
+          }
+        }
+
+        // Functions for accepting and rejecting requests
+        async function acceptRequest(requestId) {
+          try {
+            const response = await fetch(
+              `/caregiver/patient-requests/${requestId}/accept`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+              alert("Request accepted successfully");
+              window.location.reload();
+            } else {
+              alert(data.message || "Failed to accept request");
+            }
+          } catch (error) {
+            console.error("Error accepting request:", error);
+            alert("An error occurred. Please try again later.");
+          }
+        }
+
+        async function rejectRequest(requestId) {
+          try {
+            const response = await fetch(
+              `/caregiver/patient-requests/${requestId}/reject`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+              alert("Request rejected successfully");
+              window.location.reload();
+            } else {
+              alert(data.message || "Failed to reject request");
+            }
+          } catch (error) {
+            console.error("Error rejecting request:", error);
+            alert("An error occurred. Please try again later.");
+          }
         }
       });
     </script>

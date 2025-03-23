@@ -26,12 +26,12 @@ router.post(
   caregiverController.updateProfile
 );
 
-// Patient details route
+// Appointments route
 router.get(
-  "/patient/:patientId",
+  "/appointments",
   isAuthenticated,
   isCaregiver,
-  caregiverController.getPatientDetails
+  caregiverController.getAppointments
 );
 
 // Patient requests route

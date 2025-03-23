@@ -876,23 +876,18 @@
           >
         </li>
         <li>
-          <a href="/caregiver/profile"
-            ><i class="fas fa-user-md"></i> Profile</a
+          <a href="/caregiver/appointments"
+            ><i class="fas fa-calendar-check"></i> Appointments</a
           >
         </li>
         <li>
           <a href="/caregiver/patient-requests"
-            ><i class="fas fa-bell"></i> Patient Requests</a
+            ><i class="fas fa-user-plus"></i> Patient Requests</a
           >
         </li>
         <li>
-          <a href="/caregiver/chat"
-            ><i class="fas fa-comments"></i> Patient Chat</a
-          >
-        </li>
-        <li>
-          <a href="/caregiver/appointments"
-            ><i class="fas fa-calendar-check"></i> Appointments</a
+          <a href="/caregiver/profile"
+            ><i class="fas fa-user-md"></i> Profile</a
           >
         </li>
       </ul>
@@ -1085,7 +1080,11 @@
                 <div class="appointment-time">09:00 AM</div>
                 <div class="appointment-details">
                   <div class="patient-info">
-                    <img src="./Pat.jpeg" alt="Patient" class="patient-image" />
+                    <img
+                      src="/images/Pat.jpeg"
+                      alt="Patient"
+                      class="patient-image"
+                    />
                     <div>
                       <div class="patient-name">John Doe</div>
                       <div class="appointment-type">Regular Checkup</div>
@@ -1107,7 +1106,7 @@
                 <div class="appointment-details">
                   <div class="patient-info">
                     <img
-                      src="./Pat2.jpeg"
+                      src="/images/Pat2.jpeg"
                       alt="Patient"
                       class="patient-image"
                     />
@@ -1131,7 +1130,11 @@
                 <div class="appointment-time">01:15 PM</div>
                 <div class="appointment-details">
                   <div class="patient-info">
-                    <img src="./Pat.jpeg" alt="Patient" class="patient-image" />
+                    <img
+                      src="/images/Pat.jpeg"
+                      alt="Patient"
+                      class="patient-image"
+                    />
                     <div>
                       <div class="patient-name">Robert Smith</div>
                       <div class="appointment-type">
@@ -1155,7 +1158,7 @@
                 <div class="appointment-details">
                   <div class="patient-info">
                     <img
-                      src="./Pat2.jpeg"
+                      src="/images/Pat2.jpeg"
                       alt="Patient"
                       class="patient-image"
                     />
@@ -1185,53 +1188,76 @@
                   <i class="fas fa-user-injured"></i>
                 </div>
                 <div>
-                  <h3>My Patients</h3>
+                  <h3>Recent Patients</h3>
                 </div>
               </div>
-              <a href="/caregiver/patients" class="view-all">View All</a>
+              <a href="patients.html" class="view-all">View All</a>
             </div>
             <div class="card-body">
               <div class="patient-list">
-                <% if (caregiver.patients && caregiver.patients.length > 0) { %>
-                <% caregiver.patients.forEach(function(patientId) { %>
                 <div class="patient-list-item">
                   <img
-                    src="/images/default-user.jpg"
+                    src="/images/Pat2.jpeg"
                     alt="Patient"
                     class="patient-image"
                   />
                   <div class="patient-list-details">
-                    <div class="patient-list-name">
-                      Patient #<%= patientId %>
-                    </div>
+                    <div class="patient-list-name">Michael Brown</div>
                     <div class="patient-list-info">
-                      <span class="patient-condition">Connected</span>
+                      <span class="patient-age">42 yrs</span>
+                      <span class="patient-condition">Hypertension</span>
                     </div>
                   </div>
-                  <div class="d-flex">
-                    <a
-                      href="/caregiver/patients/<%= patientId %>"
-                      class="btn-view me-2"
-                      >View</a
-                    >
-                    <a
-                      href="/caregiver/chat/<%= patientId %>"
-                      class="btn-view"
-                      style="background-color: #28a745"
-                    >
-                      <i class="fas fa-comments"></i>
-                    </a>
+                  <a href="patient-details.html" class="btn-view">View</a>
+                </div>
+
+                <div class="patient-list-item">
+                  <img
+                    src="/images/Pat.jpeg"
+                    alt="Patient"
+                    class="patient-image"
+                  />
+                  <div class="patient-list-details">
+                    <div class="patient-list-name">Sarah Williams</div>
+                    <div class="patient-list-info">
+                      <span class="patient-age">35 yrs</span>
+                      <span class="patient-condition">Diabetes</span>
+                    </div>
                   </div>
+                  <a href="patient-details.html" class="btn-view">View</a>
                 </div>
-                <% }); %> <% } else { %>
-                <div class="text-center py-4">
-                  <i class="fas fa-user-injured fa-3x text-muted mb-3"></i>
-                  <p>You have no patients yet</p>
-                  <p class="text-muted">
-                    Patient requests will appear when patients connect with you
-                  </p>
+
+                <div class="patient-list-item">
+                  <img
+                    src="/images/Pat2.jpeg"
+                    alt="Patient"
+                    class="patient-image"
+                  />
+                  <div class="patient-list-details">
+                    <div class="patient-list-name">James Miller</div>
+                    <div class="patient-list-info">
+                      <span class="patient-age">28 yrs</span>
+                      <span class="patient-condition">Asthma</span>
+                    </div>
+                  </div>
+                  <a href="patient-details.html" class="btn-view">View</a>
                 </div>
-                <% } %>
+
+                <div class="patient-list-item">
+                  <img
+                    src="/images/Pat.jpeg"
+                    alt="Patient"
+                    class="patient-image"
+                  />
+                  <div class="patient-list-details">
+                    <div class="patient-list-name">Jennifer Davis</div>
+                    <div class="patient-list-info">
+                      <span class="patient-age">51 yrs</span>
+                      <span class="patient-condition">Arthritis</span>
+                    </div>
+                  </div>
+                  <a href="patient-details.html" class="btn-view">View</a>
+                </div>
               </div>
             </div>
           </div>

@@ -4,7 +4,6 @@ const Conversation = require("../models/conversation");
 const User = require("../models/user");
 const path = require("path");
 const fs = require("fs");
-const PatientRequest = require("../models/patientRequest");
 
 // Ensure upload directories exist
 const ensureDirectoryExists = (directory) => {
@@ -16,10 +15,7 @@ const ensureDirectoryExists = (directory) => {
 // Dashboard controller
 exports.getDashboard = async (req, res) => {
   try {
-    const caregiver = await Caregiver.findOne({ user: req.user._id }).populate({
-      path: "patients",
-      select: "fullName gender bloodGroup",
-    });
+    const caregiver = await Caregiver.findOne({ user: req.user._id });
 
     if (!caregiver) {
       return res.render("pages/caregiver/profile", {
@@ -46,28 +42,6 @@ exports.getDashboard = async (req, res) => {
       },
     });
 
-    // Fetch patient details for accepted requests
-    const acceptedRequests = await PatientRequest.find({
-      caregiver: caregiver._id,
-      status: "accepted",
-    }).populate({
-      path: "patient",
-      populate: {
-        path: "user",
-        select: "fullName email",
-      },
-    });
-
-    const patientDetails = acceptedRequests.map((request) => ({
-      id: request.patient._id,
-      fullName: request.patient.user
-        ? request.patient.user.fullName
-        : "Unknown Patient",
-      email: request.patient.user ? request.patient.user.email : "",
-      reason: request.reason || "No reason provided",
-      requestDate: request.createdAt,
-    }));
-
     res.render("pages/caregiver/dashboard", {
       title: "Caregiver Dashboard",
       user: req.user,
@@ -75,7 +49,6 @@ exports.getDashboard = async (req, res) => {
       patientCount,
       conversationCount,
       unreadMessages,
-      patientDetails,
       path: "/caregiver/dashboard",
     });
   } catch (error) {
@@ -452,6 +425,45 @@ exports.getChat = async (req, res) => {
     res.status(500).render("error", {
       message: "Failed to load chat",
       error,
+    });
+  }
+};
+
+// Appointments management
+exports.getAppointments = async (req, res) => {
+  try {
+    const caregiver = await Caregiver.findOne({ user: req.user._id });
+
+    if (!caregiver) {
+      return res.redirect(
+        "/caregiver/profile?error=Please complete your profile first"
+      );
+    }
+
+    // In a real implementation, you would fetch appointments from your database
+    // For now, we'll use static data
+    const todayAppointments = 6;
+    const upcomingAppointments = 14;
+    const completedAppointments = 8;
+    const pendingAppointments = 5;
+
+    res.render("pages/caregiver/appointment-management", {
+      title: "Appointment Management",
+      user: req.user,
+      caregiver,
+      todayAppointments,
+      upcomingAppointments,
+      completedAppointments,
+      pendingAppointments,
+      path: "/caregiver/appointments",
+    });
+  } catch (error) {
+    console.error("Error in caregiver appointments:", error);
+    res.status(500).render("error", {
+      message: "Failed to load appointments",
+      error,
+      user: req.user,
+      caregiver: {},
     });
   }
 };
