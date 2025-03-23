@@ -67,11 +67,11 @@ Cancer is a battle fought on both physical and emotional fronts. Our AI-driven m
 
 **AI Integration 🤖**:
 
-✅ Google Gemini 1.5 Flash – AI-powered health risk assessment and smart record search.
+✅ Google Gemini 2.0 Flash – AI-powered health risk assessment and smart record search.
 
-✅ GroqLLaMa – NLP model for processing and understanding patient queries.
+✅ Groclake – NLP model for processing and understanding patient queries.
 
-✅ LangChain – AI workflow management for advanced decision-making and automation.
+✅ Modellake – AI workflow management for advanced decision-making and automation.
 
 **Authentication & Security 🔐**:
 
