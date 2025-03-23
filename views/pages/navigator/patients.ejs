@@ -95,6 +95,24 @@
         margin-bottom: 20px;
         opacity: 0.6;
       }
+      .medical-records-section,
+      .screening-results-section {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        margin-top: 1rem;
+        padding-top: 1rem;
+      }
+      .list-group-item {
+        transition: background-color 0.2s ease;
+      }
+      .list-group-item:hover {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+      }
+      .toast {
+        opacity: 0.9;
+      }
+      .toast:hover {
+        opacity: 1;
+      }
     </style>
   </head>
 
@@ -294,11 +312,11 @@
           container.append(`
             <div class="card patient-card mb-3">
               <div class="card-body">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center mb-3">
                   <div class="patient-avatar me-3">
                     ${patient.fullName.charAt(0)}
                   </div>
-                  <div class="patient-info">
+                  <div class="patient-info flex-grow-1">
                     <h5 class="mb-1">${patient.fullName}</h5>
                     <div class="text-muted small">
                       <span class="me-3">
@@ -312,21 +330,62 @@
                     </div>
                   </div>
                   <div class="patient-actions">
-                    <a href="/navigator/patient/${
+                    <button onclick="viewMedicalRecords('${
                       patient._id
-                    }" class="action-link text-primary">
-                      <i data-feather="file-text"></i> Details
-                    </a>
-                    <a href="/navigator/patient/${
+                    }')" class="btn btn-sm btn-outline-primary me-2">
+                      <i data-feather="file-text"></i> Medical Records
+                    </button>
+                    <button onclick="viewScreeningResults('${
                       patient._id
-                    }/care-plan" class="action-link text-success">
-                      <i data-feather="clipboard"></i> Care Plan
-                    </a>
-                    <a href="#" onclick="openChat('${
+                    }')" class="btn btn-sm btn-outline-info me-2">
+                      <i data-feather="activity"></i> Screening Results
+                    </button>
+                    <button onclick="generateCarePlan('${
                       patient._id
-                    }')" class="action-link text-info">
+                    }')" class="btn btn-sm btn-success me-2">
+                      <i data-feather="clipboard"></i> Generate Care Plan
+                    </button>
+                    <button onclick="openChat('${
+                      patient._id
+                    }')" class="btn btn-sm btn-outline-secondary">
                       <i data-feather="message-square"></i> Message
-                    </a>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Medical Records Section (Hidden by default) -->
+                <div id="medicalRecords-${
+                  patient._id
+                }" class="medical-records-section mt-3" style="display: none;">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h6 class="card-title">Medical Records</h6>
+                      <div class="records-content">
+                        <div class="text-center">
+                          <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Screening Results Section (Hidden by default) -->
+                <div id="screeningResults-${
+                  patient._id
+                }" class="screening-results-section mt-3" style="display: none;">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h6 class="card-title">Baseline Screening Results</h6>
+                      <div class="screening-content">
+                        <div class="text-center">
+                          <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -350,6 +409,213 @@
           </div>
         `);
         feather.replace();
+      }
+
+      function viewMedicalRecords(patientId) {
+        const recordsSection = $(`#medicalRecords-${patientId}`);
+        const isVisible = recordsSection.is(":visible");
+
+        if (isVisible) {
+          recordsSection.slideUp();
+          return;
+        }
+
+        recordsSection.slideDown();
+
+        // Load medical records
+        $.ajax({
+          url: `/api/navigator/patient/${patientId}/medical-records`,
+          method: "GET",
+          success: function (response) {
+            if (response.success && response.records) {
+              let recordsHtml = '<div class="list-group list-group-flush">';
+              response.records.forEach((record) => {
+                recordsHtml += `
+                  <div class="list-group-item bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">${record.title}</h6>
+                        <small class="text-muted">
+                          <i data-feather="calendar" class="me-1"></i> ${new Date(
+                            record.date
+                          ).toLocaleDateString()}
+                        </small>
+                      </div>
+                      <span class="badge bg-${
+                        record.type === "Condition" ? "warning" : "info"
+                      }">${record.type}</span>
+                    </div>
+                    <p class="mb-1 mt-2">${record.description}</p>
+                  </div>
+                `;
+              });
+              recordsHtml += "</div>";
+
+              if (response.records.length === 0) {
+                recordsHtml =
+                  '<p class="text-muted text-center mb-0">No medical records available</p>';
+              }
+
+              $(`#medicalRecords-${patientId} .records-content`).html(
+                recordsHtml
+              );
+              feather.replace();
+            } else {
+              $(`#medicalRecords-${patientId} .records-content`).html(
+                '<div class="alert alert-danger mb-0">Failed to load medical records</div>'
+              );
+            }
+          },
+          error: function () {
+            $(`#medicalRecords-${patientId} .records-content`).html(
+              '<div class="alert alert-danger mb-0">Error loading medical records</div>'
+            );
+          },
+        });
+      }
+
+      function viewScreeningResults(patientId) {
+        const screeningSection = $(`#screeningResults-${patientId}`);
+        const isVisible = screeningSection.is(":visible");
+
+        if (isVisible) {
+          screeningSection.slideUp();
+          return;
+        }
+
+        screeningSection.slideDown();
+
+        // Load screening results
+        $.ajax({
+          url: `/api/navigator/patient/${patientId}/baseline-screening`,
+          method: "GET",
+          success: function (response) {
+            if (response.success && response.screening) {
+              const screening = response.screening;
+              const assessment = screening.riskAssessment;
+
+              let riskClass = "success";
+              if (assessment.riskLevel === "High") {
+                riskClass = "danger";
+              } else if (assessment.riskLevel === "Medium") {
+                riskClass = "warning";
+              }
+
+              let screeningHtml = `
+                <div class="mb-3">
+                  <span class="badge bg-${riskClass} mb-2">Risk Level: ${
+                assessment.riskLevel
+              }</span>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <h6 class="mb-2">Health Concerns:</h6>
+                      <ul class="list-unstyled mb-0">
+                        ${assessment.possibleIssues
+                          .map(
+                            (issue) => `
+                          <li><i data-feather="alert-circle" class="me-1"></i> ${issue}</li>
+                        `
+                          )
+                          .join("")}
+                      </ul>
+                    </div>
+                    <div class="col-md-6">
+                      <h6 class="mb-2">Vital Signs:</h6>
+                      <ul class="list-unstyled mb-0">
+                        ${Object.entries(screening.vitals || {})
+                          .map(
+                            ([key, value]) => `
+                          <li><strong>${key}:</strong> ${value}</li>
+                        `
+                          )
+                          .join("")}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              `;
+
+              $(`#screeningResults-${patientId} .screening-content`).html(
+                screeningHtml
+              );
+              feather.replace();
+            } else {
+              $(`#screeningResults-${patientId} .screening-content`).html(
+                '<div class="alert alert-info mb-0">No screening results available</div>'
+              );
+            }
+          },
+          error: function () {
+            $(`#screeningResults-${patientId} .screening-content`).html(
+              '<div class="alert alert-danger mb-0">Error loading screening results</div>'
+            );
+          },
+        });
+      }
+
+      function generateCarePlan(patientId) {
+        // Show loading modal
+        const loadingModal = `
+          <div class="modal fade" id="carePlanModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                  <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <h5>Generating Care Plan</h5>
+                  <p class="text-muted mb-0">Please wait while we analyze patient data and generate a personalized care plan...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        $(loadingModal).modal("show");
+
+        // Generate care plan using Gemini
+        $.ajax({
+          url: `/api/gemini/generate-care-plan/${patientId}`,
+          method: "POST",
+          success: function (response) {
+            $("#carePlanModal").modal("hide");
+
+            if (response.success) {
+              // Show success message and redirect to care plan page
+              showToast(
+                "Success",
+                "Care plan generated successfully!",
+                "success"
+              );
+              setTimeout(() => {
+                window.location.href = `/navigator/patient/${patientId}/care-plan`;
+              }, 1500);
+            } else {
+              showToast("Error", "Failed to generate care plan", "error");
+            }
+          },
+          error: function () {
+            $("#carePlanModal").modal("hide");
+            showToast("Error", "Error generating care plan", "error");
+          },
+        });
+      }
+
+      function showToast(title, message, type = "info") {
+        const toast = `
+          <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+            <div class="toast align-items-center text-white bg-${type}" role="alert">
+              <div class="d-flex">
+                <div class="toast-body">
+                  <strong>${title}:</strong> ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        $(toast).appendTo("body").find(".toast").toast("show");
       }
     </script>
   </body>

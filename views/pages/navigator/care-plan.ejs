@@ -8,7 +8,9 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    <title>Patient Care Plan | Health Navigator</title>
+    <title>
+      <%= carePlan ? 'Edit' : 'Create' %> Care Plan | Health Navigator
+    </title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link rel="shortcut icon" href="/img/icons/icon-48x48.png" />
@@ -25,6 +27,10 @@
     <link href="/css/app.css" rel="stylesheet" />
     <link
       href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
       rel="stylesheet"
     />
 
@@ -96,6 +102,35 @@
         border-radius: 12px;
         display: inline-block;
         margin-left: 5px;
+      }
+      .list-group-item {
+        border: none;
+        padding: 0.5rem 0;
+      }
+      .list-group-item:not(:last-child) {
+        border-bottom: 1px solid #e9ecef;
+      }
+      .item-actions {
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .list-group-item:hover .item-actions {
+        opacity: 1;
+      }
+      .btn-icon {
+        padding: 0.25rem;
+        line-height: 1;
+      }
+      .patient-info {
+        background: linear-gradient(135deg, #2a5c82, #5c9baf);
+        color: white;
+        border-radius: 10px;
+        padding: 15px;
+      }
+      .ai-suggestions {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
       }
     </style>
   </head>
@@ -198,7 +233,7 @@
                   class="btn btn-outline-secondary"
                 >
                   <i data-feather="arrow-left" class="me-1"></i> Back to Patient
-                  Profile
+                  Details
                 </a>
               </div>
             </div>
@@ -213,7 +248,7 @@
                       </div>
                       <div>
                         <h4 class="mb-1">
-                          Care Plan for <%= patient.fullName %>
+                          Creating Care Plan for <%= patient.fullName %>
                         </h4>
                         <p class="text-muted mb-0">
                           Create or update a personalized care plan based on
@@ -228,18 +263,19 @@
             </div>
 
             <div class="row">
-              <div class="col-12">
-                <div class="card form-card">
+              <div class="col-md-8">
+                <div class="card form-card mb-4">
                   <div class="card-header">
-                    <h5 class="card-title mb-0">Care Plan Details</h5>
+                    <h5 class="card-title mb-0">
+                      <i data-feather="clipboard" class="me-2"></i>
+                      <%= carePlan ? 'Edit Care Plan' : 'Create New Care Plan'
+                      %>
+                    </h5>
                   </div>
                   <div class="card-body">
                     <form id="carePlanForm">
                       <div class="mb-3">
-                        <label for="title" class="form-label"
-                          >Care Plan Title
-                          <span class="text-danger">*</span></label
-                        >
+                        <label class="form-label">Care Plan Title</label>
                         <input
                           type="text"
                           class="form-control"
@@ -247,143 +283,214 @@
                           name="title"
                           required
                           value="<%= carePlan ? carePlan.title : '' %>"
+                          placeholder="e.g., Comprehensive Health Management Plan"
                         />
-                        <div class="form-text">
-                          Give this care plan a descriptive title (e.g.,
-                          "Post-Surgery Recovery Plan")
-                        </div>
                       </div>
 
-                      <div class="mb-4">
-                        <label class="form-label"
-                          >Recommendations
-                          <span class="text-danger">*</span></label
-                        >
-                        <div class="input-group mb-2">
+                      <div class="mb-3">
+                        <label class="form-label">Recommendations</label>
+                        <div class="list-group mb-2" id="recommendationsList">
+                          <% if (carePlan && carePlan.recommendations) { %> <%
+                          carePlan.recommendations.forEach((rec, index) => { %>
+                          <div
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                          >
+                            <span><%= rec %></span>
+                            <div class="item-actions">
+                              <button
+                                type="button"
+                                class="btn btn-icon btn-outline-danger"
+                                onclick="removeItem('recommendations', <%= index %>)"
+                              >
+                                <i data-feather="x"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <% }) %> <% } %>
+                        </div>
+                        <div class="input-group">
                           <input
                             type="text"
                             class="form-control"
                             id="newRecommendation"
-                            placeholder="Add a recommendation..."
+                            placeholder="Add a recommendation"
                           />
                           <button
-                            class="btn btn-primary"
                             type="button"
-                            id="addRecommendation"
+                            class="btn btn-primary"
+                            onclick="addItem('recommendations')"
                           >
-                            Add
+                            <i data-feather="plus"></i> Add
                           </button>
-                        </div>
-                        <div class="form-text mb-2">
-                          Add specific healthcare recommendations for this
-                          patient
-                        </div>
-
-                        <div
-                          class="list-group items-container"
-                          id="recommendationsList"
-                        >
-                          <!-- Recommendations will be loaded here -->
-                          <div class="list-group-item text-center text-muted">
-                            <small>No recommendations added yet</small>
-                          </div>
                         </div>
                       </div>
 
-                      <div class="mb-4">
+                      <div class="mb-3">
                         <label class="form-label">Goals</label>
-                        <div class="input-group mb-2">
+                        <div class="list-group mb-2" id="goalsList">
+                          <% if (carePlan && carePlan.goals) { %> <%
+                          carePlan.goals.forEach((goal, index) => { %>
+                          <div
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                          >
+                            <span><%= goal %></span>
+                            <div class="item-actions">
+                              <button
+                                type="button"
+                                class="btn btn-icon btn-outline-danger"
+                                onclick="removeItem('goals', <%= index %>)"
+                              >
+                                <i data-feather="x"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <% }) %> <% } %>
+                        </div>
+                        <div class="input-group">
                           <input
                             type="text"
                             class="form-control"
                             id="newGoal"
-                            placeholder="Add a goal..."
+                            placeholder="Add a goal"
                           />
                           <button
-                            class="btn btn-outline-primary"
                             type="button"
-                            id="addGoal"
+                            class="btn btn-primary"
+                            onclick="addItem('goals')"
                           >
-                            Add
+                            <i data-feather="plus"></i> Add
                           </button>
-                        </div>
-                        <div class="form-text mb-2">
-                          Add measurable goals for the patient to achieve
-                        </div>
-
-                        <div class="list-group items-container" id="goalsList">
-                          <!-- Goals will be loaded here -->
-                          <div class="list-group-item text-center text-muted">
-                            <small>No goals added yet</small>
-                          </div>
                         </div>
                       </div>
 
-                      <div class="mb-4">
+                      <div class="mb-3">
                         <label class="form-label">Next Steps</label>
-                        <div class="input-group mb-2">
+                        <div class="list-group mb-2" id="stepsList">
+                          <% if (carePlan && carePlan.nextSteps) { %> <%
+                          carePlan.nextSteps.forEach((step, index) => { %>
+                          <div
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                          >
+                            <span><%= step %></span>
+                            <div class="item-actions">
+                              <button
+                                type="button"
+                                class="btn btn-icon btn-outline-danger"
+                                onclick="removeItem('steps', <%= index %>)"
+                              >
+                                <i data-feather="x"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <% }) %> <% } %>
+                        </div>
+                        <div class="input-group">
                           <input
                             type="text"
                             class="form-control"
                             id="newStep"
-                            placeholder="Add a next step..."
+                            placeholder="Add a next step"
                           />
                           <button
-                            class="btn btn-outline-primary"
                             type="button"
-                            id="addStep"
+                            class="btn btn-primary"
+                            onclick="addItem('steps')"
                           >
-                            Add
+                            <i data-feather="plus"></i> Add
                           </button>
-                        </div>
-                        <div class="form-text mb-2">
-                          Add concrete next steps for the patient to follow
-                        </div>
-
-                        <div class="list-group items-container" id="stepsList">
-                          <!-- Steps will be loaded here -->
-                          <div class="list-group-item text-center text-muted">
-                            <small>No next steps added yet</small>
-                          </div>
                         </div>
                       </div>
 
-                      <div class="mb-4">
-                        <label for="notes" class="form-label"
-                          >Additional Notes</label
-                        >
+                      <div class="mb-3">
+                        <label class="form-label">Additional Notes</label>
                         <textarea
                           class="form-control"
                           id="notes"
                           name="notes"
                           rows="4"
+                          placeholder="Add any additional notes or context"
                         >
 <%= carePlan ? carePlan.notes : '' %></textarea
                         >
-                        <div class="form-text">
-                          Add any additional notes or context about this care
-                          plan
-                        </div>
                       </div>
 
-                      <div class="d-flex justify-content-between">
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
                         <button
                           type="button"
                           class="btn btn-outline-secondary"
-                          id="resetForm"
+                          onclick="history.back()"
                         >
-                          Reset
+                          Cancel
                         </button>
-                        <button
-                          type="submit"
-                          class="btn btn-primary"
-                          id="saveCarePlan"
-                        >
+                        <button type="submit" class="btn btn-primary">
+                          <i data-feather="save" class="me-1"></i>
                           <%= carePlan ? 'Update Care Plan' : 'Create Care Plan'
                           %>
                         </button>
                       </div>
                     </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card form-card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">
+                      <i data-feather="cpu" class="me-2"></i>
+                      AI Care Plan Suggestions
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted small mb-3">
+                      Get AI-powered suggestions based on the patient's health
+                      data and screening results.
+                    </p>
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary w-100"
+                      onclick="generateAISuggestions()"
+                    >
+                      <i data-feather="refresh-cw" class="me-1"></i>
+                      Generate Suggestions
+                    </button>
+                    <div
+                      id="aiSuggestionsLoading"
+                      class="text-center py-4"
+                      style="display: none"
+                    >
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted small">
+                        Analyzing patient data...
+                      </p>
+                    </div>
+                    <div id="aiSuggestions" class="mt-3"></div>
+                  </div>
+                </div>
+
+                <div class="card form-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">
+                      <i data-feather="activity" class="me-2"></i>
+                      Health Summary
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="healthSummaryLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted small">
+                        Loading health data...
+                      </p>
+                    </div>
+                    <div id="healthSummaryContent" style="display: none">
+                      <!-- Content will be loaded dynamically -->
+                    </div>
                   </div>
                 </div>
               </div>
@@ -511,411 +618,239 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-      // Store patient ID for API calls
-      const patientId = '<%= patientId %>';
+      // Initialize Feather icons
+      feather.replace();
 
-      // Initialize data structures
-      let recommendations = <%= carePlan && carePlan.recommendations ? JSON.stringify(carePlan.recommendations) : '[]' %>;
-      let goals = <%= carePlan && carePlan.goals ? JSON.stringify(carePlan.goals) : '[]' %>;
-      let nextSteps = <%= carePlan && carePlan.nextSteps ? JSON.stringify(carePlan.nextSteps) : '[]' %>;
+      // Store items for the care plan
+      const carePlanData = {
+        recommendations: <%= carePlan ? JSON.stringify(carePlan.recommendations) : '[]' %>,
+        goals: <%= carePlan ? JSON.stringify(carePlan.goals) : '[]' %>,
+        nextSteps: <%= carePlan ? JSON.stringify(carePlan.nextSteps) : '[]' %>
+      };
 
-      $(document).ready(function() {
-        // Initialize Feather icons
+      // Function to add an item to a list
+      function addItem(type) {
+        const input = document.getElementById(`new${type.charAt(0).toUpperCase() + type.slice(1, -1)}`);
+        const value = input.value.trim();
+
+        if (value) {
+          carePlanData[type].push(value);
+          updateList(type);
+          input.value = '';
+        }
+      }
+
+      // Function to remove an item from a list
+      function removeItem(type, index) {
+        carePlanData[type].splice(index, 1);
+        updateList(type);
+      }
+
+      // Function to update a list's display
+      function updateList(type) {
+        const list = document.getElementById(`${type}List`);
+        list.innerHTML = carePlanData[type].map((item, index) => `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span>${item}</span>
+            <div class="item-actions">
+              <button type="button" class="btn btn-icon btn-outline-danger" onclick="removeItem('${type}', ${index})">
+                <i data-feather="x"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+
         feather.replace();
+      }
 
-        // Initial UI setup
-        updateRecommendationsList();
-        updateGoalsList();
-        updateStepsList();
+      // Handle form submission
+      document.getElementById('carePlanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-        // Event handlers for adding items
-        $('#addRecommendation').on('click', function() {
-          addRecommendation();
-        });
+        const formData = {
+          patient: '<%= patientId %>',
+          title: document.getElementById('title').value,
+          recommendations: carePlanData.recommendations,
+          goals: carePlanData.goals,
+          nextSteps: carePlanData.nextSteps,
+          notes: document.getElementById('notes').value
+        };
 
-        $('#newRecommendation').on('keypress', function(e) {
-          if (e.which === 13) {
-            e.preventDefault();
-            addRecommendation();
-          }
-        });
-
-        $('#addGoal').on('click', function() {
-          addGoal();
-        });
-
-        $('#newGoal').on('keypress', function(e) {
-          if (e.which === 13) {
-            e.preventDefault();
-            addGoal();
-          }
-        });
-
-        $('#addStep').on('click', function() {
-          addStep();
-        });
-
-        $('#newStep').on('keypress', function(e) {
-          if (e.which === 13) {
-            e.preventDefault();
-            addStep();
-          }
-        });
-
-        // Form submission
-        $('#carePlanForm').on('submit', function(e) {
-          e.preventDefault();
-
-          if (recommendations.length === 0) {
-            alert('Please add at least one recommendation to the care plan.');
-            return;
-          }
-
-          const carePlanData = {
-            title: $('#title').val().trim(),
-            recommendations: recommendations,
-            goals: goals,
-            nextSteps: nextSteps,
-            notes: $('#notes').val().trim()
-          };
-
-          // Save care plan
-          $.ajax({
-            url: `/api/navigator/patient/${patientId}/care-plan`,
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(carePlanData),
-            success: function(response) {
-              if (response.success) {
-                showAlert('success', response.message);
-                setTimeout(function() {
-                  window.location.href = `/navigator/patient/${patientId}`;
-                }, 1500);
-              } else {
-                showAlert('danger', response.message || 'Failed to save care plan');
-              }
-            },
-            error: function(xhr) {
-              showAlert('danger', 'An error occurred while saving the care plan');
-              console.error('Error saving care plan:', xhr.responseText);
+        // Send the data to the server
+        $.ajax({
+          url: '/api/care-plans<%= carePlan ? "/" + carePlan._id : "" %>',
+          method: '<%= carePlan ? "PUT" : "POST" %>',
+          contentType: 'application/json',
+          data: JSON.stringify(formData),
+          success: function(response) {
+            if (response.success) {
+              window.location.href = '/navigator/patient/<%= patientId %>';
+            } else {
+              alert('Failed to save care plan. Please try again.');
             }
-          });
-        });
-
-        // Reset form button
-        $('#resetForm').on('click', function() {
-          if (confirm('Are you sure you want to reset the form? All unsaved changes will be lost.')) {
-            recommendations = <%= carePlan && carePlan.recommendations ? JSON.stringify(carePlan.recommendations) : '[]' %>;
-            goals = <%= carePlan && carePlan.goals ? JSON.stringify(carePlan.goals) : '[]' %>;
-            nextSteps = <%= carePlan && carePlan.nextSteps ? JSON.stringify(carePlan.nextSteps) : '[]' %>;
-
-            $('#title').val('<%= carePlan ? carePlan.title : "" %>');
-            $('#notes').val('<%= carePlan ? carePlan.notes : "" %>');
-
-            updateRecommendationsList();
-            updateGoalsList();
-            updateStepsList();
+          },
+          error: function() {
+            alert('Failed to save care plan. Please try again.');
           }
-        });
-
-        // AI care plan generation
-        $('#generateAiCarePlan').on('click', function(e) {
-          e.preventDefault();
-
-          // Show modal
-          const aiModal = new bootstrap.Modal(document.getElementById('aiSuggestionModal'));
-          aiModal.show();
-
-          // Show loading, hide content
-          $('#aiLoading').show();
-          $('#aiContent').hide();
-
-          // Make API call to generate care plan
-          $.ajax({
-            url: `/api/navigator/patient/${patientId}/generate-care-plan`,
-            method: 'POST',
-            success: function(response) {
-              if (response.success) {
-                displayAiSuggestions(response.generatedCarePlan);
-              } else {
-                $('#aiLoading').html(`
-                  <div class="alert alert-danger">
-                    <i data-feather="alert-triangle" class="me-2"></i> ${response.message || 'Failed to generate care plan'}
-                  </div>
-                `);
-                feather.replace();
-              }
-            },
-            error: function(xhr) {
-              $('#aiLoading').html(`
-                <div class="alert alert-danger">
-                  <i data-feather="alert-triangle" class="me-2"></i> An error occurred while generating the care plan
-                </div>
-              `);
-              feather.replace();
-            }
-          });
-        });
-
-        // Use AI suggestion button
-        $('#useAiSuggestion').on('click', function() {
-          const aiCarePlan = {
-            title: $('#aiTitle').text(),
-            recommendations: [],
-            goals: [],
-            nextSteps: [],
-            notes: $('#aiNotes').text()
-          };
-
-          // Get recommendations
-          $('#aiRecommendations li').each(function() {
-            aiCarePlan.recommendations.push($(this).text());
-          });
-
-          // Get goals
-          $('#aiGoals li').each(function() {
-            aiCarePlan.goals.push($(this).text());
-          });
-
-          // Get next steps
-          $('#aiNextSteps li').each(function() {
-            aiCarePlan.nextSteps.push($(this).text());
-          });
-
-          // Update form
-          $('#title').val(aiCarePlan.title);
-          $('#notes').val(aiCarePlan.notes);
-
-          recommendations = aiCarePlan.recommendations;
-          goals = aiCarePlan.goals;
-          nextSteps = aiCarePlan.nextSteps;
-
-          updateRecommendationsList();
-          updateGoalsList();
-          updateStepsList();
-
-          // Close modal
-          bootstrap.Modal.getInstance(document.getElementById('aiSuggestionModal')).hide();
-
-          showAlert('success', 'AI-generated care plan applied to form. Review and save to confirm.');
         });
       });
 
-      // Function to add a recommendation
-      function addRecommendation() {
-        const recommendation = $('#newRecommendation').val().trim();
-        if (recommendation) {
-          recommendations.push(recommendation);
-          $('#newRecommendation').val('');
-          updateRecommendationsList();
-        }
-      }
+      // Function to generate AI suggestions
+      function generateAISuggestions() {
+        $('#aiSuggestionsLoading').show();
+        $('#aiSuggestions').hide();
 
-      // Function to update recommendations list
-      function updateRecommendationsList() {
-        const list = $('#recommendationsList');
-        list.empty();
+        // Fetch patient's baseline screening data
+        $.ajax({
+          url: `/api/baseline-screening/latest/<%= patientId %>`,
+          method: 'GET',
+          success: function(response) {
+            if (response.success && response.screening) {
+              // Use the screening data to get AI suggestions
+              $.ajax({
+                url: '/api/gemini/care-plan-suggestions',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  screeningData: response.screening,
+                  patientData: {
+                    age: <%= patient.age || 'null' %>,
+                    sex: '<%= patient.sex || "" %>'
+                  }
+                }),
+                success: function(aiResponse) {
+                  $('#aiSuggestionsLoading').hide();
+                  $('#aiSuggestions').show();
 
-        if (recommendations.length === 0) {
-          list.html(`
-            <div class="list-group-item text-center text-muted">
-              <small>No recommendations added yet</small>
-            </div>
-          `);
-          return;
-        }
+                  if (aiResponse.success) {
+                    const suggestions = aiResponse.suggestions;
+                    let html = '<div class="ai-suggestions">';
 
-        recommendations.forEach(function(item, index) {
-          list.append(`
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <span>${item}</span>
-              <a class="remove-item" onclick="removeRecommendation(${index})">
-                <i data-feather="x-circle"></i>
-              </a>
-            </div>
-          `);
+                    if (suggestions.recommendations) {
+                      html += `
+                        <h6 class="mb-2">Recommended Actions</h6>
+                        <ul class="mb-3">
+                          ${suggestions.recommendations.map(rec => `
+                            <li class="mb-2">
+                              ${rec}
+                              <button class="btn btn-sm btn-outline-primary ms-2" onclick="addSuggestion('recommendations', '${rec}')">
+                                <i data-feather="plus" style="width: 14px; height: 14px;"></i>
+                              </button>
+                            </li>
+                          `).join('')}
+                        </ul>
+                      `;
+                    }
+
+                    if (suggestions.goals) {
+                      html += `
+                        <h6 class="mb-2">Suggested Goals</h6>
+                        <ul class="mb-3">
+                          ${suggestions.goals.map(goal => `
+                            <li class="mb-2">
+                              ${goal}
+                              <button class="btn btn-sm btn-outline-primary ms-2" onclick="addSuggestion('goals', '${goal}')">
+                                <i data-feather="plus" style="width: 14px; height: 14px;"></i>
+                              </button>
+                            </li>
+                          `).join('')}
+                        </ul>
+                      `;
+                    }
+
+                    html += '</div>';
+                    $('#aiSuggestions').html(html);
+                    feather.replace();
+                  } else {
+                    $('#aiSuggestions').html('<div class="alert alert-warning">Failed to generate suggestions.</div>');
+                  }
+                },
+                error: function() {
+                  $('#aiSuggestionsLoading').hide();
+                  $('#aiSuggestions').show().html('<div class="alert alert-danger">Error generating suggestions.</div>');
+                }
+              });
+            } else {
+              $('#aiSuggestionsLoading').hide();
+              $('#aiSuggestions').show().html('<div class="alert alert-warning">No screening data available.</div>');
+            }
+          },
+          error: function() {
+            $('#aiSuggestionsLoading').hide();
+            $('#aiSuggestions').show().html('<div class="alert alert-danger">Error fetching patient data.</div>');
+          }
         });
-
-        feather.replace();
       }
 
-      // Function to remove a recommendation
-      function removeRecommendation(index) {
-        recommendations.splice(index, 1);
-        updateRecommendationsList();
-      }
-
-      // Function to add a goal
-      function addGoal() {
-        const goal = $('#newGoal').val().trim();
-        if (goal) {
-          goals.push(goal);
-          $('#newGoal').val('');
-          updateGoalsList();
+      // Function to add an AI suggestion to the care plan
+      function addSuggestion(type, value) {
+        if (!carePlanData[type].includes(value)) {
+          carePlanData[type].push(value);
+          updateList(type);
         }
       }
 
-      // Function to update goals list
-      function updateGoalsList() {
-        const list = $('#goalsList');
-        list.empty();
+      // Load health summary
+      function loadHealthSummary() {
+        $.ajax({
+          url: `/api/baseline-screening/latest/<%= patientId %>`,
+          method: 'GET',
+          success: function(response) {
+            $('#healthSummaryLoading').hide();
+            $('#healthSummaryContent').show();
 
-        if (goals.length === 0) {
-          list.html(`
-            <div class="list-group-item text-center text-muted">
-              <small>No goals added yet</small>
-            </div>
-          `);
-          return;
-        }
+            if (response.success && response.screening) {
+              const screening = response.screening;
+              let html = '';
 
-        goals.forEach(function(item, index) {
-          list.append(`
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <span>${item}</span>
-              <a class="remove-item" onclick="removeGoal(${index})">
-                <i data-feather="x-circle"></i>
-              </a>
-            </div>
-          `);
+              if (screening.riskAssessment) {
+                const risk = screening.riskAssessment;
+                html += `
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="badge bg-${risk.riskLevel === 'Low' ? 'success' : risk.riskLevel === 'Medium' ? 'warning' : 'danger'} me-2">
+                        ${risk.riskLevel} Risk
+                      </span>
+                      <small class="text-muted">Last updated: ${new Date(screening.createdAt).toLocaleDateString()}</small>
+                    </div>
+                    <p class="small mb-0">${risk.analysisExplanation}</p>
+                  </div>
+                `;
+
+                if (risk.possibleIssues && risk.possibleIssues.length > 0) {
+                  html += `
+                    <div class="mb-3">
+                      <h6 class="mb-2">Health Concerns</h6>
+                      <ul class="small mb-0">
+                        ${risk.possibleIssues.map(issue => `<li>${issue}</li>`).join('')}
+                      </ul>
+                    </div>
+                  `;
+                }
+              }
+
+              $('#healthSummaryContent').html(html || '<p class="text-muted">No health summary available.</p>');
+            } else {
+              $('#healthSummaryContent').html('<div class="alert alert-warning">No screening data available.</div>');
+            }
+          },
+          error: function() {
+            $('#healthSummaryLoading').hide();
+            $('#healthSummaryContent').show().html('<div class="alert alert-danger">Error loading health summary.</div>');
+          }
         });
-
-        feather.replace();
       }
 
-      // Function to remove a goal
-      function removeGoal(index) {
-        goals.splice(index, 1);
-        updateGoalsList();
-      }
-
-      // Function to add a step
-      function addStep() {
-        const step = $('#newStep').val().trim();
-        if (step) {
-          nextSteps.push(step);
-          $('#newStep').val('');
-          updateStepsList();
-        }
-      }
-
-      // Function to update steps list
-      function updateStepsList() {
-        const list = $('#stepsList');
-        list.empty();
-
-        if (nextSteps.length === 0) {
-          list.html(`
-            <div class="list-group-item text-center text-muted">
-              <small>No next steps added yet</small>
-            </div>
-          `);
-          return;
-        }
-
-        nextSteps.forEach(function(item, index) {
-          list.append(`
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <span>${item}</span>
-              <a class="remove-item" onclick="removeStep(${index})">
-                <i data-feather="x-circle"></i>
-              </a>
-            </div>
-          `);
-        });
-
-        feather.replace();
-      }
-
-      // Function to remove a step
-      function removeStep(index) {
-        nextSteps.splice(index, 1);
-        updateStepsList();
-      }
-
-      // Function to display AI suggestions
-      function displayAiSuggestions(carePlan) {
-        // Hide loading, show content
-        $('#aiLoading').hide();
-        $('#aiContent').show();
-
-        // Set title and notes
-        $('#aiTitle').text(carePlan.title);
-        $('#aiNotes').text(carePlan.notes || 'No additional notes provided.');
-
-        // Set recommendations
-        const recommendationsList = $('#aiRecommendations');
-        recommendationsList.empty();
-        carePlan.recommendations.forEach(function(item) {
-          recommendationsList.append(`
-            <li class="list-group-item">${item}</li>
-          `);
-        });
-
-        // Set goals
-        const goalsList = $('#aiGoals');
-        goalsList.empty();
-        if (carePlan.goals && carePlan.goals.length > 0) {
-          carePlan.goals.forEach(function(item) {
-            goalsList.append(`
-              <li class="list-group-item">${item}</li>
-            `);
-          });
-        } else {
-          goalsList.append(`
-            <li class="list-group-item text-muted">No goals provided</li>
-          `);
-        }
-
-        // Set next steps
-        const stepsList = $('#aiNextSteps');
-        stepsList.empty();
-        if (carePlan.nextSteps && carePlan.nextSteps.length > 0) {
-          carePlan.nextSteps.forEach(function(item) {
-            stepsList.append(`
-              <li class="list-group-item">${item}</li>
-            `);
-          });
-        } else {
-          stepsList.append(`
-            <li class="list-group-item text-muted">No next steps provided</li>
-          `);
-        }
-
-        feather.replace();
-      }
-
-      // Function to show alert
-      function showAlert(type, message) {
-        const alertHtml = `
-          <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        `;
-
-        // Remove any existing alerts
-        $('.alert-container').remove();
-
-        // Add alert container if it doesn't exist
-        if ($('.alert-container').length === 0) {
-          $('main.content').prepend('<div class="alert-container"></div>');
-        }
-
-        // Add alert to container
-        $('.alert-container').html(alertHtml);
-
-        // Auto-dismiss after 5 seconds
-        setTimeout(function() {
-          $('.alert').alert('close');
-        }, 5000);
-      }
+      // Load health summary when page loads
+      $(document).ready(function() {
+        loadHealthSummary();
+      });
     </script>
   </body>
 </html>

@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const CarePlan = require("../models/carePlan");
+const Patient = require("../models/patient");
+const { isAuthenticated } = require("../middleware/auth");
 
 // Initialize Gemini with API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 // Middleware to ensure user is authenticated
 const isLoggedIn = (req, res, next) => {
@@ -70,6 +74,165 @@ router.post("/chat", isLoggedIn, async (req, res) => {
       success: false,
       message: "Failed to process your request with Gemini",
       error: error.message,
+    });
+  }
+});
+
+// Generate care plan using Gemini AI
+router.post(
+  "/generate-care-plan/:patientId",
+  isAuthenticated,
+  async (req, res) => {
+    try {
+      const patientId = req.params.patientId;
+
+      // Get patient data
+      const patient = await Patient.findById(patientId);
+      if (!patient) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Patient not found" });
+      }
+
+      // Import required model
+      const MedicalRecord = require('../models/medicalRecord');
+      const BaselineScreening = require('../models/baselineScreening');
+
+      // Get patient's medical records and screening results
+      const medicalRecords = await MedicalRecord.find({
+        patient: patientId,
+      }).sort("-date");
+      const screening = await BaselineScreening.findOne({
+        patient: patientId,
+      }).sort("-createdAt");
+
+      // Prepare context for Gemini
+      const context = {
+        patient: {
+          name: patient.fullName,
+          age: patient.age,
+          gender: patient.gender,
+        },
+        medicalHistory: medicalRecords.map((record) => ({
+          condition: record.title,
+          description: record.description,
+          date: record.date,
+        })),
+        screening: screening
+          ? {
+              riskLevel: screening.riskAssessment.riskLevel,
+              healthConcerns: screening.riskAssessment.possibleIssues,
+              vitals: screening.vitals,
+            }
+          : null,
+      };
+
+      // Generate care plan using Gemini
+      const prompt = `As a healthcare professional, analyze the following patient data and generate a comprehensive care plan. The plan should include specific recommendations, goals, and next steps based on the patient's medical history and current health status.
+
+Patient Information:
+${JSON.stringify(context, null, 2)}
+
+Please provide a structured care plan with the following sections:
+1. Overall Assessment
+2. Key Health Goals
+3. Specific Recommendations
+4. Next Steps
+5. Risk Mitigation Strategies
+6. Follow-up Schedule
+
+Format the response in JSON.`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const carePlanSuggestion = JSON.parse(response.text());
+
+      // Create new care plan
+      const carePlan = new CarePlan({
+        patient: patientId,
+        creator: req.user._id,
+        title: `Care Plan for ${patient.fullName}`,
+        recommendations: carePlanSuggestion.recommendations || [],
+        goals: carePlanSuggestion.goals || [],
+        nextSteps: carePlanSuggestion.nextSteps || [],
+        riskMitigation: carePlanSuggestion.riskMitigation || [],
+        followUpSchedule: carePlanSuggestion.followUpSchedule,
+        status: "Active",
+      });
+
+      await carePlan.save();
+
+      res.json({
+        success: true,
+        message: "Care plan generated successfully",
+        carePlan: carePlan,
+      });
+    } catch (error) {
+      console.error("Error generating care plan:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate care plan",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Let's add some caregiver-related routes to handle profile and chat functionality
+router.post("/caregiver/update-profile", isAuthenticated, async (req, res) => {
+  try {
+    // Ensure the user is a caregiver
+    if (req.user.role !== 'caregiver') {
+      return res.status(403).json({ success: false, message: "Access denied. Not a caregiver account." });
+    }
+
+    const Caregiver = require('../models/caregiver');
+    
+    // Find or create caregiver profile
+    let caregiver = await Caregiver.findOne({ user: req.user._id });
+    
+    if (!caregiver) {
+      caregiver = new Caregiver({
+        user: req.user._id,
+        fullName: req.body.fullName,
+        speciality: req.body.speciality,
+        qualification: req.body.qualification,
+        experience: req.body.experience,
+        hospital: req.body.hospital,
+        location: req.body.location,
+        languages: req.body.languages,
+        licenseNumber: req.body.licenseNumber
+      });
+    } else {
+      // Update existing caregiver
+      caregiver.fullName = req.body.fullName;
+      caregiver.speciality = req.body.speciality;
+      caregiver.qualification = req.body.qualification;
+      caregiver.experience = req.body.experience;
+      caregiver.hospital = req.body.hospital;
+      caregiver.location = req.body.location;
+      caregiver.languages = req.body.languages;
+      caregiver.licenseNumber = req.body.licenseNumber;
+    }
+    
+    // Handle certification document upload if provided
+    if (req.file) {
+      caregiver.certificationDocs = req.file.filename;
+    }
+    
+    await caregiver.save();
+    
+    res.json({
+      success: true,
+      message: "Caregiver profile updated successfully",
+      caregiver: caregiver
+    });
+  } catch (error) {
+    console.error("Error updating caregiver profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update caregiver profile",
+      error: error.message
     });
   }
 });

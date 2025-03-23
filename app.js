@@ -572,6 +572,9 @@ app.use(navigatorListRoutes);
 app.use(chatRoutes);
 app.use("/", carePlansRouter);
 
+// Mount routes
+app.use('/caregiver', caregiverRoutes);
+
 // Create HTTP server
 const server = http.createServer(app);
 

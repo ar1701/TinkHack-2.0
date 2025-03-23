@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <title>Doctor Dashboard | MedConnect</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="/img/icons/icon-48x48.png" />
+    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="/css/app.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .stats-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .stats-card:hover {
+        transform: translateY(-5px);
+      }
+      .stats-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .upcoming-appointment {
+        border-left: 4px solid #3f80ea;
+        transition: transform 0.2s;
+      }
+      .upcoming-appointment:hover {
+        transform: translateY(-2px);
+      }
+      .badge-waiting {
+        background-color: #fcf8e3;
+        color: #8a6d3b;
+      }
+      .badge-accepted {
+        background-color: #dff0d8;
+        color: #3c763d;
+      }
+      .badge-rejected {
+        background-color: #f2dede;
+        color: #a94442;
+      }
+      .welcome-banner {
+        background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+        border-radius: 10px;
+        color: white;
+      }
+      .patient-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: #e0f7fa;
+        color: #0288d1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+      }
+      .chart-container {
+        position: relative;
+        margin: auto;
+        height: 250px;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+          <a class="sidebar-brand" href="/caregiver/dashboard">
+            <span class="align-middle">MedConnect</span>
+          </a>
+
+          <ul class="sidebar-nav">
+            <li class="sidebar-item active">
+              <a class="sidebar-link" href="/caregiver/dashboard">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/caregiver/patients">
+                <i class="align-middle" data-feather="users"></i>
+                <span class="align-middle">My Patients</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/caregiver/requests">
+                <i class="align-middle" data-feather="user-plus"></i>
+                <span class="align-middle">Connection Requests</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/caregiver/appointments">
+                <i class="align-middle" data-feather="calendar"></i>
+                <span class="align-middle">Appointments</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/caregiver/messages">
+                <i class="align-middle" data-feather="message-square"></i>
+                <span class="align-middle">Messages</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/caregiver/profile">
+                <i class="align-middle" data-feather="user"></i>
+                <span class="align-middle">My Profile</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="main">
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+          <a class="sidebar-toggle js-sidebar-toggle">
+            <i class="hamburger align-self-center"></i>
+          </a>
+
+          <div class="navbar-collapse collapse">
+            <ul class="navbar-nav navbar-align">
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="align-middle" data-feather="settings"></i>
+                </a>
+
+                <a
+                  class="nav-link dropdown-toggle d-none d-sm-inline-block"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <img
+                    src="/img/avatars/avatar.jpg"
+                    class="avatar img-fluid rounded me-1"
+                    alt="User"
+                  />
+                  <span class="text-dark"><%= user.fullName %></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="/caregiver/profile">
+                    <i class="align-middle me-1" data-feather="user"></i>
+                    Profile
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/logout">Log out</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main class="content">
+          <div class="container-fluid p-0">
+            <!-- Welcome Banner -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <div class="welcome-banner p-4">
+                  <div class="d-flex align-items-center">
+                    <div class="me-4">
+                      <i
+                        data-feather="activity"
+                        style="width: 48px; height: 48px"
+                      ></i>
+                    </div>
+                    <div>
+                      <h3>
+                        Welcome back, Dr. <%= user.fullName.split(' ')[0] %>!
+                      </h3>
+                      <p class="mb-0">
+                        Here's what's happening with your patients today.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+              <div class="col-xl-3 col-md-6">
+                <div class="card stats-card mb-4">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="stats-icon bg-primary me-3">
+                        <i data-feather="users" class="text-white"></i>
+                      </div>
+                      <h5 class="card-title mb-0">Total Patients</h5>
+                    </div>
+                    <h3 class="mb-2" id="totalPatientsCount">--</h3>
+                    <p class="mb-0 text-muted">
+                      <span class="text-success">
+                        <i data-feather="trending-up" class="me-1"></i>
+                        <span id="newPatientsCount">--</span>
+                      </span>
+                      <span class="text-muted">since last month</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-md-6">
+                <div class="card stats-card mb-4">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="stats-icon bg-success me-3">
+                        <i data-feather="calendar" class="text-white"></i>
+                      </div>
+                      <h5 class="card-title mb-0">Appointments</h5>
+                    </div>
+                    <h3 class="mb-2" id="totalAppointmentsCount">--</h3>
+                    <p class="mb-0 text-muted">
+                      <span class="text-success">
+                        <span id="appointmentsToday">--</span>
+                      </span>
+                      <span class="text-muted">scheduled today</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-md-6">
+                <div class="card stats-card mb-4">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="stats-icon bg-warning me-3">
+                        <i data-feather="user-plus" class="text-white"></i>
+                      </div>
+                      <h5 class="card-title mb-0">Requests</h5>
+                    </div>
+                    <h3 class="mb-2" id="pendingRequestsCount">--</h3>
+                    <p class="mb-0 text-muted">
+                      <span class="text-warning">
+                        <i data-feather="alert-circle" class="me-1"></i>
+                        Pending requests
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-md-6">
+                <div class="card stats-card mb-4">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="stats-icon bg-info me-3">
+                        <i data-feather="message-square" class="text-white"></i>
+                      </div>
+                      <h5 class="card-title mb-0">Messages</h5>
+                    </div>
+                    <h3 class="mb-2" id="unreadMessagesCount">--</h3>
+                    <p class="mb-0 text-muted">
+                      <span class="text-info">
+                        <i data-feather="mail" class="me-1"></i>
+                        Unread messages
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Today's Appointments -->
+              <div class="col-lg-6">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Today's Appointments</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="appointmentsLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">Loading appointments...</p>
+                    </div>
+                    <div id="appointmentsList" style="display: none">
+                      <!-- Appointments will be loaded here -->
+                    </div>
+                    <div
+                      id="noAppointments"
+                      class="text-center py-4"
+                      style="display: none"
+                    >
+                      <img
+                        src="https://img.icons8.com/color/96/000000/calendar.png"
+                        width="60"
+                        class="mb-3"
+                      />
+                      <p class="text-muted">
+                        No appointments scheduled for today
+                      </p>
+                      <a
+                        href="/caregiver/appointments"
+                        class="btn btn-sm btn-primary"
+                      >
+                        <i data-feather="calendar" class="me-1"></i>
+                        Schedule Appointments
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Connection Requests -->
+              <div class="col-lg-6">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Connection Requests</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="requestsLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">Loading requests...</p>
+                    </div>
+                    <div id="requestsList" style="display: none">
+                      <!-- Requests will be loaded here -->
+                    </div>
+                    <div
+                      id="noRequests"
+                      class="text-center py-4"
+                      style="display: none"
+                    >
+                      <img
+                        src="https://img.icons8.com/color/96/000000/user-group.png"
+                        width="60"
+                        class="mb-3"
+                      />
+                      <p class="text-muted">No new connection requests</p>
+                      <a
+                        href="/caregiver/requests"
+                        class="btn btn-sm btn-primary"
+                      >
+                        <i data-feather="user-plus" class="me-1"></i>
+                        View All Requests
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Patient Activity -->
+              <div class="col-lg-8">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Patient Activity</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="patientActivityChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Messages -->
+              <div class="col-lg-4">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Messages</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="messagesLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">Loading messages...</p>
+                    </div>
+                    <div id="messagesList" style="display: none">
+                      <!-- Messages will be loaded here -->
+                    </div>
+                    <div
+                      id="noMessages"
+                      class="text-center py-4"
+                      style="display: none"
+                    >
+                      <img
+                        src="https://img.icons8.com/color/96/000000/chat.png"
+                        width="60"
+                        class="mb-3"
+                      />
+                      <p class="text-muted">No recent messages</p>
+                      <a
+                        href="/caregiver/messages"
+                        class="btn btn-sm btn-primary"
+                      >
+                        <i data-feather="message-square" class="me-1"></i>
+                        Go to Messages
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row text-muted">
+              <div class="col-6 text-start">
+                <p class="mb-0">
+                  <a class="text-muted" href="#" target="_blank"
+                    ><strong>MedConnect</strong></a
+                  >
+                  &copy;
+                </p>
+              </div>
+              <div class="col-6 text-end">
+                <ul class="list-inline">
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Support</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Help Center</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Privacy</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Terms</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // Initialize Feather icons
+        feather.replace();
+
+        // Load dashboard data
+        loadDashboardStats();
+        loadTodayAppointments();
+        loadRecentRequests();
+        loadRecentMessages();
+        initPatientActivityChart();
+      });
+
+      function loadDashboardStats() {
+        $.ajax({
+          url: "/api/caregiver/dashboard-stats",
+          method: "GET",
+          success: function (response) {
+            if (response.success) {
+              const stats = response.stats;
+              $("#totalPatientsCount").text(stats.totalPatients || 0);
+              $("#newPatientsCount").text(stats.newPatients || 0);
+              $("#totalAppointmentsCount").text(stats.totalAppointments || 0);
+              $("#appointmentsToday").text(stats.todayAppointments || 0);
+              $("#pendingRequestsCount").text(stats.pendingRequests || 0);
+              $("#unreadMessagesCount").text(stats.unreadMessages || 0);
+            } else {
+              console.error("Failed to load dashboard stats");
+            }
+          },
+          error: function (error) {
+            console.error("Error loading dashboard stats:", error);
+          },
+        });
+      }
+
+      function loadTodayAppointments() {
+        $.ajax({
+          url: "/api/caregiver/today-appointments",
+          method: "GET",
+          success: function (response) {
+            $("#appointmentsLoading").hide();
+
+            if (
+              response.success &&
+              response.appointments &&
+              response.appointments.length > 0
+            ) {
+              const appointments = response.appointments;
+              const appointmentsList = $("#appointmentsList");
+              appointmentsList.empty();
+
+              appointments.forEach(function (appointment) {
+                const timeString = new Date(
+                  appointment.time
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                appointmentsList.append(`
+                  <div class="upcoming-appointment p-3 mb-2 bg-light">
+                    <div class="d-flex align-items-center">
+                      <div class="patient-avatar me-3">${appointment.patient.fullName.charAt(
+                        0
+                      )}</div>
+                      <div>
+                        <h6 class="mb-1">${appointment.patient.fullName}</h6>
+                        <div class="d-flex align-items-center text-muted small">
+                          <i data-feather="clock" class="me-1" style="width: 14px; height: 14px;"></i>
+                          <span>${timeString}</span>
+                          <span class="mx-2">|</span>
+                          <span>${
+                            appointment.reason || "General Checkup"
+                          }</span>
+                        </div>
+                      </div>
+                      <div class="ms-auto">
+                        <a href="/caregiver/appointments?id=${
+                          appointment._id
+                        }" class="btn btn-sm btn-outline-primary">
+                          <i data-feather="eye" class="me-1" style="width: 14px; height: 14px;"></i>
+                          Details
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                `);
+              });
+
+              appointmentsList.show();
+              feather.replace();
+            } else {
+              $("#noAppointments").show();
+            }
+          },
+          error: function (error) {
+            console.error("Error loading appointments:", error);
+            $("#appointmentsLoading").hide();
+            $("#noAppointments").show();
+          },
+        });
+      }
+
+      function loadRecentRequests() {
+        $.ajax({
+          url: "/api/caregiver/recent-requests",
+          method: "GET",
+          success: function (response) {
+            $("#requestsLoading").hide();
+
+            if (
+              response.success &&
+              response.requests &&
+              response.requests.length > 0
+            ) {
+              const requests = response.requests;
+              const requestsList = $("#requestsList");
+              requestsList.empty();
+
+              requests.forEach(function (request) {
+                const date = new Date(request.createdAt).toLocaleDateString();
+                requestsList.append(`
+                  <div class="upcoming-appointment p-3 mb-2 bg-light">
+                    <div class="d-flex align-items-center">
+                      <div class="patient-avatar me-3">${request.patient.fullName.charAt(
+                        0
+                      )}</div>
+                      <div>
+                        <h6 class="mb-1">${request.patient.fullName}</h6>
+                        <div class="d-flex align-items-center text-muted small">
+                          <i data-feather="calendar" class="me-1" style="width: 14px; height: 14px;"></i>
+                          <span>Requested on ${date}</span>
+                        </div>
+                      </div>
+                      <div class="ms-auto">
+                        <a href="/caregiver/requests" class="btn btn-sm btn-outline-success me-1">
+                          <i data-feather="check" class="me-1" style="width: 14px; height: 14px;"></i>
+                          Accept
+                        </a>
+                        <a href="/caregiver/requests" class="btn btn-sm btn-outline-danger">
+                          <i data-feather="x" class="me-1" style="width: 14px; height: 14px;"></i>
+                          Decline
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                `);
+              });
+
+              requestsList.show();
+              feather.replace();
+            } else {
+              $("#noRequests").show();
+            }
+          },
+          error: function (error) {
+            console.error("Error loading requests:", error);
+            $("#requestsLoading").hide();
+            $("#noRequests").show();
+          },
+        });
+      }
+
+      function loadRecentMessages() {
+        $.ajax({
+          url: "/api/caregiver/recent-messages",
+          method: "GET",
+          success: function (response) {
+            $("#messagesLoading").hide();
+
+            if (
+              response.success &&
+              response.messages &&
+              response.messages.length > 0
+            ) {
+              const messages = response.messages;
+              const messagesList = $("#messagesList");
+              messagesList.empty();
+
+              messages.forEach(function (message) {
+                const date = new Date(message.createdAt).toLocaleDateString();
+                messagesList.append(`
+                  <div class="d-flex align-items-start mb-3">
+                    <div class="patient-avatar me-2">${message.sender.fullName.charAt(
+                      0
+                    )}</div>
+                    <div>
+                      <div class="d-flex">
+                        <h6 class="mb-0">${message.sender.fullName}</h6>
+                        <small class="text-muted ms-auto">${date}</small>
+                      </div>
+                      <p class="mb-0 text-truncate" style="max-width: 250px;">${
+                        message.content
+                      }</p>
+                    </div>
+                  </div>
+                `);
+              });
+
+              messagesList.append(`
+                <div class="text-center mt-3">
+                  <a href="/caregiver/messages" class="btn btn-sm btn-primary">
+                    View All Messages
+                  </a>
+                </div>
+              `);
+
+              messagesList.show();
+            } else {
+              $("#noMessages").show();
+            }
+          },
+          error: function (error) {
+            console.error("Error loading messages:", error);
+            $("#messagesLoading").hide();
+            $("#noMessages").show();
+          },
+        });
+      }
+
+      function initPatientActivityChart() {
+        const ctx = document
+          .getElementById("patientActivityChart")
+          .getContext("2d");
+
+        // Sample data - in a real app, this would come from an API
+        const chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+              {
+                label: "Patient Appointments",
+                data: [12, 19, 10, 15, 22, 18],
+                borderColor: "#3f80ea",
+                backgroundColor: "rgba(63, 128, 234, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+              {
+                label: "New Patients",
+                data: [5, 8, 6, 9, 7, 10],
+                borderColor: "#4bbf73",
+                backgroundColor: "rgba(75, 191, 115, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

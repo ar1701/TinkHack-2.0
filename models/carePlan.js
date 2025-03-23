@@ -20,21 +20,34 @@ const carePlanSchema = new mongoose.Schema(
     recommendations: [
       {
         type: String,
+        required: true,
         trim: true,
       },
     ],
     goals: [
       {
         type: String,
+        required: true,
         trim: true,
       },
     ],
     nextSteps: [
       {
         type: String,
+        required: true,
         trim: true,
       },
     ],
+    riskMitigation: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    followUpSchedule: {
+      type: String,
+      trim: true,
+    },
     notes: {
       type: String,
       trim: true,
@@ -44,12 +57,28 @@ const carePlanSchema = new mongoose.Schema(
       enum: ["Active", "Completed", "Archived"],
       default: "Active",
     },
+    aiGenerated: {
+      type: Boolean,
+      default: false,
+    },
+    overallAssessment: {
+      type: String,
+      trim: true,
+    },
+    lastReviewed: {
+      type: Date,
+    },
+    nextReview: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
 // Index for faster queries
-carePlanSchema.index({ patient: 1, updatedAt: -1 });
+carePlanSchema.index({ patient: 1, status: 1 });
+carePlanSchema.index({ creator: 1, status: 1 });
+carePlanSchema.index({ updatedAt: -1 });
 
 const CarePlan = mongoose.model("CarePlan", carePlanSchema);
 

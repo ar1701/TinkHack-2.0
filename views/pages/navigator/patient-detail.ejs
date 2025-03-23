@@ -297,14 +297,14 @@
               </div>
             </div>
 
-            <!-- Care Plan Status -->
-            <div class="row">
-              <div class="col-12 mb-4">
-                <div class="card info-card">
+            <!-- Care Plan Section -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <div class="card">
                   <div class="card-header">
                     <h5 class="card-title mb-0">
-                      <i data-feather="clipboard" class="me-1"></i> Care Plan
-                      Status
+                      <i data-feather="clipboard" class="me-2"></i>
+                      Care Plan Management
                     </h5>
                   </div>
                   <div class="card-body">
@@ -312,9 +312,83 @@
                       <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                       </div>
+                      <p class="mt-2 text-muted">Loading care plan...</p>
                     </div>
+
                     <div id="carePlanContent" style="display: none">
-                      <!-- Content will be loaded here -->
+                      <div id="existingCarePlan" style="display: none">
+                        <div class="alert alert-info mb-4">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <h6 class="alert-heading mb-1">Active Care Plan</h6>
+                              <p class="mb-0" id="carePlanTitle"></p>
+                            </div>
+                            <div class="ms-auto">
+                              <button class="btn btn-primary btn-sm me-2" onclick="editCarePlan()">
+                                <i data-feather="edit-2" class="me-1"></i> Edit Plan
+                              </button>
+                              <button class="btn btn-outline-danger btn-sm" onclick="deleteCarePlan()">
+                                <i data-feather="trash-2" class="me-1"></i> Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row mb-4">
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <h6 class="card-subtitle mb-3">
+                                  <i data-feather="check-circle" class="me-2"></i>
+                                  Recommendations
+                                </h6>
+                                <div id="recommendationsList"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <h6 class="card-subtitle mb-3">
+                                  <i data-feather="target" class="me-2"></i>
+                                  Goals
+                                </h6>
+                                <div id="goalsList"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <h6 class="card-subtitle mb-3">
+                                  <i data-feather="arrow-right" class="me-2"></i>
+                                  Next Steps
+                                </h6>
+                                <div id="stepsList"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card mb-0">
+                          <div class="card-body">
+                            <h6 class="card-subtitle mb-3">Additional Notes</h6>
+                            <p id="carePlanNotes" class="mb-0"></p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="noCarePlan" style="display: none">
+                        <div class="text-center py-4">
+                          <img src="https://img.icons8.com/color/96/000000/clipboard.png" alt="No care plan" width="64" class="mb-3">
+                          <h5>No Care Plan Created Yet</h5>
+                          <p class="text-muted mb-4">Create a personalized care plan for <%= patient.fullName %> to help track their health journey.</p>
+                          <a href="/navigator/patient/<%= patientId %>/care-plan" class="btn btn-primary">
+                            <i data-feather="plus-circle" class="me-2"></i>
+                            Create Care Plan
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -625,6 +699,105 @@
 
       function openChat(patientId) {
         window.location.href = `/navigator/messages?patient=${patientId}`;
+      }
+
+      // Function to load care plan data
+      function loadCarePlan() {
+        const patientId = '<%= patientId %>';
+        
+        // Show loading state
+        $('#carePlanLoading').show();
+        $('#carePlanContent').hide();
+
+        // Fetch care plan data
+        $.ajax({
+          url: `/api/care-plans/${patientId}`,
+          method: 'GET',
+          success: function(response) {
+            $('#carePlanLoading').hide();
+            $('#carePlanContent').show();
+
+            if (response.success && response.carePlans && response.carePlans.length > 0) {
+              const carePlan = response.carePlans[0]; // Get the latest care plan
+              
+              // Update care plan title
+              $('#carePlanTitle').text(carePlan.title);
+
+              // Update recommendations
+              const recommendationsHtml = carePlan.recommendations.map(rec => 
+                `<div class="mb-2">
+                  <i data-feather="check" class="me-2 text-success"></i>
+                  ${rec}
+                </div>`
+              ).join('');
+              $('#recommendationsList').html(recommendationsHtml);
+
+              // Update goals
+              const goalsHtml = carePlan.goals.map(goal => 
+                `<div class="mb-2">
+                  <i data-feather="target" class="me-2 text-primary"></i>
+                  ${goal}
+                </div>`
+              ).join('');
+              $('#goalsList').html(goalsHtml);
+
+              // Update next steps
+              const stepsHtml = carePlan.nextSteps.map(step => 
+                `<div class="mb-2">
+                  <i data-feather="arrow-right" class="me-2 text-warning"></i>
+                  ${step}
+                </div>`
+              ).join('');
+              $('#stepsList').html(stepsHtml);
+
+              // Update notes
+              $('#carePlanNotes').text(carePlan.notes || 'No additional notes.');
+
+              // Show existing care plan section
+              $('#existingCarePlan').show();
+              $('#noCarePlan').hide();
+
+              // Refresh Feather icons
+              feather.replace();
+            } else {
+              $('#existingCarePlan').hide();
+              $('#noCarePlan').show();
+            }
+          },
+          error: function() {
+            $('#carePlanLoading').hide();
+            $('#carePlanContent').show();
+            $('#existingCarePlan').hide();
+            $('#noCarePlan').show();
+          }
+        });
+      }
+
+      // Function to edit care plan
+      function editCarePlan() {
+        window.location.href = `/navigator/patient/<%= patientId %>/care-plan`;
+      }
+
+      // Function to delete care plan
+      function deleteCarePlan() {
+        if (confirm('Are you sure you want to delete this care plan? This action cannot be undone.')) {
+          const patientId = '<%= patientId %>';
+          
+          $.ajax({
+            url: `/api/care-plans/${patientId}`,
+            method: 'DELETE',
+            success: function(response) {
+              if (response.success) {
+                loadCarePlan(); // Reload the care plan section
+              } else {
+                alert('Failed to delete care plan. Please try again.');
+              }
+            },
+            error: function() {
+              alert('Failed to delete care plan. Please try again.');
+            }
+          });
+        }
       }
     </script>
   </body>

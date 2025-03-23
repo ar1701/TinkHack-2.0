@@ -27,3 +27,42 @@
   </a>
 </li>
 <% } %>
+
+<% if (user.role === 'caregiver') { %>
+<li class="nav-item">
+  <a
+    href="/caregiver/dashboard"
+    class="nav-link <%= locals.path === '/caregiver/dashboard' ? 'active' : '' %>"
+  >
+    <i class="fas fa-tachometer-alt me-2"></i>
+    Dashboard
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/caregiver/profile"
+    class="nav-link <%= locals.path === '/caregiver/profile' ? 'active' : '' %>"
+  >
+    <i class="fas fa-user-md me-2"></i>
+    Profile
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/caregiver/patient-requests"
+    class="nav-link <%= locals.path === '/caregiver/patient-requests' ? 'active' : '' %>"
+  >
+    <i class="fas fa-bell me-2"></i>
+    Patient Requests
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/caregiver/chat"
+    class="nav-link <%= locals.path === '/caregiver/chat' ? 'active' : '' %>"
+  >
+    <i class="fas fa-comments me-2"></i>
+    Patient Chat
+  </a>
+</li>
+<% } %>
