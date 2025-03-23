@@ -142,7 +142,7 @@ router.post("/upload", isLoggedIn, async (req, res) => {
         );
 
         const pythonResponse = await axios.post(
-          "http://localhost:5000/process_record",
+          "https://groclake-rag.onrender.com/process_record",
           formData,
           {
             headers: formData.getHeaders(),
@@ -198,10 +198,13 @@ router.post("/query", isLoggedIn, async (req, res) => {
 
     // Call Python server for RAG
     try {
-      const response = await axios.post("http://localhost:5000/query_records", {
-        question,
-        userId: req.user._id.toString(),
-      });
+      const response = await axios.post(
+        "https://groclake-rag.onrender.com/query_records",
+        {
+          question,
+          userId: req.user._id.toString(),
+        }
+      );
 
       res.json(response.data);
     } catch (error) {
@@ -360,7 +363,7 @@ router.put("/:id", isLoggedIn, async (req, res) => {
             formData.append("record_data", JSON.stringify(recordData));
 
             const pythonResponse = await axios.post(
-              "http://localhost:5000/process_record",
+              "https://groclake-rag.onrender.com/process_record",
               formData,
               {
                 headers: formData.getHeaders(),
