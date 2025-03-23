@@ -194,6 +194,12 @@
         >
           <i class="fas fa-user-md"></i> My Navigator
         </a>
+        <a
+          href="/patient/care-plans"
+          class="nav-link <%= locals.path === '/patient/care-plans' ? 'active' : '' %>"
+        >
+          <i class="fas fa-clipboard-list"></i> Care Plans
+        </a>
       </nav>
     </div>
 
@@ -348,8 +354,62 @@
           </div>
         </div>
 
-        <!-- Appointments -->
+        <!-- Care Plans and Appointments in a new row -->
         <div class="row">
+          <!-- Care Plans -->
+          <div
+            class="col-md-6 mb-4"
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-delay="300"
+          >
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-clipboard-list"></i>
+                  Care Plans
+                </h5>
+                <div id="carePlansLoading" class="text-center mb-3">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+                <div id="carePlansContent" style="display: none">
+                  <div id="hasCarePlans">
+                    <p class="text-muted">
+                      Your navigator has created personalized care plans for
+                      you.
+                    </p>
+                    <div id="latestCarePlan" class="card bg-light mb-3">
+                      <div class="card-body">
+                        <h6 id="carePlanTitle" class="card-title"></h6>
+                        <div id="carePlanRecommendations" class="small"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="noCarePlans" style="display: none">
+                    <div class="text-center mb-3">
+                      <img
+                        src="https://img.icons8.com/color/96/000000/clipboard.png"
+                        width="70"
+                      />
+                      <p class="card-text text-muted mt-3">
+                        No care plans available yet.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="d-grid">
+                    <a href="/patient/care-plans" class="btn btn-primary">
+                      <i class="fas fa-eye me-1"></i>
+                      View All Care Plans
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointments -->
           <div
             class="col-md-6 mb-4"
             data-aos="fade-up"
@@ -380,36 +440,35 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Care Team -->
-          <div
-            class="col-md-6 mb-4"
-            data-aos="fade-up"
-            data-aos-duration="800"
-            data-aos-delay="400"
-          >
-            <div class="card h-100">
-              <div class="card-body">
-                <h5 class="card-title">
-                  <i class="fas fa-user-md"></i>
-                  Your Care Team
-                </h5>
-                <div class="text-center my-4">
-                  <img
-                    src="https://img.icons8.com/color/96/000000/medical-doctor.png"
-                    width="70"
-                  />
-                  <p class="card-text text-muted mt-3">
-                    Connect with healthcare professionals dedicated to your
-                    care.
-                  </p>
-                </div>
-                <div class="d-grid">
-                  <button class="btn btn-outline-primary">
-                    <i class="fas fa-search me-1"></i>
-                    Find Providers
-                  </button>
-                </div>
+        <!-- Care Team -->
+        <div
+          class="col-md-6 mb-4"
+          data-aos="fade-up"
+          data-aos-duration="800"
+          data-aos-delay="400"
+        >
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-user-md"></i>
+                Your Care Team
+              </h5>
+              <div class="text-center my-4">
+                <img
+                  src="https://img.icons8.com/color/96/000000/medical-doctor.png"
+                  width="70"
+                />
+                <p class="card-text text-muted mt-3">
+                  Connect with healthcare professionals dedicated to your care.
+                </p>
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-outline-primary">
+                  <i class="fas fa-search me-1"></i>
+                  Find Providers
+                </button>
               </div>
             </div>
           </div>
@@ -422,12 +481,17 @@
     <!-- Add AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-      // Initialize AOS animation
-      AOS.init({
-        once: true,
+      $(document).ready(function () {
+        AOS.init();
+
+        // Load baseline screening data
+        loadScreeningData();
+
+        // Load care plans
+        loadCarePlans();
       });
 
-      document.addEventListener("DOMContentLoaded", function () {
+      function loadScreeningData() {
         // Fetch the latest risk assessment
         fetch("/api/baseline-screening/latest")
           .then((response) => response.json())
@@ -531,7 +595,58 @@
               "none";
             document.getElementById("noRiskAssessment").style.display = "block";
           });
-      });
+      }
+
+      // Function to load care plans
+      function loadCarePlans() {
+        $.ajax({
+          url: `/api/care-plans/<%= user._id %>`,
+          method: "GET",
+          success: function (response) {
+            $("#carePlansLoading").hide();
+            $("#carePlansContent").show();
+
+            if (
+              response.success &&
+              response.carePlans &&
+              response.carePlans.length > 0
+            ) {
+              // Display latest care plan
+              const latestPlan = response.carePlans[0]; // Assuming sorted by updatedAt desc
+
+              $("#carePlanTitle").text(latestPlan.title);
+
+              let recommendationsHtml = '<ul class="mb-0">';
+              const maxRecs = Math.min(latestPlan.recommendations.length, 3); // Show max 3 recommendations
+
+              for (let i = 0; i < maxRecs; i++) {
+                recommendationsHtml += `<li>${latestPlan.recommendations[i]}</li>`;
+              }
+
+              if (latestPlan.recommendations.length > 3) {
+                recommendationsHtml += `<li>...and ${
+                  latestPlan.recommendations.length - 3
+                } more recommendations</li>`;
+              }
+
+              recommendationsHtml += "</ul>";
+              $("#carePlanRecommendations").html(recommendationsHtml);
+
+              $("#hasCarePlans").show();
+              $("#noCarePlans").hide();
+            } else {
+              $("#hasCarePlans").hide();
+              $("#noCarePlans").show();
+            }
+          },
+          error: function () {
+            $("#carePlansLoading").hide();
+            $("#carePlansContent").show();
+            $("#hasCarePlans").hide();
+            $("#noCarePlans").show();
+          },
+        });
+      }
     </script>
 
     <!-- Chatbot CSS and JavaScript -->

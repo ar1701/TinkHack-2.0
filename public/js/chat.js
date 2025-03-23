@@ -57,8 +57,9 @@ class ChatManager {
       this.socket.on("new-message", (data) => {
         console.log("New message received:", data);
 
-        // Check if this is a message sent by current user
-        const isSent = data.sender._id === this.userId;
+        // Determine if message is outgoing (sent by current user)
+        // Either use the flag provided by server or check sender ID
+        const isOutgoing = data.isSenderView || data.sender._id === this.userId;
 
         // If we have a callback, use it
         if (
@@ -71,16 +72,18 @@ class ChatManager {
               timestamp: data.message.createdAt,
               sender: data.sender._id,
             },
-            isSent
+            isOutgoing
           );
         }
 
         document.dispatchEvent(
-          new CustomEvent("chat:newMessage", { detail: data })
+          new CustomEvent("chat:newMessage", {
+            detail: { ...data, isOutgoing },
+          })
         );
 
-        // If message is from current chat partner, mark as read
-        if (this.currentChatPartnerId === data.sender._id) {
+        // If message is from current chat partner and not from self, mark as read
+        if (!isOutgoing && this.currentChatPartnerId === data.sender._id) {
           this.markMessagesAsRead(data.sender._id);
         }
       });
@@ -141,7 +144,7 @@ class ChatManager {
             // Add messages to chat
             data.messages.forEach((msg) => {
               // Determine if this is a sent or received message
-              const isSent = msg.sender.toString() === this.userId;
+              const isOutgoing = msg.sender.toString() === this.userId;
 
               if (this.onMessageReceived) {
                 this.onMessageReceived(
@@ -150,13 +153,13 @@ class ChatManager {
                     timestamp: msg.createdAt,
                     sender: msg.sender,
                   },
-                  isSent
+                  isOutgoing
                 );
               } else {
                 // Fallback implementation
                 const msgElement = document.createElement("div");
                 msgElement.className = `message ${
-                  isSent ? "outgoing" : "incoming"
+                  isOutgoing ? "outgoing" : "incoming"
                 }`;
                 msgElement.innerHTML = `
                   <div class="message-content">
@@ -205,6 +208,24 @@ class ChatManager {
     if (!this.socket || !this.isConnected) {
       console.error("Cannot send message: Not connected");
       return false;
+    }
+
+    // Add new message to UI immediately for better user experience
+    const chatContainer = document.getElementById("chatMessages");
+    if (chatContainer) {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message outgoing";
+      messageDiv.innerHTML = `
+        <div class="message-content">
+          <div class="message-text">${message}</div>
+          <div class="message-time">${new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}</div>
+        </div>
+      `;
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
     this.socket.emit("private-message", {
@@ -300,15 +321,31 @@ function setupChatEventListeners() {
     const data = event.detail;
     console.log("New message event:", data);
 
+    // Check if message is already displayed by the optimistic UI update in sendMessage
+    if (
+      data.isOutgoing &&
+      document.querySelector(".message.outgoing:last-child")
+    ) {
+      const lastMessage = document.querySelector(
+        ".message.outgoing:last-child"
+      );
+      const messageText = lastMessage.querySelector(".message-text");
+
+      // If the last outgoing message contains the same text, don't add a duplicate
+      if (messageText && messageText.textContent === data.message.message) {
+        console.log("Skipping duplicate outgoing message display");
+        return;
+      }
+    }
+
     // Update UI with new message
     const chatContainer = document.getElementById("chatMessages");
     if (chatContainer) {
-      const isOutgoing = data.sender._id === chatManager.userId;
-      appendNewMessage(chatContainer, data.message, isOutgoing);
+      appendNewMessage(chatContainer, data.message, data.isOutgoing);
     }
 
     // Show notification if needed
-    if (document.hidden && data.sender._id !== chatManager.userId) {
+    if (document.hidden && !data.isOutgoing) {
       showNotification(data.sender.fullName, data.message.message);
     }
   });

@@ -480,4 +480,52 @@ router.get("/api/patient/pending-requests", isLoggedIn, async (req, res) => {
   }
 });
 
+// API for patients to remove a connection with a navigator (even if accepted)
+router.delete(
+  "/api/patient/navigator-connection/:requestId",
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      if (req.user.userType !== "Patient") {
+        return res.status(403).json({
+          success: false,
+          message: "Only patients can remove navigator connections",
+        });
+      }
+
+      const { requestId } = req.params;
+
+      // Find the connection request and ensure it belongs to the current patient
+      const request = await NavigatorRequest.findOne({
+        _id: requestId,
+        patient: req.user._id,
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          message: "Connection request not found",
+        });
+      }
+
+      // Delete the connection request
+      await NavigatorRequest.deleteOne({ _id: requestId });
+
+      res.json({
+        success: true,
+        message:
+          request.status === "pending"
+            ? "Connection request retracted successfully"
+            : "Connection removed successfully",
+      });
+    } catch (error) {
+      console.error("Error removing navigator connection:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  }
+);
+
 module.exports = router;

@@ -22,6 +22,7 @@ const chatRoutes = require("./routes/chat");
 const fileUpload = require("express-fileupload");
 const http = require("http");
 const socketIO = require("socket.io");
+const carePlansRouter = require("./routes/carePlans");
 
 var app = express();
 
@@ -278,6 +279,17 @@ app.get("/patient/messages", isLoggedIn, (req, res) => {
   });
 });
 
+// Add patient care plans page
+app.get("/patient/care-plans", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+  res.render("pages/patient/care-plans.ejs", {
+    user: req.user,
+    path: "/patient/care-plans",
+  });
+});
+
 app.get("/navigator/dashboard", isLoggedIn, (req, res) => {
   if (req.user.userType !== "Patient-Navigator") {
     return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
@@ -345,6 +357,100 @@ app.get("/navigator/messages", isLoggedIn, (req, res) => {
     path: "/navigator/messages",
   });
 });
+
+// Add navigator patient detail page
+app.get("/navigator/patient/:patientId", isLoggedIn, async (req, res) => {
+  if (req.user.userType !== "Patient-Navigator") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  try {
+    const patientId = req.params.patientId;
+
+    // Check if navigator has a connection with this patient
+    const NavigatorRequest = require("./models/navigatorRequest");
+    const connection = await NavigatorRequest.findOne({
+      navigator: req.user._id,
+      patient: patientId,
+      status: "accepted",
+    });
+
+    if (!connection) {
+      return res.redirect("/navigator/patients");
+    }
+
+    // Get patient data
+    const User = require("./models/user");
+    const patient = await User.findById(patientId);
+
+    if (!patient) {
+      return res.redirect("/navigator/patients");
+    }
+
+    res.render("pages/navigator/patient-detail.ejs", {
+      user: req.user,
+      patient: patient,
+      patientId: patientId,
+      path: "/navigator/patients",
+    });
+  } catch (error) {
+    console.error("Error loading patient details:", error);
+    res.redirect("/navigator/patients");
+  }
+});
+
+// Add navigator care plan creation page
+app.get(
+  "/navigator/patient/:patientId/care-plan",
+  isLoggedIn,
+  async (req, res) => {
+    if (req.user.userType !== "Patient-Navigator") {
+      return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+    }
+
+    try {
+      const patientId = req.params.patientId;
+
+      // Check if navigator has a connection with this patient
+      const NavigatorRequest = require("./models/navigatorRequest");
+      const connection = await NavigatorRequest.findOne({
+        navigator: req.user._id,
+        patient: patientId,
+        status: "accepted",
+      });
+
+      if (!connection) {
+        return res.redirect("/navigator/patients");
+      }
+
+      // Get patient data
+      const User = require("./models/user");
+      const patient = await User.findById(patientId);
+
+      if (!patient) {
+        return res.redirect("/navigator/patients");
+      }
+
+      // Get existing care plan if any
+      const CarePlan = require("./models/carePlan");
+      const carePlan = await CarePlan.findOne({
+        patient: patientId,
+        creator: req.user._id,
+      });
+
+      res.render("pages/navigator/care-plan.ejs", {
+        user: req.user,
+        patient: patient,
+        patientId: patientId,
+        carePlan: carePlan || null,
+        path: "/navigator/patients",
+      });
+    } catch (error) {
+      console.error("Error loading care plan page:", error);
+      res.redirect("/navigator/patients");
+    }
+  }
+);
 
 app.post("/navigator/profile", isLoggedIn, async (req, res) => {
   if (req.user.userType !== "Patient-Navigator") {
@@ -464,6 +570,7 @@ app.use(baselineScreeningRoutes);
 app.use("/api/gemini", geminiRoutes);
 app.use(navigatorListRoutes);
 app.use(chatRoutes);
+app.use("/", carePlansRouter);
 
 // Create HTTP server
 const server = http.createServer(app);

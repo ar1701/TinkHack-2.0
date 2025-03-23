@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <title>Patient Details | Health Navigator</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="/img/icons/icon-48x48.png" />
+    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="/css/app.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .patient-header {
+        background: linear-gradient(135deg, #2a5c82, #5c9baf);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .patient-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+      }
+      .info-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        height: 100%;
+      }
+      .risk-badge {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+      }
+      .risk-low {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .risk-medium {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+      .risk-high {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .document-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        transition: background-color 0.2s;
+      }
+      .document-item:hover {
+        background-color: #f8f9fa;
+      }
+      .document-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #e9ecef;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .health-indicator {
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+      }
+      .indicator-value {
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .care-plan-status {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background-color: #e8f5e9;
+        border-left: 4px solid #4caf50;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+          <a class="sidebar-brand" href="/navigator/dashboard">
+            <span class="align-middle">Health Navigator</span>
+          </a>
+
+          <ul class="sidebar-nav">
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/dashboard">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item active">
+              <a class="sidebar-link" href="/navigator/patients">
+                <i class="align-middle" data-feather="users"></i>
+                <span class="align-middle">My Patients</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/requests">
+                <i class="align-middle" data-feather="user-plus"></i>
+                <span class="align-middle">Connection Requests</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/messages">
+                <i class="align-middle" data-feather="message-square"></i>
+                <span class="align-middle">Messages</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/profile">
+                <i class="align-middle" data-feather="user"></i>
+                <span class="align-middle">My Profile</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="main">
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+          <a class="sidebar-toggle js-sidebar-toggle">
+            <i class="hamburger align-self-center"></i>
+          </a>
+
+          <div class="navbar-collapse collapse">
+            <ul class="navbar-nav navbar-align">
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="align-middle" data-feather="settings"></i>
+                </a>
+
+                <a
+                  class="nav-link dropdown-toggle d-none d-sm-inline-block"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <img
+                    src="/img/avatars/avatar.jpg"
+                    class="avatar img-fluid rounded me-1"
+                    alt="User"
+                  />
+                  <span class="text-dark"><%= user.fullName %></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="/navigator/profile">
+                    <i class="align-middle me-1" data-feather="user"></i>
+                    Profile
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/logout">Log out</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main class="content">
+          <div class="container-fluid p-0">
+            <div class="row mb-3">
+              <div class="col-12">
+                <a href="/navigator/patients" class="btn btn-outline-secondary">
+                  <i data-feather="arrow-left" class="me-1"></i> Back to
+                  Patients
+                </a>
+              </div>
+            </div>
+
+            <!-- Patient Header -->
+            <div class="patient-header">
+              <div class="d-flex align-items-center">
+                <div class="patient-avatar me-4">
+                  <%= patient.fullName.charAt(0) %>
+                </div>
+                <div>
+                  <h2 class="mb-1"><%= patient.fullName %></h2>
+                  <div class="d-flex align-items-center">
+                    <span class="me-3">
+                      <i data-feather="mail" class="me-1"></i> <%= patient.email
+                      %>
+                    </span>
+                    <% if (patient.phone) { %>
+                    <span class="me-3">
+                      <i data-feather="phone" class="me-1"></i> <%=
+                      patient.phone %>
+                    </span>
+                    <% } %> <% if (patient.age) { %>
+                    <span>
+                      <i data-feather="user" class="me-1"></i> <%= patient.age
+                      %> years old
+                    </span>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="ms-auto">
+                  <a
+                    href="/navigator/patient/<%= patientId %>/care-plan"
+                    class="btn btn-light me-2"
+                  >
+                    <i data-feather="clipboard" class="me-1"></i> Care Plan
+                  </a>
+                  <a
+                    href="#"
+                    onclick="openChat('<%= patientId %>')"
+                    class="btn btn-light"
+                  >
+                    <i data-feather="message-square" class="me-1"></i> Message
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Health Risk Assessment -->
+              <div class="col-md-6 mb-4">
+                <div class="card info-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">
+                      <i data-feather="activity" class="me-1"></i> Health Risk
+                      Assessment
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="screeningLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                    <div id="screeningContent" style="display: none">
+                      <!-- Content will be loaded here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Medical Records -->
+              <div class="col-md-6 mb-4">
+                <div class="card info-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">
+                      <i data-feather="file-text" class="me-1"></i> Medical
+                      Records
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="recordsLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                    <div id="recordsContent" style="display: none">
+                      <!-- Content will be loaded here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Care Plan Status -->
+            <div class="row">
+              <div class="col-12 mb-4">
+                <div class="card info-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">
+                      <i data-feather="clipboard" class="me-1"></i> Care Plan
+                      Status
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="carePlanLoading" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                    <div id="carePlanContent" style="display: none">
+                      <!-- Content will be loaded here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row text-muted">
+              <div class="col-6 text-start">
+                <p class="mb-0">
+                  <a class="text-muted" href="#" target="_blank"
+                    ><strong>Health Navigator</strong></a
+                  >
+                  &copy;
+                </p>
+              </div>
+              <div class="col-6 text-end">
+                <ul class="list-inline">
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Support</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Help Center</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Privacy</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Terms</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="/js/app.js"></script>
+
+    <script>
+      const patientId = "<%= patientId %>";
+
+      $(document).ready(function () {
+        // Initialize Feather icons
+        feather.replace();
+
+        // Load all patient data
+        loadScreeningData();
+        loadMedicalRecords();
+        loadCarePlan();
+      });
+
+      function loadScreeningData() {
+        $.ajax({
+          url: `/api/navigator/patient/${patientId}/baseline-screening`,
+          method: "GET",
+          success: function (response) {
+            $("#screeningLoading").hide();
+            $("#screeningContent").show();
+
+            if (response.success && response.screening) {
+              const screening = response.screening;
+              const assessment = screening.riskAssessment;
+
+              let riskClass = "risk-low";
+              if (assessment.riskLevel === "High") {
+                riskClass = "risk-high";
+              } else if (assessment.riskLevel === "Medium") {
+                riskClass = "risk-medium";
+              }
+
+              let content = `
+                <div class="mb-3">
+                  <span class="risk-badge ${riskClass}">${assessment.riskLevel} Risk Level</span>
+                </div>
+              `;
+
+              if (
+                assessment.possibleIssues &&
+                assessment.possibleIssues.length > 0
+              ) {
+                content +=
+                  '<div class="mb-3"><h6>Health Concerns:</h6><ul class="mb-0">';
+                assessment.possibleIssues.forEach((issue) => {
+                  content += `<li>${issue}</li>`;
+                });
+                content += "</ul></div>";
+              }
+
+              if (screening.healthIndicators) {
+                content += '<div class="mb-3"><h6>Health Indicators:</h6>';
+                Object.entries(screening.healthIndicators).forEach(
+                  ([key, value]) => {
+                    content += `
+                    <div class="health-indicator">
+                      <div class="small text-muted">${key
+                        .replace(/_/g, " ")
+                        .toUpperCase()}</div>
+                      <div class="indicator-value">${value}</div>
+                    </div>
+                  `;
+                  }
+                );
+                content += "</div>";
+              }
+
+              content += `
+                <div class="small text-muted mt-3">
+                  Last updated: ${new Date(
+                    screening.createdAt
+                  ).toLocaleDateString()}
+                </div>
+              `;
+
+              $("#screeningContent").html(content);
+            } else {
+              $("#screeningContent").html(`
+                <div class="text-center text-muted py-4">
+                  <i data-feather="clipboard" style="width: 40px; height: 40px; opacity: 0.5"></i>
+                  <p class="mt-2">No baseline screening data available</p>
+                </div>
+              `);
+              feather.replace();
+            }
+          },
+          error: function () {
+            $("#screeningLoading").hide();
+            $("#screeningContent").html(`
+              <div class="alert alert-danger">
+                Failed to load screening data
+              </div>
+            `);
+          },
+        });
+      }
+
+      function loadMedicalRecords() {
+        $.ajax({
+          url: `/api/navigator/patient/${patientId}/medical-records`,
+          method: "GET",
+          success: function (response) {
+            $("#recordsLoading").hide();
+            $("#recordsContent").show();
+
+            if (
+              response.success &&
+              response.records &&
+              response.records.length > 0
+            ) {
+              let content = "";
+              response.records.forEach((record) => {
+                content += `
+                  <div class="document-item">
+                    <div class="d-flex align-items-center">
+                      <div class="document-icon me-3">
+                        <i data-feather="file-text"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-1">${record.title}</h6>
+                        <div class="small text-muted">
+                          Uploaded on ${new Date(
+                            record.uploadDate
+                          ).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <a href="${
+                        record.fileUrl
+                      }" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i data-feather="download"></i>
+                      </a>
+                    </div>
+                  </div>
+                `;
+              });
+              $("#recordsContent").html(content);
+              feather.replace();
+            } else {
+              $("#recordsContent").html(`
+                <div class="text-center text-muted py-4">
+                  <i data-feather="file" style="width: 40px; height: 40px; opacity: 0.5"></i>
+                  <p class="mt-2">No medical records available</p>
+                </div>
+              `);
+              feather.replace();
+            }
+          },
+          error: function () {
+            $("#recordsLoading").hide();
+            $("#recordsContent").html(`
+              <div class="alert alert-danger">
+                Failed to load medical records
+              </div>
+            `);
+          },
+        });
+      }
+
+      function loadCarePlan() {
+        $.ajax({
+          url: `/api/care-plans/${patientId}`,
+          method: "GET",
+          success: function (response) {
+            $("#carePlanLoading").hide();
+            $("#carePlanContent").show();
+
+            if (
+              response.success &&
+              response.carePlans &&
+              response.carePlans.length > 0
+            ) {
+              const latestPlan = response.carePlans[0];
+
+              let content = `
+                <div class="care-plan-status">
+                  <h6 class="mb-2">Current Care Plan: ${latestPlan.title}</h6>
+                  <p class="mb-0 small">Last updated: ${new Date(
+                    latestPlan.updatedAt
+                  ).toLocaleDateString()}</p>
+                </div>
+
+                <div class="row">
+              `;
+
+              if (
+                latestPlan.recommendations &&
+                latestPlan.recommendations.length > 0
+              ) {
+                content += `
+                  <div class="col-md-4">
+                    <h6>Recommendations</h6>
+                    <ul class="mb-4">
+                      ${latestPlan.recommendations
+                        .map((rec) => `<li>${rec}</li>`)
+                        .join("")}
+                    </ul>
+                  </div>
+                `;
+              }
+
+              if (latestPlan.goals && latestPlan.goals.length > 0) {
+                content += `
+                  <div class="col-md-4">
+                    <h6>Goals</h6>
+                    <ul class="mb-4">
+                      ${latestPlan.goals
+                        .map((goal) => `<li>${goal}</li>`)
+                        .join("")}
+                    </ul>
+                  </div>
+                `;
+              }
+
+              if (latestPlan.nextSteps && latestPlan.nextSteps.length > 0) {
+                content += `
+                  <div class="col-md-4">
+                    <h6>Next Steps</h6>
+                    <ul class="mb-4">
+                      ${latestPlan.nextSteps
+                        .map((step) => `<li>${step}</li>`)
+                        .join("")}
+                    </ul>
+                  </div>
+                `;
+              }
+
+              content += "</div>";
+
+              if (latestPlan.notes) {
+                content += `
+                  <div class="mt-3">
+                    <h6>Additional Notes</h6>
+                    <p class="mb-0">${latestPlan.notes}</p>
+                  </div>
+                `;
+              }
+
+              $("#carePlanContent").html(content);
+            } else {
+              $("#carePlanContent").html(`
+                <div class="text-center py-4">
+                  <i data-feather="clipboard" style="width: 40px; height: 40px; opacity: 0.5"></i>
+                  <p class="text-muted mt-2">No care plan created yet</p>
+                  <a href="/navigator/patient/${patientId}/care-plan" class="btn btn-primary">
+                    <i data-feather="plus" class="me-1"></i> Create Care Plan
+                  </a>
+                </div>
+              `);
+              feather.replace();
+            }
+          },
+          error: function () {
+            $("#carePlanLoading").hide();
+            $("#carePlanContent").html(`
+              <div class="alert alert-danger">
+                Failed to load care plan data
+              </div>
+            `);
+          },
+        });
+      }
+
+      function openChat(patientId) {
+        window.location.href = `/navigator/messages?patient=${patientId}`;
+      }
+    </script>
+  </body>
+</html>

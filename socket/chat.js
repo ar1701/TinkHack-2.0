@@ -76,17 +76,31 @@ module.exports = function (io) {
 
           await newMessage.save();
 
-          // Emit the message to sender (for immediate feedback)
-          io.to(userId).emit("new-message", {
+          // Get receiver info
+          const receiver = await User.findById(receiverId);
+          if (!receiver) {
+            console.log(`Receiver not found: ${receiverId}`);
+            return;
+          }
+
+          // Prepare message data objects - one for sender view, one for receiver view
+          const senderMessageData = {
             message: newMessage,
             sender: user,
-          });
+            isSenderView: true,
+          };
+
+          const receiverMessageData = {
+            message: newMessage,
+            sender: user,
+            isSenderView: false,
+          };
+
+          // Emit to sender (ensure they see their own message)
+          socket.emit("new-message", senderMessageData);
 
           // Emit to receiver if they are connected
-          io.to(receiverId).emit("new-message", {
-            message: newMessage,
-            sender: user,
-          });
+          socket.to(receiverId).emit("new-message", receiverMessageData);
 
           console.log(`Message sent from ${userId} to ${receiverId}`);
         } catch (error) {
@@ -101,8 +115,8 @@ module.exports = function (io) {
 
         if (!receiverId) return;
 
-        // Emit typing status to receiver
-        io.to(receiverId).emit("user-typing", {
+        // Emit typing status to receiver only
+        socket.to(receiverId).emit("user-typing", {
           userId,
           isTyping,
         });
@@ -122,7 +136,7 @@ module.exports = function (io) {
           );
 
           // Emit read status to sender
-          io.to(senderId).emit("messages-read", {
+          socket.to(senderId).emit("messages-read", {
             by: userId,
           });
         } catch (error) {

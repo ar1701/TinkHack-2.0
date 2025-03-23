@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <title>Patient Care Plan | Health Navigator</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="/img/icons/icon-48x48.png" />
+    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="/css/app.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .patient-info-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .patient-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #e0f7fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #0288d1;
+        margin-right: 20px;
+      }
+      .form-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .list-group-item-action:hover {
+        background-color: #f5f9ff;
+      }
+      .remove-item {
+        cursor: pointer;
+        color: #dc3545;
+      }
+      .items-container {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .action-buttons {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .floating-ai-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #4285f4;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        z-index: 1000;
+        transition: all 0.3s;
+      }
+      .floating-ai-button:hover {
+        transform: scale(1.1);
+        background-color: #3367d6;
+        color: white;
+      }
+      .ais-label {
+        background-color: #e8f0fe;
+        color: #4285f4;
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        display: inline-block;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+          <a class="sidebar-brand" href="/navigator/dashboard">
+            <span class="align-middle">Health Navigator</span>
+          </a>
+
+          <ul class="sidebar-nav">
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/dashboard">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item active">
+              <a class="sidebar-link" href="/navigator/patients">
+                <i class="align-middle" data-feather="users"></i>
+                <span class="align-middle">My Patients</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/requests">
+                <i class="align-middle" data-feather="user-plus"></i>
+                <span class="align-middle">Connection Requests</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/messages">
+                <i class="align-middle" data-feather="message-square"></i>
+                <span class="align-middle">Messages</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/navigator/profile">
+                <i class="align-middle" data-feather="user"></i>
+                <span class="align-middle">My Profile</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="main">
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+          <a class="sidebar-toggle js-sidebar-toggle">
+            <i class="hamburger align-self-center"></i>
+          </a>
+
+          <div class="navbar-collapse collapse">
+            <ul class="navbar-nav navbar-align">
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="align-middle" data-feather="settings"></i>
+                </a>
+
+                <a
+                  class="nav-link dropdown-toggle d-none d-sm-inline-block"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                >
+                  <img
+                    src="/img/avatars/avatar.jpg"
+                    class="avatar img-fluid rounded me-1"
+                    alt="User"
+                  />
+                  <span class="text-dark"><%= user.fullName %></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="/navigator/profile"
+                    ><i class="align-middle me-1" data-feather="user"></i>
+                    Profile</a
+                  >
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/logout">Log out</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main class="content">
+          <div class="container-fluid p-0">
+            <div class="row mb-3">
+              <div class="col-12">
+                <a
+                  href="/navigator/patient/<%= patientId %>"
+                  class="btn btn-outline-secondary"
+                >
+                  <i data-feather="arrow-left" class="me-1"></i> Back to Patient
+                  Profile
+                </a>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <div class="card patient-info-card position-relative">
+                  <div class="card-body">
+                    <div class="d-flex">
+                      <div class="patient-avatar">
+                        <%= patient.fullName.charAt(0) %>
+                      </div>
+                      <div>
+                        <h4 class="mb-1">
+                          Care Plan for <%= patient.fullName %>
+                        </h4>
+                        <p class="text-muted mb-0">
+                          Create or update a personalized care plan based on
+                          this patient's medical history, baseline screening,
+                          and health needs.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <div class="card form-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Care Plan Details</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="carePlanForm">
+                      <div class="mb-3">
+                        <label for="title" class="form-label"
+                          >Care Plan Title
+                          <span class="text-danger">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="title"
+                          name="title"
+                          required
+                          value="<%= carePlan ? carePlan.title : '' %>"
+                        />
+                        <div class="form-text">
+                          Give this care plan a descriptive title (e.g.,
+                          "Post-Surgery Recovery Plan")
+                        </div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label"
+                          >Recommendations
+                          <span class="text-danger">*</span></label
+                        >
+                        <div class="input-group mb-2">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="newRecommendation"
+                            placeholder="Add a recommendation..."
+                          />
+                          <button
+                            class="btn btn-primary"
+                            type="button"
+                            id="addRecommendation"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        <div class="form-text mb-2">
+                          Add specific healthcare recommendations for this
+                          patient
+                        </div>
+
+                        <div
+                          class="list-group items-container"
+                          id="recommendationsList"
+                        >
+                          <!-- Recommendations will be loaded here -->
+                          <div class="list-group-item text-center text-muted">
+                            <small>No recommendations added yet</small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label">Goals</label>
+                        <div class="input-group mb-2">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="newGoal"
+                            placeholder="Add a goal..."
+                          />
+                          <button
+                            class="btn btn-outline-primary"
+                            type="button"
+                            id="addGoal"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        <div class="form-text mb-2">
+                          Add measurable goals for the patient to achieve
+                        </div>
+
+                        <div class="list-group items-container" id="goalsList">
+                          <!-- Goals will be loaded here -->
+                          <div class="list-group-item text-center text-muted">
+                            <small>No goals added yet</small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label">Next Steps</label>
+                        <div class="input-group mb-2">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="newStep"
+                            placeholder="Add a next step..."
+                          />
+                          <button
+                            class="btn btn-outline-primary"
+                            type="button"
+                            id="addStep"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        <div class="form-text mb-2">
+                          Add concrete next steps for the patient to follow
+                        </div>
+
+                        <div class="list-group items-container" id="stepsList">
+                          <!-- Steps will be loaded here -->
+                          <div class="list-group-item text-center text-muted">
+                            <small>No next steps added yet</small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="notes" class="form-label"
+                          >Additional Notes</label
+                        >
+                        <textarea
+                          class="form-control"
+                          id="notes"
+                          name="notes"
+                          rows="4"
+                        >
+<%= carePlan ? carePlan.notes : '' %></textarea
+                        >
+                        <div class="form-text">
+                          Add any additional notes or context about this care
+                          plan
+                        </div>
+                      </div>
+
+                      <div class="d-flex justify-content-between">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          id="resetForm"
+                        >
+                          Reset
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-primary"
+                          id="saveCarePlan"
+                        >
+                          <%= carePlan ? 'Update Care Plan' : 'Create Care Plan'
+                          %>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row text-muted">
+              <div class="col-6 text-start">
+                <p class="mb-0">
+                  <a class="text-muted" href="#" target="_blank"
+                    ><strong>Health Navigator</strong></a
+                  >
+                  &copy;
+                </p>
+              </div>
+              <div class="col-6 text-end">
+                <ul class="list-inline">
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Support</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Help Center</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Privacy</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted" href="#">Terms</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- AI Assistant Button -->
+    <a
+      href="#"
+      class="floating-ai-button"
+      id="generateAiCarePlan"
+      title="Generate AI Care Plan"
+    >
+      <i data-feather="cpu"></i>
+    </a>
+
+    <!-- AI Suggestion Modal -->
+    <div
+      class="modal fade"
+      id="aiSuggestionModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i data-feather="cpu" class="me-2"></i> AI Generated Care Plan
+              <span class="ais-label">GEMINI</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="aiLoading" class="text-center p-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Generating personalized care plan...</p>
+            </div>
+
+            <div id="aiContent" style="display: none">
+              <div class="alert alert-info">
+                <i data-feather="info" class="me-2"></i> This is an AI-generated
+                suggestion based on patient data. Review carefully before using.
+              </div>
+
+              <div class="mb-3">
+                <h5>Suggested Title</h5>
+                <p id="aiTitle" class="p-2 border rounded"></p>
+              </div>
+
+              <div class="mb-3">
+                <h5>Recommendations</h5>
+                <ul id="aiRecommendations" class="list-group"></ul>
+              </div>
+
+              <div class="mb-3">
+                <h5>Goals</h5>
+                <ul id="aiGoals" class="list-group"></ul>
+              </div>
+
+              <div class="mb-3">
+                <h5>Next Steps</h5>
+                <ul id="aiNextSteps" class="list-group"></ul>
+              </div>
+
+              <div class="mb-3">
+                <h5>Notes</h5>
+                <p id="aiNotes" class="p-2 border rounded"></p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="useAiSuggestion">
+              Use This Plan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="/js/app.js"></script>
+
+    <script>
+      // Store patient ID for API calls
+      const patientId = '<%= patientId %>';
+
+      // Initialize data structures
+      let recommendations = <%= carePlan && carePlan.recommendations ? JSON.stringify(carePlan.recommendations) : '[]' %>;
+      let goals = <%= carePlan && carePlan.goals ? JSON.stringify(carePlan.goals) : '[]' %>;
+      let nextSteps = <%= carePlan && carePlan.nextSteps ? JSON.stringify(carePlan.nextSteps) : '[]' %>;
+
+      $(document).ready(function() {
+        // Initialize Feather icons
+        feather.replace();
+
+        // Initial UI setup
+        updateRecommendationsList();
+        updateGoalsList();
+        updateStepsList();
+
+        // Event handlers for adding items
+        $('#addRecommendation').on('click', function() {
+          addRecommendation();
+        });
+
+        $('#newRecommendation').on('keypress', function(e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            addRecommendation();
+          }
+        });
+
+        $('#addGoal').on('click', function() {
+          addGoal();
+        });
+
+        $('#newGoal').on('keypress', function(e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            addGoal();
+          }
+        });
+
+        $('#addStep').on('click', function() {
+          addStep();
+        });
+
+        $('#newStep').on('keypress', function(e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            addStep();
+          }
+        });
+
+        // Form submission
+        $('#carePlanForm').on('submit', function(e) {
+          e.preventDefault();
+
+          if (recommendations.length === 0) {
+            alert('Please add at least one recommendation to the care plan.');
+            return;
+          }
+
+          const carePlanData = {
+            title: $('#title').val().trim(),
+            recommendations: recommendations,
+            goals: goals,
+            nextSteps: nextSteps,
+            notes: $('#notes').val().trim()
+          };
+
+          // Save care plan
+          $.ajax({
+            url: `/api/navigator/patient/${patientId}/care-plan`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(carePlanData),
+            success: function(response) {
+              if (response.success) {
+                showAlert('success', response.message);
+                setTimeout(function() {
+                  window.location.href = `/navigator/patient/${patientId}`;
+                }, 1500);
+              } else {
+                showAlert('danger', response.message || 'Failed to save care plan');
+              }
+            },
+            error: function(xhr) {
+              showAlert('danger', 'An error occurred while saving the care plan');
+              console.error('Error saving care plan:', xhr.responseText);
+            }
+          });
+        });
+
+        // Reset form button
+        $('#resetForm').on('click', function() {
+          if (confirm('Are you sure you want to reset the form? All unsaved changes will be lost.')) {
+            recommendations = <%= carePlan && carePlan.recommendations ? JSON.stringify(carePlan.recommendations) : '[]' %>;
+            goals = <%= carePlan && carePlan.goals ? JSON.stringify(carePlan.goals) : '[]' %>;
+            nextSteps = <%= carePlan && carePlan.nextSteps ? JSON.stringify(carePlan.nextSteps) : '[]' %>;
+
+            $('#title').val('<%= carePlan ? carePlan.title : "" %>');
+            $('#notes').val('<%= carePlan ? carePlan.notes : "" %>');
+
+            updateRecommendationsList();
+            updateGoalsList();
+            updateStepsList();
+          }
+        });
+
+        // AI care plan generation
+        $('#generateAiCarePlan').on('click', function(e) {
+          e.preventDefault();
+
+          // Show modal
+          const aiModal = new bootstrap.Modal(document.getElementById('aiSuggestionModal'));
+          aiModal.show();
+
+          // Show loading, hide content
+          $('#aiLoading').show();
+          $('#aiContent').hide();
+
+          // Make API call to generate care plan
+          $.ajax({
+            url: `/api/navigator/patient/${patientId}/generate-care-plan`,
+            method: 'POST',
+            success: function(response) {
+              if (response.success) {
+                displayAiSuggestions(response.generatedCarePlan);
+              } else {
+                $('#aiLoading').html(`
+                  <div class="alert alert-danger">
+                    <i data-feather="alert-triangle" class="me-2"></i> ${response.message || 'Failed to generate care plan'}
+                  </div>
+                `);
+                feather.replace();
+              }
+            },
+            error: function(xhr) {
+              $('#aiLoading').html(`
+                <div class="alert alert-danger">
+                  <i data-feather="alert-triangle" class="me-2"></i> An error occurred while generating the care plan
+                </div>
+              `);
+              feather.replace();
+            }
+          });
+        });
+
+        // Use AI suggestion button
+        $('#useAiSuggestion').on('click', function() {
+          const aiCarePlan = {
+            title: $('#aiTitle').text(),
+            recommendations: [],
+            goals: [],
+            nextSteps: [],
+            notes: $('#aiNotes').text()
+          };
+
+          // Get recommendations
+          $('#aiRecommendations li').each(function() {
+            aiCarePlan.recommendations.push($(this).text());
+          });
+
+          // Get goals
+          $('#aiGoals li').each(function() {
+            aiCarePlan.goals.push($(this).text());
+          });
+
+          // Get next steps
+          $('#aiNextSteps li').each(function() {
+            aiCarePlan.nextSteps.push($(this).text());
+          });
+
+          // Update form
+          $('#title').val(aiCarePlan.title);
+          $('#notes').val(aiCarePlan.notes);
+
+          recommendations = aiCarePlan.recommendations;
+          goals = aiCarePlan.goals;
+          nextSteps = aiCarePlan.nextSteps;
+
+          updateRecommendationsList();
+          updateGoalsList();
+          updateStepsList();
+
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('aiSuggestionModal')).hide();
+
+          showAlert('success', 'AI-generated care plan applied to form. Review and save to confirm.');
+        });
+      });
+
+      // Function to add a recommendation
+      function addRecommendation() {
+        const recommendation = $('#newRecommendation').val().trim();
+        if (recommendation) {
+          recommendations.push(recommendation);
+          $('#newRecommendation').val('');
+          updateRecommendationsList();
+        }
+      }
+
+      // Function to update recommendations list
+      function updateRecommendationsList() {
+        const list = $('#recommendationsList');
+        list.empty();
+
+        if (recommendations.length === 0) {
+          list.html(`
+            <div class="list-group-item text-center text-muted">
+              <small>No recommendations added yet</small>
+            </div>
+          `);
+          return;
+        }
+
+        recommendations.forEach(function(item, index) {
+          list.append(`
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span>${item}</span>
+              <a class="remove-item" onclick="removeRecommendation(${index})">
+                <i data-feather="x-circle"></i>
+              </a>
+            </div>
+          `);
+        });
+
+        feather.replace();
+      }
+
+      // Function to remove a recommendation
+      function removeRecommendation(index) {
+        recommendations.splice(index, 1);
+        updateRecommendationsList();
+      }
+
+      // Function to add a goal
+      function addGoal() {
+        const goal = $('#newGoal').val().trim();
+        if (goal) {
+          goals.push(goal);
+          $('#newGoal').val('');
+          updateGoalsList();
+        }
+      }
+
+      // Function to update goals list
+      function updateGoalsList() {
+        const list = $('#goalsList');
+        list.empty();
+
+        if (goals.length === 0) {
+          list.html(`
+            <div class="list-group-item text-center text-muted">
+              <small>No goals added yet</small>
+            </div>
+          `);
+          return;
+        }
+
+        goals.forEach(function(item, index) {
+          list.append(`
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span>${item}</span>
+              <a class="remove-item" onclick="removeGoal(${index})">
+                <i data-feather="x-circle"></i>
+              </a>
+            </div>
+          `);
+        });
+
+        feather.replace();
+      }
+
+      // Function to remove a goal
+      function removeGoal(index) {
+        goals.splice(index, 1);
+        updateGoalsList();
+      }
+
+      // Function to add a step
+      function addStep() {
+        const step = $('#newStep').val().trim();
+        if (step) {
+          nextSteps.push(step);
+          $('#newStep').val('');
+          updateStepsList();
+        }
+      }
+
+      // Function to update steps list
+      function updateStepsList() {
+        const list = $('#stepsList');
+        list.empty();
+
+        if (nextSteps.length === 0) {
+          list.html(`
+            <div class="list-group-item text-center text-muted">
+              <small>No next steps added yet</small>
+            </div>
+          `);
+          return;
+        }
+
+        nextSteps.forEach(function(item, index) {
+          list.append(`
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span>${item}</span>
+              <a class="remove-item" onclick="removeStep(${index})">
+                <i data-feather="x-circle"></i>
+              </a>
+            </div>
+          `);
+        });
+
+        feather.replace();
+      }
+
+      // Function to remove a step
+      function removeStep(index) {
+        nextSteps.splice(index, 1);
+        updateStepsList();
+      }
+
+      // Function to display AI suggestions
+      function displayAiSuggestions(carePlan) {
+        // Hide loading, show content
+        $('#aiLoading').hide();
+        $('#aiContent').show();
+
+        // Set title and notes
+        $('#aiTitle').text(carePlan.title);
+        $('#aiNotes').text(carePlan.notes || 'No additional notes provided.');
+
+        // Set recommendations
+        const recommendationsList = $('#aiRecommendations');
+        recommendationsList.empty();
+        carePlan.recommendations.forEach(function(item) {
+          recommendationsList.append(`
+            <li class="list-group-item">${item}</li>
+          `);
+        });
+
+        // Set goals
+        const goalsList = $('#aiGoals');
+        goalsList.empty();
+        if (carePlan.goals && carePlan.goals.length > 0) {
+          carePlan.goals.forEach(function(item) {
+            goalsList.append(`
+              <li class="list-group-item">${item}</li>
+            `);
+          });
+        } else {
+          goalsList.append(`
+            <li class="list-group-item text-muted">No goals provided</li>
+          `);
+        }
+
+        // Set next steps
+        const stepsList = $('#aiNextSteps');
+        stepsList.empty();
+        if (carePlan.nextSteps && carePlan.nextSteps.length > 0) {
+          carePlan.nextSteps.forEach(function(item) {
+            stepsList.append(`
+              <li class="list-group-item">${item}</li>
+            `);
+          });
+        } else {
+          stepsList.append(`
+            <li class="list-group-item text-muted">No next steps provided</li>
+          `);
+        }
+
+        feather.replace();
+      }
+
+      // Function to show alert
+      function showAlert(type, message) {
+        const alertHtml = `
+          <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        `;
+
+        // Remove any existing alerts
+        $('.alert-container').remove();
+
+        // Add alert container if it doesn't exist
+        if ($('.alert-container').length === 0) {
+          $('main.content').prepend('<div class="alert-container"></div>');
+        }
+
+        // Add alert to container
+        $('.alert-container').html(alertHtml);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+          $('.alert').alert('close');
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>
