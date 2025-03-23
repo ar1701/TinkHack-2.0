@@ -34,5 +34,24 @@ router.get(
   patientController.getPrescriptionAnalysis
 );
 
+// Request caregiver
+router.get(
+  "/request-caregiver/:id",
+  isAuthenticated,
+  patientController.getRequestCaregiverPage
+);
+router.post(
+  "/request-caregiver/:id",
+  isAuthenticated,
+  patientController.requestCaregiver
+);
+
+// Request caregiver from recommendation
+router.post(
+  "/request-caregiver-from-recommendation/:id",
+  isAuthenticated,
+  patientController.requestCaregiverFromRecommendation
+);
+
 // Export the router
 module.exports = router;
