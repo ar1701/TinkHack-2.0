@@ -18,31 +18,31 @@ const caregiverSchema = new Schema(
     },
     speciality: {
       type: String,
-      required: true,
+      required: false,
     },
     qualification: {
       type: String,
-      required: true,
+      required: false,
     },
     experience: {
       type: Number,
-      required: true,
+      required: false,
     },
     hospital: {
       type: String,
-      required: true,
+      required: false,
     },
     location: {
       type: String,
-      required: true,
+      required: false,
     },
     languages: {
       type: String,
-      required: true,
+      required: false,
     },
     licenseNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     certificationDocs: {
       type: String,

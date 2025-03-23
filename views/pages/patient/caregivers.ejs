@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find a Caregiver | Patient Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .profile-img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-right: 15px;
+      }
+      .caregiver-info {
+        display: flex;
+        align-items: center;
+      }
+      .caregiver-details {
+        flex: 1;
+      }
+      .request-btn {
+        border-radius: 20px;
+        padding: 8px 25px;
+      }
+      .badge-verified {
+        background-color: #28a745;
+        color: white;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+        margin-left: 10px;
+      }
+      .request-status {
+        font-size: 0.9rem;
+        padding: 5px 15px;
+        border-radius: 20px;
+        margin-top: 10px;
+        display: inline-block;
+      }
+      .status-pending {
+        background-color: #ffc107;
+        color: #212529;
+      }
+      .status-accepted {
+        background-color: #28a745;
+        color: white;
+      }
+      .status-rejected {
+        background-color: #dc3545;
+        color: white;
+      }
+      .modal-dialog {
+        max-width: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include header and navigation -->
+    <%- include('../../partials/header') %>
+
+    <div class="container my-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+          <%- include('../../partials/sidebar', {path}) %>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-md me-2"></i>Find a Caregiver</h2>
+            <a
+              href="/patient/caregiver-requests"
+              class="btn btn-outline-primary"
+            >
+              <i class="fas fa-bell me-1"></i> View My Requests
+            </a>
+          </div>
+
+          <% if (caregivers && caregivers.length > 0) { %>
+          <div class="row">
+            <% caregivers.forEach(function(item) { const caregiver =
+            item.caregiver; const requestStatus = item.requestStatus; %>
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <div class="caregiver-info">
+                    <img
+                      src="<%= caregiver.profileImage ? `/uploads/profile/${caregiver.profileImage}` : '/images/default-doctor.jpg' %>"
+                      alt="<%= caregiver.fullName %>"
+                      class="profile-img"
+                    />
+                    <div class="caregiver-details">
+                      <h5 class="card-title">
+                        Dr. <%= caregiver.fullName %>
+                        <span class="badge-verified"
+                          ><i class="fas fa-check-circle me-1"></i
+                          >Verified</span
+                        >
+                      </h5>
+                      <p class="card-text text-muted">
+                        <%= caregiver.speciality %>
+                      </p>
+                      <p class="card-text">
+                        <i class="fas fa-hospital me-2"></i><%=
+                        caregiver.hospital %><br />
+                        <i class="fas fa-map-marker-alt me-2"></i><%=
+                        caregiver.location %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="row">
+                    <div class="col-6">
+                      <p>
+                        <i class="fas fa-graduation-cap me-2"></i><%=
+                        caregiver.qualification %>
+                      </p>
+                    </div>
+                    <div class="col-6">
+                      <p>
+                        <i class="fas fa-briefcase me-2"></i><%=
+                        caregiver.experience %> years exp.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <% if (requestStatus === 'pending') { %>
+                    <span class="request-status status-pending"
+                      >Request Pending</span
+                    >
+                    <% } else if (requestStatus === 'accepted') { %>
+                    <span class="request-status status-accepted"
+                      >Request Accepted</span
+                    >
+                    <% } else if (requestStatus === 'rejected') { %>
+                    <span class="request-status status-rejected"
+                      >Request Rejected</span
+                    >
+                    <% } else { %>
+                    <button
+                      class="btn btn-primary request-btn"
+                      data-caregiver-id="<%= caregiver._id %>"
+                      data-caregiver-name="<%= caregiver.fullName %>"
+                      data-bs-toggle="modal"
+                      data-bs-target="#requestModal"
+                    >
+                      <i class="fas fa-paper-plane me-1"></i> Send Request
+                    </button>
+                    <% } %>
+
+                    <button class="btn btn-outline-info">
+                      <i class="fas fa-info-circle"></i> View Profile
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+          <% } else { %>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> No caregivers available at
+            the moment. Please check back later.
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Modal -->
+    <div
+      class="modal fade"
+      id="requestModal"
+      tabindex="-1"
+      aria-labelledby="requestModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="requestModalLabel">
+              Send Request to <span id="caregiverName"></span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="requestForm">
+              <input type="hidden" id="caregiverId" name="caregiverId" />
+              <div class="mb-3">
+                <label for="reason" class="form-label"
+                  >Reason for Request</label
+                >
+                <textarea
+                  class="form-control"
+                  id="reason"
+                  name="reason"
+                  rows="4"
+                  required
+                  placeholder="Please explain why you would like to connect with this caregiver. Include any relevant medical information or specific needs."
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="sendRequestBtn">
+              Send Request
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include footer -->
+    <%- include('../../partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set caregiver details in the modal when opened
+        const requestModal = document.getElementById("requestModal");
+        if (requestModal) {
+          requestModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            const caregiverId = button.getAttribute("data-caregiver-id");
+            const caregiverName = button.getAttribute("data-caregiver-name");
+
+            document.getElementById(
+              "caregiverName"
+            ).textContent = `Dr. ${caregiverName}`;
+            document.getElementById("caregiverId").value = caregiverId;
+          });
+        }
+
+        // Handle form submission
+        const sendRequestBtn = document.getElementById("sendRequestBtn");
+        if (sendRequestBtn) {
+          sendRequestBtn.addEventListener("click", async function () {
+            const caregiverId = document.getElementById("caregiverId").value;
+            const reason = document.getElementById("reason").value.trim();
+
+            if (!reason) {
+              alert("Please provide a reason for your request.");
+              return;
+            }
+
+            try {
+              const response = await fetch("/patient/caregivers/request", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ caregiverId, reason }),
+              });
+
+              const data = await response.json();
+
+              if (response.ok) {
+                alert(data.message);
+                // Close modal and reload page to show status change
+                const modalInstance = bootstrap.Modal.getInstance(requestModal);
+                modalInstance.hide();
+                window.location.reload();
+              } else {
+                alert(
+                  data.message || "Failed to send request. Please try again."
+                );
+              }
+            } catch (error) {
+              console.error("Error sending request:", error);
+              alert("An error occurred. Please try again later.");
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

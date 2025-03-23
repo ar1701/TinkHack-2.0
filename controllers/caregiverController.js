@@ -4,6 +4,7 @@ const Conversation = require("../models/conversation");
 const User = require("../models/user");
 const path = require("path");
 const fs = require("fs");
+const PatientRequest = require("../models/patientRequest");
 
 // Ensure upload directories exist
 const ensureDirectoryExists = (directory) => {
@@ -15,7 +16,10 @@ const ensureDirectoryExists = (directory) => {
 // Dashboard controller
 exports.getDashboard = async (req, res) => {
   try {
-    const caregiver = await Caregiver.findOne({ user: req.user._id });
+    const caregiver = await Caregiver.findOne({ user: req.user._id }).populate({
+      path: "patients",
+      select: "fullName gender bloodGroup",
+    });
 
     if (!caregiver) {
       return res.render("pages/caregiver/profile", {
@@ -42,6 +46,28 @@ exports.getDashboard = async (req, res) => {
       },
     });
 
+    // Fetch patient details for accepted requests
+    const acceptedRequests = await PatientRequest.find({
+      caregiver: caregiver._id,
+      status: "accepted",
+    }).populate({
+      path: "patient",
+      populate: {
+        path: "user",
+        select: "fullName email",
+      },
+    });
+
+    const patientDetails = acceptedRequests.map((request) => ({
+      id: request.patient._id,
+      fullName: request.patient.user
+        ? request.patient.user.fullName
+        : "Unknown Patient",
+      email: request.patient.user ? request.patient.user.email : "",
+      reason: request.reason || "No reason provided",
+      requestDate: request.createdAt,
+    }));
+
     res.render("pages/caregiver/dashboard", {
       title: "Caregiver Dashboard",
       user: req.user,
@@ -49,6 +75,7 @@ exports.getDashboard = async (req, res) => {
       patientCount,
       conversationCount,
       unreadMessages,
+      patientDetails,
       path: "/caregiver/dashboard",
     });
   } catch (error) {
@@ -209,7 +236,7 @@ exports.getPatientRequests = async (req, res) => {
       status: "pending",
     }).populate("patient", "fullName");
 
-    res.render("caregiver/patient-requests", {
+    res.render("pages/caregiver/patient-requests", {
       title: "Patient Requests",
       user: req.user,
       caregiver,
@@ -223,6 +250,123 @@ exports.getPatientRequests = async (req, res) => {
       error,
       user: req.user,
       caregiver: {},
+    });
+  }
+};
+
+// Accept patient request
+exports.acceptPatientRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    // Get the caregiver
+    const caregiver = await Caregiver.findOne({ user: req.user._id });
+
+    if (!caregiver) {
+      return res.status(403).json({
+        success: false,
+        message: "Caregiver profile not found",
+      });
+    }
+
+    // Find and update the request
+    const PatientRequest = require("../models/patientRequest");
+    const request = await PatientRequest.findById(requestId);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    // Make sure the request is for this caregiver
+    if (request.caregiver.toString() !== caregiver._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this request",
+      });
+    }
+
+    // Update request status
+    request.status = "accepted";
+    await request.save();
+
+    // Add patient to caregiver's patients list if not already there
+    if (!caregiver.patients.includes(request.patient)) {
+      caregiver.patients.push(request.patient);
+      await caregiver.save();
+    }
+
+    // Also update Patient model to include this caregiver
+    const Patient = require("../models/patient");
+    const patient = await Patient.findById(request.patient);
+
+    if (patient && !patient.caregivers.includes(caregiver._id)) {
+      patient.caregivers.push(caregiver._id);
+      await patient.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Request accepted successfully",
+    });
+  } catch (error) {
+    console.error("Error accepting patient request:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to accept request",
+    });
+  }
+};
+
+// Reject patient request
+exports.rejectPatientRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    // Get the caregiver
+    const caregiver = await Caregiver.findOne({ user: req.user._id });
+
+    if (!caregiver) {
+      return res.status(403).json({
+        success: false,
+        message: "Caregiver profile not found",
+      });
+    }
+
+    // Find and update the request
+    const PatientRequest = require("../models/patientRequest");
+    const request = await PatientRequest.findById(requestId);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    // Make sure the request is for this caregiver
+    if (request.caregiver.toString() !== caregiver._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this request",
+      });
+    }
+
+    // Update request status
+    request.status = "rejected";
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Request rejected successfully",
+    });
+  } catch (error) {
+    console.error("Error rejecting patient request:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject request",
     });
   }
 };

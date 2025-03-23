@@ -290,6 +290,89 @@ app.get("/patient/care-plans", isLoggedIn, (req, res) => {
   });
 });
 
+// Add caregiver listing route for patients
+app.get("/patient/caregivers", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  const patientController = require("./controllers/patientController");
+  patientController.getCaregivers(req, res);
+});
+
+// Add caregiver requests route for patients
+app.get("/patient/caregiver-requests", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  const patientController = require("./controllers/patientController");
+  patientController.getMyCaregiverRequests(req, res);
+});
+
+// API endpoint for sending caregiver requests
+app.post("/patient/caregivers/request", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.status(403).json({
+      success: false,
+      message: "Unauthorized: Patient access required",
+    });
+  }
+
+  const patientController = require("./controllers/patientController");
+  patientController.sendCaregiverRequest(req, res);
+});
+
+// API endpoints for caregivers to accept/reject patient requests
+app.post(
+  "/caregiver/patient-requests/:requestId/accept",
+  isLoggedIn,
+  (req, res) => {
+    if (req.user.userType !== "Caregiver") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Caregiver access required",
+      });
+    }
+
+    const caregiverController = require("./controllers/caregiverController");
+    caregiverController.acceptPatientRequest(req, res);
+  }
+);
+
+app.post(
+  "/caregiver/patient-requests/:requestId/reject",
+  isLoggedIn,
+  (req, res) => {
+    if (req.user.userType !== "Caregiver") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Caregiver access required",
+      });
+    }
+
+    const caregiverController = require("./controllers/caregiverController");
+    caregiverController.rejectPatientRequest(req, res);
+  }
+);
+
+// Route for patients to cancel caregiver requests
+app.post(
+  "/patient/caregiver-requests/:requestId/cancel",
+  isLoggedIn,
+  (req, res) => {
+    if (req.user.userType !== "Patient") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Patient access required",
+      });
+    }
+
+    const patientController = require("./controllers/patientController");
+    patientController.cancelCaregiverRequest(req, res);
+  }
+);
+
 app.get("/navigator/dashboard", isLoggedIn, (req, res) => {
   if (req.user.userType !== "Patient-Navigator") {
     return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Requests | Caregiver Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .card {
+        border-radius: 10px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      }
+      .table {
+        margin-bottom: 0;
+      }
+      .action-btns .btn {
+        margin-right: 5px;
+      }
+      .page-header {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+      }
+      .badge-pending {
+        background-color: #ffc107;
+        color: #212529;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include header and navigation -->
+    <%- include('../../partials/header') %>
+
+    <div class="container my-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+          <%- include('../../partials/sidebar', {path}) %>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+          <div class="page-header">
+            <h2>
+              <i class="fas fa-user-plus me-2"></i>Patient Connection Requests
+            </h2>
+            <p class="text-muted">
+              Manage patient connection requests to provide care
+            </p>
+          </div>
+
+          <% if (pendingRequests && pendingRequests.length > 0) { %>
+          <div class="card">
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Patient</th>
+                      <th>Request Date</th>
+                      <th>Reason</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% pendingRequests.forEach(function(request) { %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div
+                            class="avatar me-2"
+                            style="
+                              width: 40px;
+                              height: 40px;
+                              border-radius: 50%;
+                              background-color: #e9ecef;
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                            "
+                          >
+                            <i class="fas fa-user"></i>
+                          </div>
+                          <div>
+                            <div>
+                              <%= request.patient ? request.patient.fullName :
+                              'Patient' %>
+                            </div>
+                            <span class="badge badge-pending">Pending</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <%= new Date(request.createdAt).toLocaleDateString() %>
+                      </td>
+                      <td>
+                        <% if (request.reason && request.reason.length > 50) {
+                        %>
+                        <span title="<%= request.reason %>"
+                          ><%= request.reason.substring(0, 50) %>...</span
+                        >
+                        <% } else { %> <%= request.reason %> <% } %>
+                      </td>
+                      <td class="action-btns">
+                        <button
+                          class="btn btn-sm btn-success accept-btn"
+                          data-request-id="<%= request._id %>"
+                        >
+                          <i class="fas fa-check"></i> Accept
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger reject-btn"
+                          data-request-id="<%= request._id %>"
+                        >
+                          <i class="fas fa-times"></i> Reject
+                        </button>
+                        <button
+                          class="btn btn-sm btn-info view-details-btn"
+                          data-request-id="<%= request._id %>"
+                          data-bs-toggle="modal"
+                          data-bs-target="#requestDetailsModal"
+                          data-reason="<%= request.reason %>"
+                          data-patient="<%= request.patient ? request.patient.fullName : 'Patient' %>"
+                        >
+                          <i class="fas fa-eye"></i> View
+                        </button>
+                      </td>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <% } else { %>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> You don't have any pending
+            patient requests at the moment.
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Details Modal -->
+    <div
+      class="modal fade"
+      id="requestDetailsModal"
+      tabindex="-1"
+      aria-labelledby="requestDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="requestDetailsModalLabel">
+              Request Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h6>Patient</h6>
+            <p id="modalPatientName"></p>
+            <h6>Reason for Request</h6>
+            <p id="modalRequestReason"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include footer -->
+    <%- include('../../partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Handle accept request buttons
+        const acceptButtons = document.querySelectorAll(".accept-btn");
+        acceptButtons.forEach((button) => {
+          button.addEventListener("click", async function () {
+            if (
+              confirm("Are you sure you want to accept this patient request?")
+            ) {
+              const requestId = this.getAttribute("data-request-id");
+
+              try {
+                const response = await fetch(
+                  `/caregiver/patient-requests/${requestId}/accept`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const data = await response.json();
+
+                if (response.ok) {
+                  alert("Request accepted successfully");
+                  window.location.reload();
+                } else {
+                  alert(data.message || "Failed to accept request");
+                }
+              } catch (error) {
+                console.error("Error accepting request:", error);
+                alert("An error occurred. Please try again later.");
+              }
+            }
+          });
+        });
+
+        // Handle reject request buttons
+        const rejectButtons = document.querySelectorAll(".reject-btn");
+        rejectButtons.forEach((button) => {
+          button.addEventListener("click", async function () {
+            if (
+              confirm("Are you sure you want to reject this patient request?")
+            ) {
+              const requestId = this.getAttribute("data-request-id");
+
+              try {
+                const response = await fetch(
+                  `/caregiver/patient-requests/${requestId}/reject`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const data = await response.json();
+
+                if (response.ok) {
+                  alert("Request rejected successfully");
+                  window.location.reload();
+                } else {
+                  alert(data.message || "Failed to reject request");
+                }
+              } catch (error) {
+                console.error("Error rejecting request:", error);
+                alert("An error occurred. Please try again later.");
+              }
+            }
+          });
+        });
+
+        // Handle request details modal
+        const requestDetailsModal = document.getElementById(
+          "requestDetailsModal"
+        );
+        if (requestDetailsModal) {
+          requestDetailsModal.addEventListener(
+            "show.bs.modal",
+            function (event) {
+              const button = event.relatedTarget;
+              const patient = button.getAttribute("data-patient");
+              const reason = button.getAttribute("data-reason");
+
+              document.getElementById("modalPatientName").textContent = patient;
+              document.getElementById("modalRequestReason").textContent =
+                reason;
+            }
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

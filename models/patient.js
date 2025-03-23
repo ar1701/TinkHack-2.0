@@ -14,25 +14,25 @@ const patientSchema = new Schema(
     },
     dateOfBirth: {
       type: Date,
-      required: true,
+      required: false,
     },
     gender: {
       type: String,
       enum: ["Male", "Female", "Other"],
-      required: true,
+      required: false,
     },
     bloodGroup: {
       type: String,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-      required: true,
+      required: false,
     },
     contactNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
-      required: true,
+      required: false,
     },
     address: {
       street: String,
@@ -71,6 +71,12 @@ const patientSchema = new Schema(
       policyNumber: String,
       validUntil: Date,
     },
+    caregivers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Caregiver",
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,

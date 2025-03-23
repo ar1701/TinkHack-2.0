@@ -26,12 +26,34 @@ router.post(
   caregiverController.updateProfile
 );
 
+// Patient details route
+router.get(
+  "/patient/:patientId",
+  isAuthenticated,
+  isCaregiver,
+  caregiverController.getPatientDetails
+);
+
 // Patient requests route
 router.get(
   "/patient-requests",
   isAuthenticated,
   isCaregiver,
   caregiverController.getPatientRequests
+);
+
+// Accept/reject patient requests
+router.post(
+  "/patient-requests/:requestId/accept",
+  isAuthenticated,
+  isCaregiver,
+  caregiverController.acceptPatientRequest
+);
+router.post(
+  "/patient-requests/:requestId/reject",
+  isAuthenticated,
+  isCaregiver,
+  caregiverController.rejectPatientRequest
 );
 
 // Chat routes
