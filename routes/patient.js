@@ -26,5 +26,13 @@ router.get(
   patientController.getMyCaregiverRequests
 );
 
+// Prescription Analysis routes
+router.get(
+  "/patient/prescription-analysis",
+  isAuthenticated,
+  isPatient,
+  patientController.getPrescriptionAnalysis
+);
+
 // Export the router
 module.exports = router;

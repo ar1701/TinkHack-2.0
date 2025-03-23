@@ -19,10 +19,13 @@ const baselineScreeningRoutes = require("./routes/baselineScreening");
 const geminiRoutes = require("./routes/gemini");
 const navigatorListRoutes = require("./routes/navigatorList");
 const chatRoutes = require("./routes/chat");
+const ocrRoutes = require("./routes/ocr");
+const recommendationsRoutes = require("./routes/recommendations");
 const fileUpload = require("express-fileupload");
 const http = require("http");
 const socketIO = require("socket.io");
 const carePlansRouter = require("./routes/carePlans");
+const fs = require("fs");
 
 var app = express();
 
@@ -36,17 +39,29 @@ mongoose
 
 // Configure middleware
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// Configure file upload middleware
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure file upload middleware with more robust settings
 app.use(
   fileUpload({
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+    useTempFiles: true,
+    tempFileDir: path.join(__dirname, "uploads/temp"),
     createParentPath: true, // Create upload directory if it doesn't exist
+    abortOnLimit: true,
+    parseNested: true,
+    debug: process.env.NODE_ENV !== "production",
   })
 );
 
@@ -288,6 +303,16 @@ app.get("/patient/care-plans", isLoggedIn, (req, res) => {
     user: req.user,
     path: "/patient/care-plans",
   });
+});
+
+// Add prescription analysis page
+app.get("/patient/prescription-analysis", isLoggedIn, (req, res) => {
+  if (req.user.userType !== "Patient") {
+    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
+  }
+
+  const patientController = require("./controllers/patientController");
+  patientController.getPrescriptionAnalysis(req, res);
 });
 
 // Add caregiver listing route for patients
@@ -640,6 +665,8 @@ app.use(patientRoutes);
 app.use(navigatorRoutes);
 app.use(baselineScreeningRoutes);
 app.use("/api/gemini", geminiRoutes);
+app.use("/api/ocr", ocrRoutes);
+app.use("/api/recommendations", recommendationsRoutes);
 app.use(navigatorListRoutes);
 app.use(chatRoutes);
 app.use("/", carePlansRouter);

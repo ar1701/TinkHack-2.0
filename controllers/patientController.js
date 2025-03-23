@@ -2,6 +2,8 @@ const User = require("../models/user");
 const Patient = require("../models/patient");
 const Caregiver = require("../models/caregiver");
 const PatientRequest = require("../models/patientRequest");
+const MedicalRecord = require("../models/medicalRecord");
+const { getRecommendations } = require("../utils/recommendationEngine");
 
 // Get all caregivers listing
 exports.getCaregivers = async (req, res) => {
@@ -236,3 +238,98 @@ exports.cancelCaregiverRequest = async (req, res) => {
 
 // Export all controller functions
 module.exports = exports;
+
+// Get prescription analysis page
+exports.getPrescriptionAnalysis = async (req, res) => {
+  try {
+    // Find the patient record or create one if it doesn't exist
+    let patient = await Patient.findOne({ user: req.user._id });
+    if (!patient) {
+      patient = new Patient({
+        user: req.user._id,
+        fullName: req.user.fullName,
+      });
+      await patient.save();
+    }
+
+    // Render the prescription analysis page
+    res.render("pages/patient/prescription-analysis", {
+      title: "Prescription Text Extraction",
+      user: req.user,
+      patient,
+      path: "/patient/prescription-analysis",
+      features: {
+        tesseractOcr: true, // Enable Tesseract OCR feature
+        geminiAi: true, // Enable Gemini AI analysis feature
+      },
+    });
+  } catch (error) {
+    console.error("Error loading prescription analysis page:", error);
+    res.status(500).render("error", {
+      message: "Failed to load prescription analysis page",
+      error,
+    });
+  }
+};
+
+// Request caregiver via recommendations
+exports.requestCaregiverFromRecommendation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!reason) {
+      return res.status(400).send("Reason for request is required");
+    }
+
+    // Find the patient
+    const patient = await Patient.findOne({ user: req.user._id });
+
+    if (!patient) {
+      return res.status(404).send("Patient not found");
+    }
+
+    // Find the caregiver
+    const caregiver = await Caregiver.findById(id);
+
+    if (!caregiver) {
+      return res.status(404).send("Caregiver not found");
+    }
+
+    // Check if request already exists
+    const existingRequest = await PatientRequest.findOne({
+      patient: patient._id,
+      caregiver: caregiver._id,
+    });
+
+    if (existingRequest) {
+      if (existingRequest.status === "pending") {
+        return res.status(400).send("Request already sent and pending");
+      } else if (existingRequest.status === "accepted") {
+        return res.status(400).send("This caregiver is already your doctor");
+      } else {
+        // If rejected, allow to send again
+        existingRequest.status = "pending";
+        existingRequest.reason = reason;
+        await existingRequest.save();
+        return res.redirect(
+          "/patient/dashboard?message=Request+sent+successfully"
+        );
+      }
+    }
+
+    // Create new request
+    const newRequest = new PatientRequest({
+      patient: patient._id,
+      caregiver: caregiver._id,
+      reason,
+    });
+
+    await newRequest.save();
+
+    res.redirect("/patient/dashboard?message=Request+sent+successfully");
+  } catch (error) {
+    console.error("Error requesting caregiver:", error);
+    res.status(500).send("Error processing your request");
+  }
+};

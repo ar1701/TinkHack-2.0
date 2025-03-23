@@ -35,7 +35,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       body {
@@ -88,14 +88,38 @@
         font-size: 40px;
       }
 
-      .icon:nth-child(1) { top: 20%; left: 10%; }
-      .icon:nth-child(2) { top: 40%; left: 25%; }
-      .icon:nth-child(3) { top: 60%; left: 15%; }
-      .icon:nth-child(4) { top: 80%; left: 30%; }
-      .icon:nth-child(5) { top: 15%; right: 20%; }
-      .icon:nth-child(6) { top: 35%; right: 10%; }
-      .icon:nth-child(7) { top: 55%; right: 25%; }
-      .icon:nth-child(8) { top: 75%; right: 15%; }
+      .icon:nth-child(1) {
+        top: 20%;
+        left: 10%;
+      }
+      .icon:nth-child(2) {
+        top: 40%;
+        left: 25%;
+      }
+      .icon:nth-child(3) {
+        top: 60%;
+        left: 15%;
+      }
+      .icon:nth-child(4) {
+        top: 80%;
+        left: 30%;
+      }
+      .icon:nth-child(5) {
+        top: 15%;
+        right: 20%;
+      }
+      .icon:nth-child(6) {
+        top: 35%;
+        right: 10%;
+      }
+      .icon:nth-child(7) {
+        top: 55%;
+        right: 25%;
+      }
+      .icon:nth-child(8) {
+        top: 75%;
+        right: 15%;
+      }
 
       /* Sidebar */
       .sidebar {
@@ -419,7 +443,8 @@
           display: flex;
         }
 
-        .filter-section, .action-section {
+        .filter-section,
+        .action-section {
           width: 100%;
         }
       }
@@ -467,7 +492,7 @@
         </li>
         <li>
           <a href="/caregiver/profile"
-            ><i class="fas fa-user-md"></i> Settings & Profile</a
+            ><i class="fas fa-user-md"></i> Profile</a
           >
         </li>
       </ul>
@@ -483,7 +508,6 @@
       <div class="header">
         <h1>Appointments Management</h1>
         <div class="user-profile">
-          <img src="./Doc.jpeg" alt="Doctor Profile" class="profile-image" />
           <div class="notification-bell" id="notificationBell">
             <i class="fas fa-bell"></i>
             <span class="notification-count">5</span>
@@ -491,505 +515,414 @@
         </div>
       </div>
 
-      <!-- Notifications Popup -->
-      <div class="notifications-popup" id="notificationsPopup">
-        <div class="notifications-header">
-          <h3>Notifications</h3>
-          <button class="mark-all-read">Mark all as read</button>
-        </div>
-        <div class="notifications-list">
-          <div class="notification-item unread">
-            <div class="notification-icon bg-primary">
-              <i class="fas fa-calendar-alt"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">New Appointment Request</div>
-              <div class="notification-message">
-                John Doe requested an urgent appointment.
-              </div>
-              <div class="notification-time">10 minutes ago</div>
-            </div>
+      <!-- Appointment Stats -->
+      <div class="appointment-stats">
+        <div class="stat-card">
+          <div class="stat-icon bg-primary">
+            <i class="fas fa-calendar-check"></i>
           </div>
-          <div class="notification-item unread">
-            <div class="notification-icon bg-info">
-              <i class="fas fa-file-medical"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">New Lab Results</div>
-              <div class="notification-message">
-                Lab results for Maria Garcia are now available.
-              </div>
-              <div class="notification-time">1 hour ago</div>
-            </div>
-          </div>
-          <div class="notification-item unread">
-            <div class="notification-icon bg-success">
-              <i class="fas fa-comments"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">New Message</div>
-              <div class="notification-message">
-                Patient Robert Smith has sent you a message.
-              </div>
-              <div class="notification-time">3 hours ago</div>
-            </div>
-          </div>
-          <div class="notification-item">
-            <div class="notification-icon bg-warning">
-              <i class="fas fa-prescription"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">Prescription Refill</div>
-              <div class="notification-message">
-                Emily Johnson requested a prescription refill.
-              </div>
-              <div class="notification-time">Yesterday</div>
-            </div>
-          </div>
-          <div class="notification-item">
-            <div class="notification-icon bg-danger">
-              <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">Urgent Follow-up</div>
-              <div class="notification-message">
-                Urgent follow-up required for patient Michael Brown.
-              </div>
-              <div class="notification-time">Yesterday</div>
+          <div class="stat-details">
+            <h4>Today</h4>
+            <div class="stat-count">
+              <%= typeof todayAppointments !== 'undefined' ? todayAppointments :
+              6 %>
             </div>
           </div>
         </div>
-        <div class="notifications-footer">
-          <a href="notifications.html">View all notifications</a>
+
+        <div class="stat-card">
+          <div class="stat-icon bg-info">
+            <i class="fas fa-calendar-plus"></i>
+          </div>
+          <div class="stat-details">
+            <h4>Upcoming</h4>
+            <div class="stat-count">
+              <%= typeof upcomingAppointments !== 'undefined' ?
+              upcomingAppointments : 14 %>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon bg-success">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-details">
+            <h4>Completed</h4>
+            <div class="stat-count">
+              <%= typeof completedAppointments !== 'undefined' ?
+              completedAppointments : 8 %>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon bg-warning">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-details">
+            <h4>Pending</h4>
+            <div class="stat-count">
+              <%= typeof pendingRequests !== 'undefined' ? pendingRequests : 5
+              %>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Appointments Section -->
-      <div class="dashboard-section active">
-        <!-- Filter and Action Bar -->
-        <div class="appointments-filter-bar">
-          <div class="filter-section">
-            <div class="filter-group">
-              <label for="dateFilter">Date Range:</label>
-              <select id="dateFilter" class="filter-select">
-                <option value="today">Today</option>
-                <option value="tomorrow">Tomorrow</option>
-                <option value="week" selected>This Week</option>
-                <option value="month">This Month</option>
-                <option value="custom">Custom Range</option>
-              </select>
+      <!-- Filter and Action Bar -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">
+            <i class="fas fa-filter me-2"></i> Filter Options
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="appointments-filter-bar">
+            <div class="filter-section">
+              <div class="filter-group">
+                <label for="dateFilter">Date Range:</label>
+                <select id="dateFilter" class="filter-select">
+                  <option value="today">Today</option>
+                  <option value="tomorrow">Tomorrow</option>
+                  <option value="week" selected>This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="urgencyFilter">Urgency:</label>
+                <select id="urgencyFilter" class="filter-select">
+                  <option value="all" selected>All</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="regular">Regular</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" class="filter-select">
+                  <option value="all" selected>All Types</option>
+                  <option value="checkup">Regular Checkup</option>
+                  <option value="followup">Follow-up</option>
+                  <option value="consultation">Consultation</option>
+                  <option value="prescription">Prescription Review</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" class="filter-select">
+                  <option value="all" selected>All Status</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
             </div>
 
-            <div class="filter-group">
-              <label for="urgencyFilter">Urgency:</label>
-              <select id="urgencyFilter" class="filter-select">
-                <option value="all" selected>All</option>
-                <option value="urgent">Urgent</option>
-                <option value="regular">Regular</option>
-              </select>
-            </div>
-
-            <div class="filter-group">
-              <label for="typeFilter">Type:</label>
-              <select id="typeFilter" class="filter-select">
-                <option value="all" selected>All Types</option>
-                <option value="checkup">Regular Checkup</option>
-                <option value="followup">Follow-up</option>
-                <option value="consultation">Consultation</option>
-                <option value="prescription">Prescription Review</option>
-              </select>
-            </div>
-
-            <div class="filter-group">
-              <label for="statusFilter">Status:</label>
-              <select id="statusFilter" class="filter-select">
-                <option value="all" selected>All Status</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="action-section">
-            <button class="btn-primary" id="newAppointmentBtn">
-              <i class="fas fa-plus"></i> New Appointment
-            </button>
-            <div class="view-toggle">
-              <button class="view-btn active" data-view="list">
-                <i class="fas fa-list"></i>
+            <div class="action-section">
+              <button class="btn btn-primary" id="newAppointmentBtn">
+                <i class="fas fa-plus"></i> New Appointment
               </button>
-              <button class="view-btn" data-view="calendar">
-                <i class="fas fa-calendar-alt"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-          <div class="search-input-container">
-            <i class="fas fa-search search-icon"></i>
-            <input
-              type="text"
-              id="appointmentSearch"
-              class="search-input"
-              placeholder="Search by patient name, ID, or appointment details..."
-            />
-          </div>
-        </div>
-
-        <!-- Calendar View (initially hidden) -->
-        <div class="calendar-view" style="display: none">
-          <div class="calendar-header">
-            <button class="calendar-nav-btn" id="prevMonth">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <h3 id="currentMonthYear">March 2025</h3>
-            <button class="calendar-nav-btn" id="nextMonth">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-          <div class="calendar-grid">
-            <div class="calendar-weekdays">
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-              <div>Thu</div>
-              <div>Fri</div>
-              <div>Sat</div>
-            </div>
-            <div class="calendar-days" id="calendarDays">
-              <!-- Calendar days will be generated with JS -->
-            </div>
-          </div>
-        </div>
-
-        <!-- List View (default) -->
-        <div class="list-view">
-          <!-- Appointment Statistics -->
-          <div class="appointment-stats">
-            <div class="stat-card bg-primary-light">
-              <div class="stat-icon bg-primary">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <div class="stat-details">
-                <h4>Today</h4>
-                <div class="stat-count">6</div>
-              </div>
-            </div>
-
-            <div class="stat-card bg-info-light">
-              <div class="stat-icon bg-info">
-                <i class="fas fa-calendar-plus"></i>
-              </div>
-              <div class="stat-details">
-                <h4>Upcoming</h4>
-                <div class="stat-count">14</div>
-              </div>
-            </div>
-
-            <div class="stat-card bg-success-light">
-              <div class="stat-icon bg-success">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="stat-details">
-                <h4>Completed</h4>
-                <div class="stat-count">8</div>
-              </div>
-            </div>
-
-            <div class="stat-card bg-warning-light">
-              <div class="stat-icon bg-warning">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div class="stat-details">
-                <h4>Pending</h4>
-                <div class="stat-count">5</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Appointments List -->
-          <div class="card appointments-card">
-            <div class="card-header">
-              <div class="d-flex">
-                <div class="card-icon bg-primary">
+              <div class="btn-group">
+                <button
+                  class="btn btn-outline-secondary active"
+                  id="listViewBtn"
+                >
+                  <i class="fas fa-list"></i>
+                </button>
+                <button class="btn btn-outline-secondary" id="calendarViewBtn">
                   <i class="fas fa-calendar-alt"></i>
-                </div>
-                <h3>Upcoming Appointments</h3>
-              </div>
-              <div class="card-actions">
-                <button class="btn-action btn-secondary" id="exportBtn">
-                  <i class="fas fa-download"></i> Export
                 </button>
               </div>
             </div>
+          </div>
 
-            <div class="card-body">
-              <div class="appointment-date-header">
-                <div class="date-badge">Today, March 23, 2025</div>
-              </div>
+          <!-- Search Bar -->
+          <div class="search-bar">
+            <div class="search-input-container">
+              <i class="fas fa-search search-icon"></i>
+              <input
+                type="text"
+                id="appointmentSearch"
+                class="search-input"
+                placeholder="Search by patient name, ID, or appointment details..."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div class="appointment-table">
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">09:00 AM</div>
-                    <span class="duration">30 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">John Doe</div>
-                      <div class="patient-details">42y, Male • ID: P-1024</div>
-                    </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Regular Checkup</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge scheduled">Scheduled</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
-                    <button
-                      class="btn-circle btn-success"
-                      title="Start Meeting"
-                    >
-                      <i class="fas fa-video"></i>
-                    </button>
-                    <button class="btn-circle btn-info" title="View Details">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
-                      <i class="fas fa-clock"></i>
-                    </button>
-                    <button class="btn-circle btn-danger" title="Cancel">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
+      <!-- Appointments List -->
+      <div class="card" id="listView">
+        <div class="card-header">
+          <h5 class="card-title">
+            <i class="fas fa-calendar-alt me-2"></i> Upcoming Appointments
+          </h5>
+          <div class="dropdown">
+            <button
+              class="btn btn-sm btn-outline-primary dropdown-toggle"
+              type="button"
+              id="exportBtn"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fas fa-download me-1"></i> Export
+            </button>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="exportBtn"
+            >
+              <li>
+                <button class="dropdown-item" id="exportCSV">
+                  <i class="fas fa-file-csv me-2"></i>Export as CSV
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" id="exportPDF">
+                  <i class="fas fa-file-pdf me-2"></i>Export as PDF
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" id="exportPrint">
+                  <i class="fas fa-print me-2"></i>Print
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">10:30 AM</div>
-                    <span class="duration">45 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat2.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">Maria Garcia</div>
-                      <div class="patient-details">
-                        35y, Female • ID: P-2189
+        <div class="card-body p-0">
+          <div class="p-3 bg-light border-bottom">
+            <strong
+              >Today, <%= new Date().toLocaleDateString('en-US', {weekday:
+              'long', month: 'long', day: 'numeric', year: 'numeric'})
+              %></strong
+            >
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Patient</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="fw-medium">09:00 AM</div>
+                    <small class="text-muted">30 min</small>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">John Doe</div>
+                        <small class="text-muted">42y, Male • ID: P-1024</small>
                       </div>
                     </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Follow-up</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge scheduled">Scheduled</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
+                  </td>
+                  <td>Regular Checkup</td>
+                  <td><span class="status-badge scheduled">Scheduled</span></td>
+                  <td class="text-center">
                     <button
-                      class="btn-circle btn-success"
+                      class="btn btn-sm btn-success"
                       title="Start Meeting"
                     >
                       <i class="fas fa-video"></i>
                     </button>
-                    <button class="btn-circle btn-info" title="View Details">
+                    <button
+                      class="btn btn-sm btn-info view-details-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#appointmentDetailsModal"
+                    >
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
+                    <button class="btn btn-sm btn-warning">
                       <i class="fas fa-clock"></i>
                     </button>
-                    <button class="btn-circle btn-danger" title="Cancel">
+                    <button class="btn btn-sm btn-danger">
                       <i class="fas fa-times"></i>
                     </button>
-                  </div>
-                </div>
-
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">01:15 PM</div>
-                    <span class="duration">60 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">Robert Smith</div>
-                      <div class="patient-details">28y, Male • ID: P-3570</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="fw-medium">10:30 AM</div>
+                    <small class="text-muted">45 min</small>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">Maria Garcia</div>
+                        <small class="text-muted"
+                          >35y, Female • ID: P-2189</small
+                        >
+                      </div>
                     </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Consultation</span>
-                    <span class="tag urgent">Urgent</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge pending">Pending</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
-                    <button class="btn-circle btn-primary" title="Accept">
+                  </td>
+                  <td>Follow-up</td>
+                  <td><span class="status-badge scheduled">Scheduled</span></td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-sm btn-success"
+                      title="Start Meeting"
+                    >
+                      <i class="fas fa-video"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-info view-details-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#appointmentDetailsModal"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning">
+                      <i class="fas fa-clock"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="fw-medium">01:15 PM</div>
+                    <small class="text-muted">60 min</small>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">Robert Smith</div>
+                        <small class="text-muted">28y, Male • ID: P-3570</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    Consultation <span class="badge bg-danger">Urgent</span>
+                  </td>
+                  <td><span class="status-badge pending">Pending</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-primary" title="Accept">
                       <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn-circle btn-info" title="View Details">
+                    <button
+                      class="btn btn-sm btn-info view-details-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#appointmentDetailsModal"
+                    >
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
+                    <button class="btn btn-sm btn-warning">
                       <i class="fas fa-clock"></i>
                     </button>
-                    <button class="btn-circle btn-danger" title="Reject">
+                    <button class="btn btn-sm btn-danger">
                       <i class="fas fa-times"></i>
                     </button>
-                  </div>
-                </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">03:45 PM</div>
-                    <span class="duration">30 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat2.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">Emily Johnson</div>
-                      <div class="patient-details">
-                        51y, Female • ID: P-4281
+          <div class="p-3 bg-light border-bottom">
+            <strong
+              >Tomorrow, <%= new Date(Date.now() +
+              86400000).toLocaleDateString('en-US', {weekday: 'long', month:
+              'long', day: 'numeric', year: 'numeric'}) %></strong
+            >
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="fw-medium">08:30 AM</div>
+                    <small class="text-muted">45 min</small>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar me-3">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">James Miller</div>
+                        <small class="text-muted">39y, Male • ID: P-5172</small>
                       </div>
                     </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Prescription Review</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge scheduled">Scheduled</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
+                  </td>
+                  <td>Follow-up</td>
+                  <td><span class="status-badge scheduled">Scheduled</span></td>
+                  <td class="text-center">
                     <button
-                      class="btn-circle btn-success"
+                      class="btn btn-sm btn-success"
                       title="Start Meeting"
                     >
                       <i class="fas fa-video"></i>
                     </button>
-                    <button class="btn-circle btn-info" title="View Details">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
-                      <i class="fas fa-clock"></i>
-                    </button>
-                    <button class="btn-circle btn-danger" title="Cancel">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="appointment-date-header">
-                <div class="date-badge">Tomorrow, March 24, 2025</div>
-              </div>
-
-              <div class="appointment-table">
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">08:30 AM</div>
-                    <span class="duration">45 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">James Miller</div>
-                      <div class="patient-details">39y, Male • ID: P-5172</div>
-                    </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Follow-up</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge scheduled">Scheduled</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
                     <button
-                      class="btn-circle btn-success"
-                      title="Start Meeting"
+                      class="btn btn-sm btn-info view-details-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#appointmentDetailsModal"
                     >
-                      <i class="fas fa-video"></i>
-                    </button>
-                    <button class="btn-circle btn-info" title="View Details">
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
+                    <button class="btn btn-sm btn-warning">
                       <i class="fas fa-clock"></i>
                     </button>
-                    <button class="btn-circle btn-danger" title="Cancel">
+                    <button class="btn btn-sm btn-danger">
                       <i class="fas fa-times"></i>
                     </button>
-                  </div>
-                </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-                <div class="appointment-row">
-                  <div class="appointment-cell time-cell">
-                    <div class="time-display">11:00 AM</div>
-                    <span class="duration">30 min</span>
-                  </div>
-                  <div class="appointment-cell patient-cell">
-                    <img
-                      src="./Pat2.jpeg"
-                      alt="Patient"
-                      class="patient-small-image"
-                    />
-                    <div class="patient-info">
-                      <div class="patient-name">Jennifer Davis</div>
-                      <div class="patient-details">
-                        45y, Female • ID: P-6038
-                      </div>
-                    </div>
-                  </div>
-                  <div class="appointment-cell type-cell">
-                    <span class="appointment-type">Regular Checkup</span>
-                  </div>
-                  <div class="appointment-cell status-cell">
-                    <span class="status-badge scheduled">Scheduled</span>
-                  </div>
-                  <div class="appointment-cell actions-cell">
-                    <button
-                      class="btn-circle btn-success"
-                      title="Start Meeting"
-                    >
-                      <i class="fas fa-video"></i>
-                    </button>
-                    <button class="btn-circle btn-info" title="View Details">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-circle btn-warning" title="Reschedule">
-                      <i class="fas fa-clock"></i>
-                    </button>
-                    <button class="btn-circle btn-danger" title="Cancel">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
+      <!-- Calendar View (initially hidden) -->
+      <div class="card" id="calendarView" style="display: none">
+        <div class="card-header">
+          <h5 class="card-title">
+            <i class="fas fa-calendar-alt me-2"></i> Calendar View
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-sm btn-outline-secondary" id="prevMonth">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <h4 id="currentMonthYear" class="mb-0">
+              <%= new Date().toLocaleDateString('en-US', {month: 'long', year:
+              'numeric'}) %>
+            </h4>
+            <button class="btn btn-sm btn-outline-secondary" id="nextMonth">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="calendar-grid mb-3">
+            <!-- Calendar will be generated with JavaScript -->
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i> Calendar view is under
+              development. Please use list view for now.
             </div>
           </div>
         </div>
@@ -997,327 +930,371 @@
     </div>
 
     <!-- Appointment Details Modal -->
-    <div class="modal" id="appointmentDetailsModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Appointment Details</h3>
-          <button class="close-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="appointment-detail-card">
-            <div class="appointment-detail-header">
-              <div class="patient-profile">
-                <img
-                  src="./Pat.jpeg"
-                  alt="Patient"
-                  class="patient-detail-image"
-                />
-                <div class="patient-detail-info">
-                  <h4>John Doe</h4>
-                  <div class="patient-demographics">
-                    <span><i class="fas fa-birthday-cake"></i> 42 years</span>
-                    <span><i class="fas fa-venus-mars"></i> Male</span>
-                    <span><i class="fas fa-id-card"></i> P-1024</span>
+    <div
+      class="modal fade"
+      id="appointmentDetailsModal"
+      tabindex="-1"
+      aria-labelledby="appointmentDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="appointmentDetailsModalLabel">
+              Appointment Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-4">
+              <div class="d-flex align-items-center mb-3">
+                <div
+                  class="avatar me-3"
+                  style="width: 50px; height: 50px; font-size: 1.2rem"
+                >
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <h5 class="mb-0">John Doe</h5>
+                  <div class="text-muted">
+                    42 years, Male • Patient ID: P-1024
                   </div>
-                  <div class="appointment-tags">
-                    <span class="tag regular">Regular Checkup</span>
-                    <span class="tag scheduled">Scheduled</span>
+                  <div class="mt-1">
+                    <span class="badge bg-info">Regular Checkup</span>
+                    <span class="status-badge scheduled">Scheduled</span>
                   </div>
-                </div>
-              </div>
-              <div class="appointment-detail-actions">
-                <button class="btn-primary">
-                  <i class="fas fa-video"></i> Start Session
-                </button>
-                <button class="btn-secondary">
-                  <i class="fas fa-phone"></i> Call Patient
-                </button>
-              </div>
-            </div>
-
-            <div class="appointment-detail-content">
-              <div class="detail-section">
-                <h5>
-                  <i class="fas fa-calendar-alt"></i> Appointment Schedule
-                </h5>
-                <div class="detail-row">
-                  <div class="detail-label">Date:</div>
-                  <div class="detail-value">March 23, 2025 (Today)</div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Time:</div>
-                  <div class="detail-value">
-                    09:00 AM - 09:30 AM (30 minutes)
-                  </div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Type:</div>
-                  <div class="detail-value">Regular Checkup</div>
-                </div>
-              </div>
-
-              <div class="detail-section">
-                <h5><i class="fas fa-info-circle"></i> Appointment Details</h5>
-                <div class="detail-row">
-                  <div class="detail-label">Reason:</div>
-                  <div class="detail-value">
-                    Annual wellness check and review of hypertension medication
-                  </div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Notes:</div>
-                  <div class="detail-value">
-                    Patient has been experiencing occasional dizziness. Blood
-                    pressure to be monitored.
-                  </div>
-                </div>
-              </div>
-
-              <div class="detail-section">
-                <h5><i class="fas fa-file-medical"></i> Patient History</h5>
-                <div class="detail-row">
-                  <div class="detail-label">Last Visit:</div>
-                  <div class="detail-value">
-                    September 15, 2024 (6 months ago)
-                  </div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Medical Conditions:</div>
-                  <div class="detail-value">Hypertension, High Cholesterol</div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Current Medications:</div>
-                  <div class="detail-value">
-                    Lisinopril 10mg daily, Simvastatin 20mg daily
-                  </div>
-                </div>
-                <div class="detail-row">
-                  <div class="detail-label">Allergies:</div>
-                  <div class="detail-value">Penicillin</div>
                 </div>
               </div>
             </div>
 
-            <div class="appointment-detail-footer">
-              <div class="btn-group">
-                <button class="btn-warning">
-                  <i class="fas fa-clock"></i> Reschedule
-                </button>
-                <button class="btn-danger">
-                  <i class="fas fa-times"></i> Cancel Appointment
-                </button>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h6 class="mb-0">
+                      <i class="fas fa-calendar-alt me-2"></i> Appointment Info
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-sm-4">Date:</dt>
+                      <dd class="col-sm-8">March 23, 2023 (Today)</dd>
+
+                      <dt class="col-sm-4">Time:</dt>
+                      <dd class="col-sm-8">09:00 AM - 09:30 AM (30 minutes)</dd>
+
+                      <dt class="col-sm-4">Type:</dt>
+                      <dd class="col-sm-8">Regular Checkup</dd>
+
+                      <dt class="col-sm-4">Reason:</dt>
+                      <dd class="col-sm-8">
+                        Annual wellness check and review of hypertension
+                        medication
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
               </div>
-              <button class="btn-info">
-                <i class="fas fa-file-medical"></i> View Full Medical Record
-              </button>
+
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h6 class="mb-0">
+                      <i class="fas fa-file-medical me-2"></i> Patient History
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-sm-4">Last Visit:</dt>
+                      <dd class="col-sm-8">
+                        September 15, 2022 (6 months ago)
+                      </dd>
+
+                      <dt class="col-sm-4">Conditions:</dt>
+                      <dd class="col-sm-8">Hypertension, High Cholesterol</dd>
+
+                      <dt class="col-sm-4">Medications:</dt>
+                      <dd class="col-sm-8">
+                        Lisinopril 10mg daily, Simvastatin 20mg daily
+                      </dd>
+
+                      <dt class="col-sm-4">Allergies:</dt>
+                      <dd class="col-sm-8">Penicillin</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-warning">
+              <i class="fas fa-clock me-1"></i> Reschedule
+            </button>
+            <button type="button" class="btn btn-danger">
+              <i class="fas fa-times me-1"></i> Cancel Appointment
+            </button>
+            <button type="button" class="btn btn-success">
+              <i class="fas fa-video me-1"></i> Start Session
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- New/Edit Appointment Modal -->
-    <div class="modal" id="appointmentFormModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>New Appointment</h3>
-          <button class="close-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form id="appointmentForm" class="appointment-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="patientSelect">Patient</label>
-                <div class="select-with-search">
-                  <input
-                    type="text"
-                    id="patientSearch"
-                    placeholder="Search patient..."
-                  />
-                  <select id="patientSelect" required>
-                    <option value="" disabled selected>Select patient</option>
-                    <option value="P-1024">John Doe (P-1024)</option>
-                    <option value="P-2189">Maria Garcia (P-2189)</option>
-                    <option value="P-3570">Robert Smith (P-3570)</option>
-                    <option value="P-4281">Emily Johnson (P-4281)</option>
-                    <option value="P-5172">James Miller (P-5172)</option>
-                    <option value="P-6038">Jennifer Davis (P-6038)</option>
-                  </select>
-                </div>
+    <!-- New Appointment Modal -->
+    <div
+      class="modal fade"
+      id="newAppointmentModal"
+      tabindex="-1"
+      aria-labelledby="newAppointmentModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newAppointmentModalLabel">
+              Schedule New Appointment
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="appointmentForm">
+              <div class="mb-3">
+                <label for="patientSelect" class="form-label"
+                  >Select Patient</label
+                >
+                <select id="patientSelect" class="form-select" required>
+                  <option value="" selected disabled>Choose a patient</option>
+                  <option value="1">John Doe (P-1024)</option>
+                  <option value="2">Maria Garcia (P-2189)</option>
+                  <option value="3">Robert Smith (P-3570)</option>
+                </select>
               </div>
-              <div class="form-group">
-                <label for="appointmentType">Appointment Type</label>
-                <select id="appointmentType" required>
-                  <option value="" disabled selected>Select type</option>
+
+              <div class="mb-3">
+                <label for="appointmentType" class="form-label"
+                  >Appointment Type</label
+                >
+                <select id="appointmentType" class="form-select" required>
+                  <option value="" selected disabled>Select type</option>
                   <option value="checkup">Regular Checkup</option>
                   <option value="followup">Follow-up</option>
                   <option value="consultation">Consultation</option>
                   <option value="prescription">Prescription Review</option>
-                  <option value="test">Lab Test</option>
-                  <option value="procedure">Procedure</option>
                 </select>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="appointmentDate">Date</label>
-                <input type="date" id="appointmentDate" required />
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="appointmentDate" class="form-label">Date</label>
+                  <input
+                    type="date"
+                    id="appointmentDate"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="appointmentTime" class="form-label">Time</label>
+                  <input
+                    type="time"
+                    id="appointmentTime"
+                    class="form-control"
+                    required
+                  />
+                </div>
               </div>
-              <div class="form-group">
-                <label for="appointmentTime">Time</label>
-                <input type="time" id="appointmentTime" required />
-              </div>
-              <div class="form-group">
-                <label for="duration">Duration</label>
-                <select id="duration" required>
+
+              <div class="mb-3">
+                <label for="duration" class="form-label">Duration</label>
+                <select id="duration" class="form-select" required>
                   <option value="15">15 minutes</option>
                   <option value="30" selected>30 minutes</option>
                   <option value="45">45 minutes</option>
                   <option value="60">60 minutes</option>
-                  <option value="90">90 minutes</option>
                 </select>
               </div>
-            </div>
 
-            <div class="form-group">
-              <label for="notes">Notes</label>
-              <textarea
-                id="notes"
-                rows="3"
-                placeholder="Add any notes or special instructions..."
-              ></textarea>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn-primary">
-                Save Appointment
-              </button>
-              <button type="button" class="btn-secondary close-modal">
-                Cancel
-              </button>
-            </div>
-          </form>
+              <div class="mb-3">
+                <label for="appointmentNotes" class="form-label">Notes</label>
+                <textarea
+                  id="appointmentNotes"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Add any notes or special instructions..."
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="saveAppointmentBtn"
+            >
+              Schedule Appointment
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Toggle mobile menu
-      document
-        .getElementById("menuToggle")
-        .addEventListener("click", function () {
-          document.getElementById("sidebar").classList.toggle("active");
-        });
-
-      // Close sidebar when clicking outside
-      document.addEventListener("click", function (event) {
-        const sidebar = document.getElementById("sidebar");
+      document.addEventListener("DOMContentLoaded", function () {
+        // Menu toggle for mobile
         const menuToggle = document.getElementById("menuToggle");
-        if (
-          !sidebar.contains(event.target) &&
-          !menuToggle.contains(event.target)
-        ) {
-          sidebar.classList.remove("active");
+        const sidebar = document.getElementById("sidebar");
+
+        if (menuToggle) {
+          menuToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("active");
+          });
+        }
+
+        // Toggle between list and calendar views
+        const listViewBtn = document.getElementById("listViewBtn");
+        const calendarViewBtn = document.getElementById("calendarViewBtn");
+        const listView = document.getElementById("listView");
+        const calendarView = document.getElementById("calendarView");
+
+        listViewBtn.addEventListener("click", function () {
+          listView.style.display = "block";
+          calendarView.style.display = "none";
+          listViewBtn.classList.add("active");
+          calendarViewBtn.classList.remove("active");
+        });
+
+        calendarViewBtn.addEventListener("click", function () {
+          listView.style.display = "none";
+          calendarView.style.display = "block";
+          listViewBtn.classList.remove("active");
+          calendarViewBtn.classList.add("active");
+        });
+
+        // New appointment button
+        const newAppointmentBtn = document.getElementById("newAppointmentBtn");
+        newAppointmentBtn.addEventListener("click", function () {
+          const newAppointmentModal = new bootstrap.Modal(
+            document.getElementById("newAppointmentModal")
+          );
+          newAppointmentModal.show();
+        });
+
+        // Save appointment button
+        const saveAppointmentBtn =
+          document.getElementById("saveAppointmentBtn");
+        saveAppointmentBtn.addEventListener("click", function () {
+          // In a real implementation, you would validate and save the form data
+          alert("Appointment scheduled successfully!");
+          bootstrap.Modal.getInstance(
+            document.getElementById("newAppointmentModal")
+          ).hide();
+        });
+
+        // Export functionality
+        document
+          .getElementById("exportCSV")
+          .addEventListener("click", function () {
+            exportAppointmentsToCSV();
+          });
+
+        document
+          .getElementById("exportPDF")
+          .addEventListener("click", function () {
+            alert("Export to PDF functionality will be available soon.");
+          });
+
+        document
+          .getElementById("exportPrint")
+          .addEventListener("click", function () {
+            window.print();
+          });
+
+        // Function to export appointments as CSV
+        function exportAppointmentsToCSV() {
+          // Get table data
+          const table = document.querySelector("#listView table");
+          const rows = table.querySelectorAll("tbody tr");
+
+          // Create CSV content
+          let csvContent =
+            "Time,Duration,Patient Name,Patient ID,Type,Status\n";
+
+          rows.forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length >= 5) {
+              const time = cells[0]
+                .querySelector(".fw-medium")
+                .innerText.trim();
+              const duration = cells[0].querySelector("small").innerText.trim();
+              const patientName = cells[1]
+                .querySelector(".fw-medium")
+                .innerText.trim();
+              const patientDetails = cells[1]
+                .querySelector("small")
+                .innerText.trim();
+              const patientID = patientDetails.split("•")[1]?.trim() || "";
+              const appointmentType = cells[2].innerText
+                .trim()
+                .replace(",", " -");
+              const status = cells[3]
+                .querySelector(".status-badge")
+                .innerText.trim();
+
+              csvContent += `"${time}","${duration}","${patientName}","${patientID}","${appointmentType}","${status}"\n`;
+            }
+          });
+
+          // Create download link
+          const encodedUri = encodeURI(
+            "data:text/csv;charset=utf-8," + csvContent
+          );
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute(
+            "download",
+            "appointments_" + new Date().toISOString().split("T")[0] + ".csv"
+          );
+          document.body.appendChild(link);
+
+          // Download the CSV file
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        // Set minimum date for appointment date picker to today
+        const appointmentDateInput = document.getElementById("appointmentDate");
+        if (appointmentDateInput) {
+          const today = new Date().toISOString().split("T")[0];
+          appointmentDateInput.setAttribute("min", today);
+          appointmentDateInput.value = today;
         }
       });
-
-      // Close sidebar when clicking a menu item
-      document.querySelectorAll(".sidebar ul li a").forEach((link) => {
-        link.addEventListener("click", () => {
-          document.getElementById("sidebar").classList.remove("active");
-        });
-      });
-
-      // Toggle notifications popup
-      document
-        .getElementById("notificationBell")
-        .addEventListener("click", function () {
-          document
-            .getElementById("notificationsPopup")
-            .classList.toggle("active");
-        });
-
-      // Close notifications popup when clicking outside
-      document.addEventListener("click", function (event) {
-        const notificationBell = document.getElementById("notificationBell");
-        const notificationsPopup =
-          document.getElementById("notificationsPopup");
-        if (
-          !notificationBell.contains(event.target) &&
-          !notificationsPopup.contains(event.target)
-        ) {
-          notificationsPopup.classList.remove("active");
-        }
-      });
-
-      // Mark all notifications as read
-      document
-        .querySelector(".mark-all-read")
-        .addEventListener("click", function () {
-          document
-            .querySelectorAll(".notification-item.unread")
-            .forEach((item) => {
-              item.classList.remove("unread");
-            });
-          document.querySelector(".notification-count").textContent = "0";
-        });
-
-      // Toggle between list and calendar view
-      document.querySelectorAll(".view-btn").forEach((button) => {
-        button.addEventListener("click", function () {
-          document
-            .querySelectorAll(".view-btn")
-            .forEach((btn) => btn.classList.remove("active"));
-          this.classList.add("active");
-          const view = this.getAttribute("data-view");
-          if (view === "list") {
-            document.querySelector(".list-view").style.display = "block";
-            document.querySelector(".calendar-view").style.display = "none";
-          } else {
-            document.querySelector(".list-view").style.display = "none";
-            document.querySelector(".calendar-view").style.display = "block";
-          }
-        });
-      });
-
-      // Open appointment details modal
-      document.querySelectorAll(".btn-circle.btn-info").forEach((button) => {
-        button.addEventListener("click", function () {
-          document
-            .getElementById("appointmentDetailsModal")
-            .classList.add("active");
-        });
-      });
-
-      // Close modals
-      document.querySelectorAll(".close-modal").forEach((button) => {
-        button.addEventListener("click", function () {
-          document
-            .querySelectorAll(".modal")
-            .forEach((modal) => modal.classList.remove("active"));
-        });
-      });
-
-      // Open new appointment modal
-      document
-        .getElementById("newAppointmentBtn")
-        .addEventListener("click", function () {
-          document
-            .getElementById("appointmentFormModal")
-            .classList.add("active");
-        });
-
-      // Handle form submission for new appointment
-      document
-        .getElementById("appointmentForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          alert("Appointment saved successfully!");
-          document
-            .getElementById("appointmentFormModal")
-            .classList.remove("active");
-        });
     </script>
   </body>
 </html>

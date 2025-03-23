@@ -1,0 +1,108 @@
+<!-- Navbar -->
+<div class="fixed-top bg-white shadow-sm" style="height: 56px; z-index: 99">
+  <div
+    class="container-fluid d-flex align-items-center justify-content-between h-100"
+  >
+    <div class="d-flex align-items-center">
+      <a href="/" class="text-decoration-none">
+        <div class="d-flex align-items-center">
+          <i
+            class="fas fa-heartbeat text-primary me-2"
+            style="font-size: 1.5rem"
+          ></i>
+          <span class="h5 mb-0 text-primary fw-bold">MedConnect</span>
+        </div>
+      </a>
+    </div>
+    <div class="d-flex align-items-center">
+      <div class="me-3 position-relative">
+        <a
+          href="#"
+          class="text-decoration-none text-dark"
+          id="notificationsDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="fas fa-bell"></i>
+          <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          >
+            3
+            <span class="visually-hidden">unread notifications</span>
+          </span>
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="notificationsDropdown"
+        >
+          <li><h6 class="dropdown-header">Notifications</h6></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="fas fa-user-plus me-2 text-info"></i> New patient
+              request</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="fas fa-calendar-check me-2 text-primary"></i>
+              Appointment reminder</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="fas fa-comment-medical me-2 text-success"></i> New
+              message</a
+            >
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item text-center small" href="#"
+              >View all notifications</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        <a
+          href="#"
+          class="text-decoration-none text-dark"
+          id="userDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <div class="d-flex align-items-center">
+            <div class="avatar me-2">
+              <i class="fas fa-user-md"></i>
+            </div>
+            <span class="d-none d-sm-inline-block">Dr. Smith</span>
+            <i class="fas fa-chevron-down ms-1 small"></i>
+          </div>
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="userDropdown"
+        >
+          <li>
+            <a class="dropdown-item" href="/caregiver/profile"
+              ><i class="fas fa-user-md me-2"></i> Profile</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/caregiver/settings"
+              ><i class="fas fa-cog me-2"></i> Settings</a
+            >
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item" href="/logout"
+              ><i class="fas fa-sign-out-alt me-2"></i> Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add spacing to keep content below navbar -->
+<div style="height: 56px"></div>

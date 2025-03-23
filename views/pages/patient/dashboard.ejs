@@ -209,6 +209,12 @@
         >
           <i class="fas fa-clipboard-list"></i> Care Plans
         </a>
+        <a
+          href="/patient/prescription-analysis"
+          class="nav-link <%= locals.path === '/patient/prescription-analysis' ? 'active' : '' %>"
+        >
+          <i class="fas fa-pills"></i> Prescription Analysis
+        </a>
       </nav>
     </div>
 
@@ -451,6 +457,142 @@
           </div>
         </div>
 
+        <!-- NEW ROW: Recommendations Section -->
+        <div class="row">
+          <div
+            class="col-12 mb-4"
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-delay="400"
+          >
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-user-md"></i>
+                  Personalized Recommendations
+                </h5>
+                <p class="text-muted small mb-3">
+                  Based on your medical records and health conditions
+                </p>
+
+                <div id="recommendationsLoading" class="text-center my-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"
+                      >Loading recommendations...</span
+                    >
+                  </div>
+                  <p class="text-muted mt-2">
+                    Analyzing your medical data and finding the best matches...
+                  </p>
+                </div>
+
+                <div id="recommendationsContent" style="display: none">
+                  <div
+                    id="healthSummary"
+                    class="alert alert-info mb-4"
+                    style="display: none"
+                  >
+                    <h6 class="alert-heading">Health Summary</h6>
+                    <p id="healthSummaryText" class="mb-0 small"></p>
+                  </div>
+
+                  <div class="row">
+                    <!-- Doctor Recommendations -->
+                    <div class="col-md-6 mb-3">
+                      <h6 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-stethoscope me-2"></i>
+                        Recommended Doctors
+                      </h6>
+
+                      <div id="doctorRecommendations">
+                        <!-- Doctor recommendations will be dynamically loaded here -->
+                      </div>
+
+                      <div id="noDoctorRecommendations" style="display: none">
+                        <div class="text-center py-3">
+                          <img
+                            src="https://img.icons8.com/color/96/000000/doctor-male.png"
+                            width="60"
+                            class="mb-3"
+                          />
+                          <p class="text-muted">
+                            No doctor recommendations available yet.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="mt-3">
+                        <a
+                          href="/patient/caregivers"
+                          class="btn btn-sm btn-outline-primary w-100"
+                        >
+                          <i class="fas fa-search me-1"></i>
+                          View All Available Doctors
+                        </a>
+                      </div>
+                    </div>
+
+                    <!-- Navigator Recommendations -->
+                    <div class="col-md-6 mb-3">
+                      <h6 class="border-bottom pb-2 mb-3">
+                        <i class="fas fa-compass me-2"></i>
+                        Recommended Navigators
+                      </h6>
+
+                      <div id="navigatorRecommendations">
+                        <!-- Navigator recommendations will be dynamically loaded here -->
+                      </div>
+
+                      <div
+                        id="noNavigatorRecommendations"
+                        style="display: none"
+                      >
+                        <div class="text-center py-3">
+                          <img
+                            src="https://img.icons8.com/color/96/000000/conference-call.png"
+                            width="60"
+                            class="mb-3"
+                          />
+                          <p class="text-muted">
+                            No navigator recommendations available yet.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="mt-3">
+                        <a
+                          href="/patient/navigator"
+                          class="btn btn-sm btn-outline-primary w-100"
+                        >
+                          <i class="fas fa-search me-1"></i>
+                          View All Available Navigators
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  id="recommendationsError"
+                  class="alert alert-warning"
+                  style="display: none"
+                >
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  <span id="recommendationsErrorText"
+                    >Could not load recommendations at this time.</span
+                  >
+                  <button
+                    id="retryRecommendations"
+                    class="btn btn-sm btn-outline-primary float-end"
+                  >
+                    <i class="fas fa-sync-alt"></i> Retry
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Care Team -->
         <div
           class="col-md-6 mb-4"
@@ -656,6 +798,217 @@
           },
         });
       }
+
+      // Add the recommendations code
+      document.addEventListener("DOMContentLoaded", function () {
+        // Fetch recommendations from the API
+        function fetchRecommendations() {
+          document.getElementById("recommendationsLoading").style.display =
+            "block";
+          document.getElementById("recommendationsContent").style.display =
+            "none";
+          document.getElementById("recommendationsError").style.display =
+            "none";
+
+          fetch("/api/recommendations")
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to load recommendations");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.success) {
+                renderRecommendations(data.recommendations);
+              } else {
+                throw new Error(
+                  data.message || "Failed to load recommendations"
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Error loading recommendations:", error);
+              document.getElementById("recommendationsLoading").style.display =
+                "none";
+              document.getElementById("recommendationsError").style.display =
+                "block";
+              document.getElementById("recommendationsErrorText").textContent =
+                error.message || "Could not load recommendations at this time.";
+            });
+        }
+
+        // Render recommendations on the page
+        function renderRecommendations(recommendations) {
+          document.getElementById("recommendationsLoading").style.display =
+            "none";
+          document.getElementById("recommendationsContent").style.display =
+            "block";
+
+          // Render health summary if available
+          if (recommendations.health_summary) {
+            document.getElementById("healthSummary").style.display = "block";
+            document.getElementById("healthSummaryText").textContent =
+              recommendations.health_summary;
+          } else {
+            document.getElementById("healthSummary").style.display = "none";
+          }
+
+          // Render doctor recommendations
+          const doctorRecommendationsEl = document.getElementById(
+            "doctorRecommendations"
+          );
+          const noDoctorRecommendationsEl = document.getElementById(
+            "noDoctorRecommendations"
+          );
+
+          if (recommendations.doctors && recommendations.doctors.length > 0) {
+            doctorRecommendationsEl.innerHTML = "";
+            noDoctorRecommendationsEl.style.display = "none";
+
+            recommendations.doctors.forEach((rec) => {
+              const doctor = rec.doctor;
+              const confidenceClass =
+                rec.confidence >= 80
+                  ? "text-success"
+                  : rec.confidence >= 60
+                  ? "text-warning"
+                  : "text-danger";
+
+              const doctorEl = document.createElement("div");
+              doctorEl.className = "card mb-2 shadow-sm";
+              doctorEl.innerHTML = `
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="flex-shrink-0">
+                      <img src="${
+                        doctor.profileImage || "/img/default-doctor.png"
+                      }" class="rounded-circle" width="40" height="40" alt="${
+                doctor.name
+              }">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0">${doctor.name}</h6>
+                      <p class="mb-0 small text-muted">
+                        ${doctor.speciality || "General Medicine"} 
+                        ${
+                          doctor.experience
+                            ? `· ${doctor.experience} yrs exp.`
+                            : ""
+                        }
+                      </p>
+                    </div>
+                    <div class="flex-shrink-0 ms-2 text-end">
+                      <div class="badge bg-primary rounded-pill px-2 ${confidenceClass}">
+                        ${rec.confidence}% match
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mb-1 small">${rec.reason}</p>
+                  <div class="d-flex justify-content-between mt-2">
+                    <a href="/patient/caregiver/${
+                      doctor.id
+                    }" class="btn btn-sm btn-outline-primary">
+                      <i class="fas fa-user-md me-1"></i> View Profile
+                    </a>
+                    <a href="/patient/request-caregiver/${
+                      doctor.id
+                    }" class="btn btn-sm btn-primary">
+                      <i class="fas fa-paper-plane me-1"></i> Send Request
+                    </a>
+                  </div>
+                </div>
+              `;
+
+              doctorRecommendationsEl.appendChild(doctorEl);
+            });
+          } else {
+            doctorRecommendationsEl.innerHTML = "";
+            noDoctorRecommendationsEl.style.display = "block";
+          }
+
+          // Render navigator recommendations
+          const navigatorRecommendationsEl = document.getElementById(
+            "navigatorRecommendations"
+          );
+          const noNavigatorRecommendationsEl = document.getElementById(
+            "noNavigatorRecommendations"
+          );
+
+          if (
+            recommendations.navigators &&
+            recommendations.navigators.length > 0
+          ) {
+            navigatorRecommendationsEl.innerHTML = "";
+            noNavigatorRecommendationsEl.style.display = "none";
+
+            recommendations.navigators.forEach((rec) => {
+              const navigator = rec.navigator;
+              const confidenceClass =
+                rec.confidence >= 80
+                  ? "text-success"
+                  : rec.confidence >= 60
+                  ? "text-warning"
+                  : "text-danger";
+
+              const specialtiesText =
+                navigator.specialties && navigator.specialties.length > 0
+                  ? navigator.specialties.slice(0, 2).join(", ")
+                  : navigator.type;
+
+              const navigatorEl = document.createElement("div");
+              navigatorEl.className = "card mb-2 shadow-sm";
+              navigatorEl.innerHTML = `
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="flex-shrink-0">
+                      <i class="fas fa-compass fa-2x text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0">${navigator.name}</h6>
+                      <p class="mb-0 small text-muted">
+                        ${specialtiesText}
+                        ${
+                          navigator.experience
+                            ? `· ${navigator.experience} yrs exp.`
+                            : ""
+                        }
+                      </p>
+                    </div>
+                    <div class="flex-shrink-0 ms-2 text-end">
+                      <div class="badge bg-primary rounded-pill px-2 ${confidenceClass}">
+                        ${rec.confidence}% match
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mb-1 small">${rec.reason}</p>
+                  <div class="mt-2">
+                    <a href="/patient/navigator-details/${
+                      navigator.id
+                    }" class="btn btn-sm btn-outline-primary w-100">
+                      <i class="fas fa-compass me-1"></i> View Navigator Profile
+                    </a>
+                  </div>
+                </div>
+              `;
+
+              navigatorRecommendationsEl.appendChild(navigatorEl);
+            });
+          } else {
+            navigatorRecommendationsEl.innerHTML = "";
+            noNavigatorRecommendationsEl.style.display = "block";
+          }
+        }
+
+        // Add event listener for retry button
+        document
+          .getElementById("retryRecommendations")
+          .addEventListener("click", function () {
+            fetchRecommendations();
+          });
+
+        // Initial load of recommendations
+        fetchRecommendations();
+      });
     </script>
 
     <!-- Chatbot CSS and JavaScript -->

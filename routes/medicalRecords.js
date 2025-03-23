@@ -49,27 +49,58 @@ router.get("/", isLoggedIn, async (req, res) => {
 });
 
 // Upload a new medical record
-router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
+router.post("/upload", isLoggedIn, async (req, res) => {
   try {
-    if (!req.file) {
+    // Check if a file was uploaded
+    if (!req.files || !req.files.file) {
       return res.status(400).json({
         success: false,
         message: "No file uploaded",
       });
     }
 
+    const file = req.files.file;
     const { title, description, recordType, recordDate } = req.body;
 
-    // Upload to Cloudinary
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    // Validate required fields
+    if (!title || !description || !recordType || !recordDate) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Missing required fields (title, description, recordType, or recordDate)",
+      });
+    }
 
-    const result = await uploader.upload(dataURI, {
+    // Validate file size
+    if (file.size > 10 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: "File too large (max 10MB)",
+      });
+    }
+
+    // Validate file type
+    const validTypes = [
+      "image/png",
+      "image/jpg",
+      "image/jpeg",
+      "application/pdf",
+    ];
+    if (!validTypes.includes(file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid file type. Only .png, .jpg, .jpeg and .pdf formats allowed!",
+      });
+    }
+
+    // Upload to Cloudinary using the temp file path
+    const result = await uploader.upload(file.tempFilePath, {
       resource_type: "auto",
       folder: "medical_records",
     });
 
-    // Create record in MongoDB first to get the ID
+    // Create record in MongoDB
     const medicalRecord = new MedicalRecord({
       patient: req.user._id,
       title,
@@ -83,47 +114,59 @@ router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
 
     await medicalRecord.save();
 
-    // Process record with Python server for RAG
-    const formData = new FormData();
-    formData.append("file", req.file.buffer, {
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
+    // Cleanup temp file
+    const fs = require("fs");
+    fs.unlink(file.tempFilePath, (err) => {
+      if (err) console.error("Failed to clean up temp file:", err);
     });
-    formData.append(
-      "record_data",
-      JSON.stringify({
-        recordId: medicalRecord._id.toString(),
-        userId: req.user._id.toString(),
-        title,
-        description,
-        recordType,
-        recordDate,
-      })
-    );
 
+    // Process record with Python server for RAG (optional)
     try {
-      const pythonResponse = await axios.post(
-        "http://localhost:5000/process_record",
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-          },
-        }
-      );
+      if (process.env.ENABLE_RAG === "true") {
+        const formData = new FormData();
+        formData.append("file", fs.createReadStream(file.tempFilePath), {
+          filename: file.name,
+          contentType: file.mimetype,
+        });
 
-      if (pythonResponse.data.success) {
-        // Update record with text content and summary
-        medicalRecord.textContent = pythonResponse.data.text_length.toString();
-        medicalRecord.metadata = new Map([
-          ["chunks_count", pythonResponse.data.chunks_count.toString()],
-          ["summary", pythonResponse.data.summary],
-          ["vector_ids", JSON.stringify(pythonResponse.data.vector_ids || [])],
-        ]);
-        await medicalRecord.save();
+        formData.append(
+          "record_data",
+          JSON.stringify({
+            recordId: medicalRecord._id.toString(),
+            userId: req.user._id.toString(),
+            title,
+            description,
+            recordType,
+            recordDate,
+          })
+        );
+
+        const pythonResponse = await axios.post(
+          "http://localhost:5000/process_record",
+          formData,
+          {
+            headers: formData.getHeaders(),
+            timeout: 30000, // 30 second timeout
+          }
+        );
+
+        if (pythonResponse.data.success) {
+          // Update record with text content and summary
+          medicalRecord.textContent =
+            pythonResponse.data.text_length.toString();
+          medicalRecord.metadata = new Map([
+            ["chunks_count", pythonResponse.data.chunks_count.toString()],
+            ["summary", pythonResponse.data.summary],
+            [
+              "vector_ids",
+              JSON.stringify(pythonResponse.data.vector_ids || []),
+            ],
+          ]);
+          await medicalRecord.save();
+        }
       }
-    } catch (err) {
-      console.error("Warning: RAG processing error:", err.message);
+    } catch (ragError) {
+      console.error("Warning: RAG processing error:", ragError.message);
       // Continue even if RAG processing fails - record is still saved
     }
 
@@ -136,7 +179,7 @@ router.post("/upload", isLoggedIn, upload.single("file"), async (req, res) => {
     console.error("Error uploading medical record:", error);
     res.status(500).json({
       success: false,
-      message: "Error uploading medical record",
+      message: "Error uploading medical record: " + error.message,
     });
   }
 });
@@ -235,10 +278,19 @@ router.get("/:id", isLoggedIn, async (req, res) => {
 });
 
 // Update a medical record
-router.put("/:id", isLoggedIn, upload.single("file"), async (req, res) => {
+router.put("/:id", isLoggedIn, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, recordType, recordDate } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !recordType || !recordDate) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Missing required fields (title, description, recordType, or recordDate)",
+      });
+    }
 
     // Find the record and ensure it belongs to the user
     const record = await MedicalRecord.findOne({
@@ -254,71 +306,94 @@ router.put("/:id", isLoggedIn, upload.single("file"), async (req, res) => {
     }
 
     // If new file uploaded, update file in Cloudinary
-    if (req.file) {
-      // Delete old file from Cloudinary
-      if (record.cloudinaryPublicId) {
-        await uploader.destroy(record.cloudinaryPublicId);
-      }
-
-      // Upload new file
-      const b64 = Buffer.from(req.file.buffer).toString("base64");
-      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-      const result = await uploader.upload(dataURI, {
-        resource_type: "auto",
-        folder: "medical_records",
-      });
-
-      // Update record with new file info
-      record.fileUrl = result.secure_url;
-      record.cloudinaryPublicId = result.public_id;
-
-      // Process new file with RAG server
-      const formData = new FormData();
-      formData.append("file", req.file.buffer, {
-        filename: req.file.originalname,
-        contentType: req.file.mimetype,
-      });
-      formData.append(
-        "record_data",
-        JSON.stringify({
-          recordId: record._id.toString(),
-          userId: req.user._id.toString(),
-          title,
-          description,
-          recordType,
-          recordDate,
-        })
-      );
-
+    if (req.files && req.files.file) {
       try {
-        const pythonResponse = await axios.post(
-          "http://localhost:5000/process_record",
-          formData,
-          {
-            headers: {
-              ...formData.getHeaders(),
-            },
-          }
-        );
+        const file = req.files.file;
 
-        if (pythonResponse.data.success) {
-          // Update record with text content and summary
-          record.textContent = pythonResponse.data.text_length.toString();
-          record.metadata = new Map([
-            ["chunks_count", pythonResponse.data.chunks_count.toString()],
-            ["summary", pythonResponse.data.summary],
-            [
-              "vector_ids",
-              JSON.stringify(pythonResponse.data.vector_ids || []),
-            ],
-          ]);
+        // Validate file size
+        if (file.size > 10 * 1024 * 1024) {
+          return res.status(400).json({
+            success: false,
+            message: "File too large (max 10MB)",
+          });
         }
-      } catch (err) {
-        console.error(
-          "Warning: RAG processing error during update:",
-          err.message
-        );
-        // Continue even if RAG processing fails
+
+        // Delete old file from Cloudinary if it exists
+        if (record.cloudinaryPublicId) {
+          await uploader.destroy(record.cloudinaryPublicId);
+        }
+
+        // Upload new file to Cloudinary
+        const result = await uploader.upload(file.tempFilePath, {
+          resource_type: "auto",
+          folder: "medical_records",
+        });
+
+        // Update record with new file info
+        record.fileUrl = result.secure_url;
+        record.cloudinaryPublicId = result.public_id;
+
+        // Cleanup temp file
+        const fs = require("fs");
+        fs.unlink(file.tempFilePath, (err) => {
+          if (err) console.error("Failed to clean up temp file:", err);
+        });
+
+        // Process new file with RAG server only if enabled
+        try {
+          if (process.env.ENABLE_RAG === "true") {
+            const formData = new FormData();
+            formData.append("file", fs.createReadStream(file.tempFilePath), {
+              filename: file.name,
+              contentType: file.mimetype,
+            });
+
+            const recordData = {
+              recordId: record._id.toString(),
+              userId: req.user._id.toString(),
+              title,
+              description,
+              recordType,
+              recordDate,
+            };
+
+            formData.append("record_data", JSON.stringify(recordData));
+
+            const pythonResponse = await axios.post(
+              "http://localhost:5000/process_record",
+              formData,
+              {
+                headers: formData.getHeaders(),
+                timeout: 30000, // 30 second timeout
+              }
+            );
+
+            if (pythonResponse.data.success) {
+              // Update record with text content and summary
+              record.textContent = pythonResponse.data.text_length.toString();
+              record.metadata = new Map([
+                ["chunks_count", pythonResponse.data.chunks_count.toString()],
+                ["summary", pythonResponse.data.summary],
+                [
+                  "vector_ids",
+                  JSON.stringify(pythonResponse.data.vector_ids || []),
+                ],
+              ]);
+            }
+          }
+        } catch (ragError) {
+          console.error(
+            "Warning: RAG processing error during update:",
+            ragError.message
+          );
+          // Continue even if RAG processing fails
+        }
+      } catch (fileError) {
+        console.error("Error processing file:", fileError);
+        return res.status(500).json({
+          success: false,
+          message: "Error processing the uploaded file: " + fileError.message,
+        });
       }
     }
 
@@ -337,9 +412,16 @@ router.put("/:id", isLoggedIn, upload.single("file"), async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating medical record:", error);
+    // Log details about the request for debugging
+    console.log("Request body fields:", Object.keys(req.body));
+    console.log(
+      "Request files:",
+      req.files ? Object.keys(req.files) : "No files"
+    );
+
     res.status(500).json({
       success: false,
-      message: "Error updating medical record",
+      message: "Error updating medical record: " + error.message,
     });
   }
 });

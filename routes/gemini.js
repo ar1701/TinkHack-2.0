@@ -78,6 +78,110 @@ router.post("/chat", isLoggedIn, async (req, res) => {
   }
 });
 
+// Route to analyze prescription images using Gemini Vision API
+router.post("/analyze-prescription", isLoggedIn, async (req, res) => {
+  try {
+    // Check if file was uploaded
+    if (!req.files || !req.files.prescriptionImage) {
+      return res.status(400).json({
+        success: false,
+        message: "Prescription image is required",
+      });
+    }
+
+    const prescriptionImage = req.files.prescriptionImage;
+
+    // Check file size (max 5MB)
+    if (prescriptionImage.size > 5 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: "Image size exceeds 5MB limit",
+      });
+    }
+
+    // Check file type
+    if (!prescriptionImage.mimetype.startsWith("image/")) {
+      return res.status(400).json({
+        success: false,
+        message: "Only image files are allowed",
+      });
+    }
+
+    // Convert file data to base64
+    const imageData = prescriptionImage.data.toString("base64");
+
+    // Get the Gemini model (using Gemini 1.5 Flash)
+    const visionModel = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+    });
+
+    // Prepare the prompt for prescription analysis with structured content extraction
+    const prompt = `
+    Analyze this prescription image and extract all available text. Then, organize the extracted information into structured content.
+    
+    The response should be in JSON format with the following fields:
+    1. "extractedText": The complete raw text extracted from the image
+    2. "structuredContent": An object with the following subfields:
+       - "header": Any clinic or hospital letterhead information
+       - "patientInfo": Patient name, ID, age, etc.
+       - "medicationList": Array of medications, each with "name" and "details"
+       - "doctorInfo": Doctor name, credentials, signature details
+       - "otherInstructions": Any additional instructions or notes
+       - "date": Any date information on the prescription
+    3. "confidenceScore": A value from 0 to 1 indicating confidence in the extraction
+
+    Provide only the JSON output with no additional text.
+    `;
+
+    // Generate content with Gemini using the image data
+    const result = await visionModel.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: imageData,
+          mimeType: prescriptionImage.mimetype,
+        },
+      },
+    ]);
+
+    const response = result.response;
+    let responseText = response.text();
+
+    // Try to parse the response as JSON
+    try {
+      // Check if response is wrapped in ```json ``` - common Gemini output format
+      if (responseText.includes("```json")) {
+        responseText = responseText.split("```json")[1].split("```")[0].trim();
+      } else if (responseText.includes("```")) {
+        responseText = responseText.split("```")[1].split("```")[0].trim();
+      }
+
+      const analysisResult = JSON.parse(responseText);
+
+      return res.status(200).json({
+        success: true,
+        extractedText: analysisResult.extractedText,
+        structuredContent: analysisResult.structuredContent,
+        confidenceScore: analysisResult.confidenceScore,
+      });
+    } catch (parseError) {
+      console.error("Error parsing Gemini response:", parseError);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to parse prescription analysis results",
+        error: parseError.message,
+      });
+    }
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to analyze prescription image",
+      error: error.message,
+    });
+  }
+});
+
 // Generate care plan using Gemini AI
 router.post(
   "/generate-care-plan/:patientId",
@@ -183,12 +287,10 @@ router.post("/caregiver/update-profile", isAuthenticated, async (req, res) => {
   try {
     // Ensure the user is a caregiver
     if (req.user.role !== "caregiver") {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Access denied. Not a caregiver account.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Not a caregiver account.",
+      });
     }
 
     const Caregiver = require("../models/caregiver");

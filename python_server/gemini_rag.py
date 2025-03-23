@@ -345,12 +345,24 @@ if __name__ == '__main__':
                 "recordId": "sample_record_3",
                 "title": "Lab Results",
                 "description": "Complete Blood Count: WBC 6.5, RBC 4.8, Hemoglobin 14.2, Hematocrit 42%, Platelets 250. Comprehensive Metabolic Panel: Sodium 140, Potassium 4.2, Glucose 110 (slightly elevated), A1C 6.4%. Lipid Panel: Total Cholesterol 185, LDL 110, HDL 45, Triglycerides 150. Thyroid Function: TSH 2.8, within normal range.",
+                "sbr": "6",
                 "recordType": "Lab Report",
                 "recordDate": "2023-06-10",
                 "doctor_name": "Dr Darshan Singh Bhakuni",
                 "hospital_name": "Medanta Hospital",
                 "hospital_no": "MH005990453",
-            }
+            },
+            {
+    "recordId": "sample_record_2",
+    "title": "Surgical Pathology Report",
+    "description": "Diagnosis: 1. Infiltrating Ductal Carcinoma, Moderately Differentiated (SBR score 6), Right Breast Core Biopsies. 2. Ductal Carcinoma in situ, high grade. Clinical History: palpable right breast mass; calcifications on mammogram. Sites: right breast core biopsies. Gross: Received in formalin are 4 cores of white and yellow tissue, each measuring 2.0 X .03 cm in diameter. Totally embedded in one cassette. Microscopic: Sections reveal infiltrating ductal carcinoma. The tumor is composed of irregular, nests and cords of cells with focal gland formation. Individual cells have irregular nuclei and nucleoli. Well-formed glands make up less than 20% of the tumor. Mitoses are occasionally encountered and these number 4 per 10 hpf. The tumor elicits a desmoplastic stromal reaction. Calcifications are seen within a few neoplastic ducts as well as the stroma. There is a focus of ductal carcinoma in situ involving one core. Nuclei are large and have prominent nucleoli. The duct lumen is filled with necrotic debris. All four core biopsies contain infiltrating carcinoma; the longest tumor segment is 1.7 cm in a 2 cm core. Breast Marker analysis is pending and an addendum report will be issued.",
+    "recordType": "Pathology Report",
+    "recordDate": "2019-01-26",
+    "doctor_name": "Dr. Not Specified",
+    "hospital_name": "Community Hospital",
+    "hospital_no": "8897786"
+}
+
         ]
         
         # Initialize user's chunks store
