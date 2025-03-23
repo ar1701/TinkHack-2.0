@@ -1,8 +1,26 @@
-# Healthcare Platform
+# Arogyam
 
-A comprehensive healthcare platform that connects patients with navigators and caregivers, facilitating medical record management and health risk assessments.
+Arogyam is not just a platform—it’s a revolution in cancer care. By harnessing AI-driven medical intelligence, we dismantle barriers to treatment, transforming chaos into clarity for underprivileged patients. With cutting-edge medical record organization, intelligent patient navigation, and automated financial aid discovery, we empower patients with swift diagnoses, structured guidance, and unwavering support. Arogyam redefines healthcare accessibility, ensuring no patient is lost in complexity—because every life deserves a fighting chance.
 
-## Features
+-------
+
+## Project Overview
+Revolutionizing Cancer Care with AI-Powered Support
+Cancer care is not just about treatment—it’s about access, guidance, and support. Many underprivileged patients struggle with treatment delays, disorganized medical records, financial burdens, and a lack of structured assistance, making their fight against cancer even harder.
+
+Arogyam is an AI-driven healthcare platform designed to bridge these gaps, ensuring that every patient receives timely care, clear guidance, and financial aid without unnecessary delays. Our intelligent patient navigation system connects patients with certified navigators, social workers, and doctors, while our AI-powered medical record management (RAG technology) organizes unstructured data for instant, hassle-free access to patient history.
+
+Beyond treatment, Arogyam provides emotional and community support, ensuring that no patient fights alone. With AI-driven financial aid discovery, real-time updates, and multilingual chatbot assistance, we are making cancer care more accessible, structured, and patient-centric—because healthcare should heal, not hinder.
+
+-------
+
+## Inspiration
+Our inspiration for Arogyam comes from the countless stories of cancer patients lost in a maze of paperwork, long wait times, and inaccessible resources—barriers that often delay treatment and worsen outcomes. We saw the urgent need for a seamless, AI-powered solution that could bring clarity, guidance, and hope to those who need it most.
+
+Cancer is a battle no one should fight alone, yet countless underprivileged patients face delays, confusion, and financial struggles that make treatment even harder. Many lose precious time—not to the disease, but to disorganized systems and inaccessible support.
+Arogyam was born from a vision to change this. Inspired by the struggles of real patients, we are leveraging AI-driven solutions to bring clarity, speed, and guidance to those who need it most. By breaking down barriers in medical record management, patient navigation, and financial aid discovery, we ensure that healthcare becomes a right, not a privilege. Because in the fight against cancer, every second counts. 
+
+--------
 
 ### Patient Features:
 
