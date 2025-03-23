@@ -14,25 +14,25 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * Get recommendations for doctors and navigators based on patient's medical conditions
- * @param {string} patientId - The user ID of the patient
+ * @param {string} patientUserId - The user ID of the patient
  * @returns {Object} - Recommended doctors and navigators with confidence scores
  */
-async function getRecommendations(patientId) {
+async function getRecommendations(patientUserId) {
   try {
     // Get patient data
-    const patient = await Patient.findOne({ user: patientId });
+    const patient = await Patient.findOne({ user: patientUserId });
     if (!patient) {
       throw new Error("Patient not found");
     }
 
     // Get patient's medical records
-    const medicalRecords = await MedicalRecord.find({ patient: patientId })
+    const medicalRecords = await MedicalRecord.find({ patient: patientUserId })
       .sort({ recordDate: -1 })
       .limit(5);
 
     // Get patient's baseline screening
     const baselineScreening = await BaselineScreening.findOne({
-      patient: patientId,
+      patient: patientUserId,
     });
 
     // Construct patient health profile

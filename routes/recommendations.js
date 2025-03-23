@@ -1,23 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const { isAuthenticated, isPatient } = require("../middleware/auth");
-const { isLoggedIn } = require("../middleware/auth");
 const { getRecommendations } = require("../utils/recommendationEngine");
 
 /**
  * Get personalized doctor and navigator recommendations
  * based on patient's medical conditions
  */
-router.get("/", isLoggedIn, async (req, res) => {
+router.get("/", isAuthenticated, isPatient, async (req, res) => {
   try {
-    // Only allow patients to access this endpoint
-    if (req.user.userType !== "Patient") {
-      return res.status(403).json({
-        success: false,
-        message: "Only patients can access recommendations",
-      });
-    }
-
     const recommendations = await getRecommendations(req.user._id);
 
     res.json({
