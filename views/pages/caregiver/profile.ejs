@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caregiver Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      :root {
+          --primary: #136179cc;
+          --primary-light: #eef2ff;
+          --info: #36b9cc;
+          --info-light: #e3f8fb;
+          --success: #1cc88a;
+          --success-light: #e6fff7;
+          --warning: #f6c23e;
+          --warning-light: #fff8e6;
+          --danger: #e74a3b;
+          --danger-light: #ffe6e4;
+          --gray: #858796;
+          --gray-light: #f8f9fc;
+          --dark: #5a5c69;
+          --sidebar-width: 250px;
+          --transition-speed: 0.3s;
+      }
+
+      body {
+          background-color: #4ca4becc;
+          color: #5a5c69;
+          overflow-x: hidden;
+      }
+
+      /* Background Elements */
+      .background-container {
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          z-index: -1;
+      }
+
+      .shape {
+          position: absolute;
+          opacity: 0.05;
+          border-radius: 50%;
+      }
+
+      .shape1 {
+          width: 500px;
+          height: 500px;
+          background: var(--primary);
+          top: -150px;
+          right: -100px;
+      }
+
+      .shape2 {
+          width: 300px;
+          height: 300px;
+          background: var(--info);
+          bottom: -100px;
+          left: -50px;
+      }
+
+      .icons-container {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      .icon {
+          position: absolute;
+          color: var(--gray);
+          opacity: 0.05;
+          font-size: 40px;
+      }
+
+      .icon:nth-child(1) { top: 20%; left: 10%; }
+      .icon:nth-child(2) { top: 40%; left: 25%; }
+      .icon:nth-child(3) { top: 60%; left: 15%; }
+      .icon:nth-child(4) { top: 80%; left: 30%; }
+      .icon:nth-child(5) { top: 15%; right: 20%; }
+      .icon:nth-child(6) { top: 35%; right: 10%; }
+      .icon:nth-child(7) { top: 55%; right: 25%; }
+      .icon:nth-child(8) { top: 75%; right: 15%; }
+
+      /* Sidebar */
+      .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: var(--sidebar-width);
+          height: 100%;
+          background: #167997cc;
+          box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+          z-index: 100;
+          transition: all var(--transition-speed);
+          overflow-y: auto;
+      }
+
+      .sidebar h2 {
+          padding: 1.5rem;
+          color: var(--primary);
+          font-size: 1.2rem;
+          color: white;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar ul {
+          list-style: none;
+          padding: 1rem 0;
+      }
+
+      .sidebar ul li {
+          position: relative;
+      }
+
+      .sidebar ul li a {
+          display: flex;
+          align-items: center;
+          color: var(--gray);
+          padding: 0.8rem 1.5rem;
+          text-decoration: none;
+          transition: all 0.2s;
+          color: white;
+      }
+
+      .sidebar ul li a i {
+          margin-right: 0.8rem;
+          min-width: 20px;
+          text-align: center;
+      }
+
+      .sidebar ul li.active a,
+      .sidebar ul li a:hover {
+          color: var(--primary);
+          background: var(--primary-light);
+          border-left: 4px solid var(--primary);
+      }
+
+      .sidebar .logout {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar .logout a {
+          color: var(--danger);
+          color: white;
+      }
+
+      .sidebar .logout a:hover {
+          background: var(--danger-light);
+          border-left: 4px solid var(--danger);
+      }
+
+      /* Main Content */
+      .main-content {
+          margin-left: var(--sidebar-width);
+          padding: 1.5rem;
+          transition: all var(--transition-speed);
+      }
+
+      /* Header */
+      .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+      }
+
+      .header h1 {
+          font-size: 1.7rem;
+          color: var(--dark);
+          font-weight: 500;
+      }
+
+      .profile-card {
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+          margin-bottom: 1.5rem;
+      }
+
+      .profile-card-header {
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          display: flex;
+          align-items: center;
+      }
+
+      .profile-card-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--primary-light);
+          color: var(--primary);
+          margin-right: 1rem;
+      }
+
+      .profile-card-title {
+          margin: 0;
+          font-size: 1.1rem;
+          color: var(--dark);
+      }
+
+      .profile-card-body {
+          padding: 1.5rem;
+      }
+
+      .form-label {
+          font-weight: 500;
+          color: var(--dark);
+      }
+
+      .form-field {
+          margin-bottom: 1.5rem;
+      }
+
+      .btn-save {
+          background-color: var(--primary);
+          border: none;
+          padding: 0.6rem 1.5rem;
+          font-weight: 500;
+      }
+
+      .btn-save:hover {
+          background-color: #0f4e61;
+      }
+
+      .profile-image-container {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          margin: 0 auto 2rem;
+      }
+
+      .profile-image {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 5px solid var(--primary-light);
+      }
+
+      .profile-image-upload {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+      }
+
+      #profile-picture-input {
+          display: none;
+      }
+
+      .verify-badge {
+          background-color: var(--success);
+          color: white;
+          padding: 0.3rem 0.8rem;
+          border-radius: 50px;
+          font-size: 0.8rem;
+          display: inline-flex;
+          align-items: center;
+          margin-left: 1rem;
+      }
+
+      .verify-badge i {
+          margin-right: 0.3rem;
+      }
+
+      .alert {
+          margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="icons-container">
+            <i class="icon fas fa-heartbeat"></i>
+            <i class="icon fas fa-pills"></i>
+            <i class="icon fas fa-stethoscope"></i>
+            <i class="icon fas fa-user-md"></i>
+            <i class="icon fas fa-hospital"></i>
+            <i class="icon fas fa-notes-medical"></i>
+            <i class="icon fas fa-syringe"></i>
+            <i class="icon fas fa-ambulance"></i>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2><i class="fas fa-user-md"></i> Caregiver Portal</h2>
+        <ul>
+            <li><a href="/caregiver/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="active"><a href="/caregiver/profile"><i class="fas fa-user-md"></i> Profile</a></li>
+            <li><a href="/caregiver/patient-requests"><i class="fas fa-bell"></i> Patient Requests</a></li>
+            <li><a href="/caregiver/chat"><i class="fas fa-comments"></i> Patient Chat</a></li>
+            <li><a href="/caregiver/appointments"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+        </ul>
+        <ul class="logout">
+            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Caregiver Profile</h1>
+            <div class="d-flex align-items-center">
+                <% if (caregiver && caregiver.isVerified) { %>
+                <div class="verify-badge">
+                    <i class="fas fa-check-circle"></i> Verified Caregiver
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <%= success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %>
+
+        <form action="/caregiver/profile" method="POST" enctype="multipart/form-data">
+            <!-- Basic Info -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="profile-card-title">Basic Information</h2>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-image-container">
+                        <img src="<%= caregiver && caregiver.profileImage ? `/uploads/profile/${caregiver.profileImage}` : '/images/default-doctor.jpg' %>" alt="Profile Picture" class="profile-image" id="profile-picture-preview">
+                        <label for="profile-picture-input" class="profile-image-upload">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="profile-picture-input" name="profileImage" accept="image/*">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" value="<%= caregiver && caregiver.fullName ? caregiver.fullName : user.fullName %>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" value="<%= user.email %>" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" value="<%= user.phone %>" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="Male" <%= caregiver && caregiver.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                                    <option value="Female" <%= caregiver && caregiver.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                                    <option value="Other" <%= caregiver && caregiver.gender === 'Other' ? 'selected' : '' %>>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Info -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h2 class="profile-card-title">Professional Information</h2>
+                </div>
+                <div class="profile-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="speciality" class="form-label">Speciality</label>
+                                <select class="form-select" id="speciality" name="speciality" required>
+                                    <option value="" disabled <%= !caregiver || !caregiver.speciality ? 'selected' : '' %>>Select your speciality</option>
+                                    <option value="Cardiologist" <%= caregiver && caregiver.speciality === 'Cardiologist' ? 'selected' : '' %>>Cardiologist</option>
+                                    <option value="Dermatologist" <%= caregiver && caregiver.speciality === 'Dermatologist' ? 'selected' : '' %>>Dermatologist</option>
+                                    <option value="Endocrinologist" <%= caregiver && caregiver.speciality === 'Endocrinologist' ? 'selected' : '' %>>Endocrinologist</option>
+                                    <option value="Gastroenterologist" <%= caregiver && caregiver.speciality === 'Gastroenterologist' ? 'selected' : '' %>>Gastroenterologist</option>
+                                    <option value="General Physician" <%= caregiver && caregiver.speciality === 'General Physician' ? 'selected' : '' %>>General Physician</option>
+                                    <option value="Neurologist" <%= caregiver && caregiver.speciality === 'Neurologist' ? 'selected' : '' %>>Neurologist</option>
+                                    <option value="Obstetrician" <%= caregiver && caregiver.speciality === 'Obstetrician' ? 'selected' : '' %>>Obstetrician</option>
+                                    <option value="Oncologist" <%= caregiver && caregiver.speciality === 'Oncologist' ? 'selected' : '' %>>Oncologist</option>
+                                    <option value="Ophthalmologist" <%= caregiver && caregiver.speciality === 'Ophthalmologist' ? 'selected' : '' %>>Ophthalmologist</option>
+                                    <option value="Orthopedist" <%= caregiver && caregiver.speciality === 'Orthopedist' ? 'selected' : '' %>>Orthopedist</option>
+                                    <option value="Pediatrician" <%= caregiver && caregiver.speciality === 'Pediatrician' ? 'selected' : '' %>>Pediatrician</option>
+                                    <option value="Psychiatrist" <%= caregiver && caregiver.speciality === 'Psychiatrist' ? 'selected' : '' %>>Psychiatrist</option>
+                                    <option value="Urologist" <%= caregiver && caregiver.speciality === 'Urologist' ? 'selected' : '' %>>Urologist</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="qualification" class="form-label">Qualification</label>
+                                <input type="text" class="form-control" id="qualification" name="qualification" value="<%= caregiver && caregiver.qualification ? caregiver.qualification : '' %>" placeholder="e.g. MD, MBBS, etc." required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="experience" class="form-label">Years of Experience</label>
+                                <input type="number" class="form-control" id="experience" name="experience" value="<%= caregiver && caregiver.experience ? caregiver.experience : '' %>" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="licenseNumber" class="form-label">License Number</label>
+                                <input type="text" class="form-control" id="licenseNumber" name="licenseNumber" value="<%= caregiver && caregiver.licenseNumber ? caregiver.licenseNumber : '' %>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="hospital" class="form-label">Hospital/Clinic</label>
+                                <input type="text" class="form-control" id="hospital" name="hospital" value="<%= caregiver && caregiver.hospital ? caregiver.hospital : '' %>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" value="<%= caregiver && caregiver.location ? caregiver.location : '' %>" placeholder="City, Country" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-field">
+                                <label for="languages" class="form-label">Languages Spoken</label>
+                                <input type="text" class="form-control" id="languages" name="languages" value="<%= caregiver && caregiver.languages ? caregiver.languages : '' %>" placeholder="e.g. English, Spanish, Hindi" required>
+                                <small class="text-muted">Separate languages with commas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certification -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h2 class="profile-card-title">Certification</h2>
+                </div>
+                <div class="profile-card-body">
+                    <div class="mb-3">
+                        <label for="certificationDocs" class="form-label">Upload Certification Documents</label>
+                        <input class="form-control" type="file" id="certificationDocs" name="certificationDocs" accept=".pdf,.jpg,.jpeg,.png">
+                        <small class="text-muted">Upload your medical license, certification, or relevant documents. (PDF, JPG, JPEG, PNG, max 5MB)</small>
+                    </div>
+                    <% if (caregiver && caregiver.certificationDocs) { %>
+                    <div class="mt-3">
+                        <p><strong>Current Document:</strong> <a href="/uploads/certifications/<%= caregiver.certificationDocs %>" target="_blank">View Document</a></p>
+                    </div>
+                    <% } %>
+                    <div class="mt-3">
+                        <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Your profile will be verified by our team after reviewing your certification documents.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h2 class="profile-card-title">About Me</h2>
+                </div>
+                <div class="profile-card-body">
+                    <div class="form-field">
+                        <label for="bio" class="form-label">Professional Bio</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="5" placeholder="Introduce yourself to your patients..."><%= caregiver && caregiver.bio ? caregiver.bio : '' %></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h2 class="profile-card-title">Availability</h2>
+                </div>
+                <div class="profile-card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Working Days</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="monday" name="workingDays[]" value="Monday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Monday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="monday">Monday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="tuesday" name="workingDays[]" value="Tuesday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Tuesday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="tuesday">Tuesday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="wednesday" name="workingDays[]" value="Wednesday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Wednesday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="wednesday">Wednesday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="thursday" name="workingDays[]" value="Thursday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Thursday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="thursday">Thursday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="friday" name="workingDays[]" value="Friday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Friday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="friday">Friday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="saturday" name="workingDays[]" value="Saturday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Saturday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="saturday">Saturday</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sunday" name="workingDays[]" value="Sunday" <%= caregiver && caregiver.workingDays && caregiver.workingDays.includes('Sunday') ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="sunday">Sunday</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="workingHoursStart" class="form-label">Working Hours (Start)</label>
+                                <input type="time" class="form-control" id="workingHoursStart" name="workingHoursStart" value="<%= caregiver && caregiver.workingHoursStart ? caregiver.workingHoursStart : '09:00' %>">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <label for="workingHoursEnd" class="form-label">Working Hours (End)</label>
+                                <input type="time" class="form-control" id="workingHoursEnd" name="workingHoursEnd" value="<%= caregiver && caregiver.workingHoursEnd ? caregiver.workingHoursEnd : '17:00' %>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                <button type="submit" class="btn btn-primary btn-save px-4 py-2">
+                    <i class="fas fa-save me-2"></i> Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview profile picture before upload
+        const profileInput = document.getElementById('profile-picture-input');
+        const profilePreview = document.getElementById('profile-picture-preview');
+
+        profileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePreview.setAttribute('src', e.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMsg = urlParams.get('success');
+        
+        // Display success message if present
+        if (successMsg) {
+            const alertBox = document.createElement('div');
+            alertBox.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+            alertBox.setAttribute('role', 'alert');
+            alertBox.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                ${successMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const header = document.querySelector('.header');
+            header.insertAdjacentElement('afterend', alertBox);
+        }
+    </script>
+  </body>
+</html> 

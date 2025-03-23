@@ -19,6 +19,15 @@
 </li>
 <li class="nav-item">
   <a
+    href="/patient/caregivers"
+    class="nav-link <%= locals.path === '/patient/caregivers' ? 'active' : '' %>"
+  >
+    <i class="fas fa-user-nurse me-2"></i>
+    Find Caregivers
+  </a>
+</li>
+<li class="nav-item">
+  <a
     href="/baseline-screening"
     class="nav-link <%= locals.path === '/patient/baseline-screening' ? 'active' : '' %>"
   >
@@ -26,9 +35,7 @@
     Health Screening
   </a>
 </li>
-<% } %>
-
-<% if (user.role === 'caregiver') { %>
+<% } %> <% if (user.role === 'caregiver') { %>
 <li class="nav-item">
   <a
     href="/caregiver/dashboard"
@@ -63,6 +70,15 @@
   >
     <i class="fas fa-comments me-2"></i>
     Patient Chat
+  </a>
+</li>
+<li class="nav-item">
+  <a
+    href="/caregiver/appointments"
+    class="nav-link <%= locals.path === '/caregiver/appointments' ? 'active' : '' %>"
+  >
+    <i class="fas fa-calendar-check me-2"></i>
+    Appointments
   </a>
 </li>
 <% } %>

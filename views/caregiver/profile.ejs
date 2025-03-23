@@ -1,0 +1,85 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3">
+      <%- include('../partials/sidebar') %>
+    </div>
+    <div class="col-md-9 mt-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4><i class="fas fa-user-md me-2"></i>Caregiver Profile</h4>
+        </div>
+        <div class="card-body">
+          <form action="/caregiver/profile" method="POST" enctype="multipart/form-data">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" name="fullName" value="<%= user.fullName %>" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Speciality</label>
+                <select class="form-select" name="speciality" required>
+                  <option value="" disabled selected>Select your speciality</option>
+                  <option value="Cardiology" <%= user.speciality === 'Cardiology' ? 'selected' : '' %>>Cardiology</option>
+                  <option value="Neurology" <%= user.speciality === 'Neurology' ? 'selected' : '' %>>Neurology</option>
+                  <option value="Oncology" <%= user.speciality === 'Oncology' ? 'selected' : '' %>>Oncology</option>
+                  <option value="Pediatrics" <%= user.speciality === 'Pediatrics' ? 'selected' : '' %>>Pediatrics</option>
+                  <option value="GeneralPractice" <%= user.speciality === 'GeneralPractice' ? 'selected' : '' %>>General Practice</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Qualification</label>
+                <input type="text" class="form-control" name="qualification" value="<%= user.qualification || '' %>" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Years of Experience</label>
+                <input type="number" class="form-control" name="experience" value="<%= user.experience || '' %>" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Hospital/Clinic Affiliated</label>
+                <input type="text" class="form-control" name="hospital" value="<%= user.hospital || '' %>" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" name="location" value="<%= user.location || '' %>" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Languages Spoken</label>
+                <input type="text" class="form-control" name="languages" value="<%= user.languages || '' %>" placeholder="e.g. English, Spanish" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">License Number</label>
+                <input type="text" class="form-control" name="licenseNumber" value="<%= user.licenseNumber || '' %>" required>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Upload Certification Documents</label>
+              <input type="file" class="form-control" name="certificationDocs" accept=".pdf,.jpg,.jpeg,.png">
+              <% if (user.certificationDocs) { %>
+                <small class="text-muted">Currently uploaded: <%= user.certificationDocs %></small>
+              <% } %>
+            </div>
+            
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary">Save Profile</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

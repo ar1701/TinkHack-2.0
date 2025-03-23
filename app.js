@@ -548,16 +548,6 @@ app.post("/navigator/profile", isLoggedIn, async (req, res) => {
   }
 });
 
-app.get("/caregiver/dashboard", isLoggedIn, (req, res) => {
-  if (req.user.userType !== "Caregiver") {
-    return res.redirect(`/${req.user.userType.toLowerCase()}/dashboard`);
-  }
-  res.render("pages/caregiver/dashboard.ejs", {
-    user: req.user,
-    path: "/caregiver/dashboard",
-  });
-});
-
 // Add medical records routes
 app.use("/api/medical-records", medicalRecordsRoutes);
 
@@ -565,7 +555,6 @@ app.use("/api/medical-records", medicalRecordsRoutes);
 app.use(authRoutes);
 app.use(patientRoutes);
 app.use(navigatorRoutes);
-app.use(caregiverRoutes);
 app.use(baselineScreeningRoutes);
 app.use("/api/gemini", geminiRoutes);
 app.use(navigatorListRoutes);
@@ -573,7 +562,7 @@ app.use(chatRoutes);
 app.use("/", carePlansRouter);
 
 // Mount routes
-app.use('/caregiver', caregiverRoutes);
+app.use("/caregiver", caregiverRoutes);
 
 // Create HTTP server
 const server = http.createServer(app);

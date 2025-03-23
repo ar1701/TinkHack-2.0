@@ -95,8 +95,8 @@ router.post(
       }
 
       // Import required model
-      const MedicalRecord = require('../models/medicalRecord');
-      const BaselineScreening = require('../models/baselineScreening');
+      const MedicalRecord = require("../models/medicalRecord");
+      const BaselineScreening = require("../models/baselineScreening");
 
       // Get patient's medical records and screening results
       const medicalRecords = await MedicalRecord.find({
@@ -182,15 +182,20 @@ Format the response in JSON.`;
 router.post("/caregiver/update-profile", isAuthenticated, async (req, res) => {
   try {
     // Ensure the user is a caregiver
-    if (req.user.role !== 'caregiver') {
-      return res.status(403).json({ success: false, message: "Access denied. Not a caregiver account." });
+    if (req.user.role !== "caregiver") {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Access denied. Not a caregiver account.",
+        });
     }
 
-    const Caregiver = require('../models/caregiver');
-    
+    const Caregiver = require("../models/caregiver");
+
     // Find or create caregiver profile
     let caregiver = await Caregiver.findOne({ user: req.user._id });
-    
+
     if (!caregiver) {
       caregiver = new Caregiver({
         user: req.user._id,
@@ -201,7 +206,7 @@ router.post("/caregiver/update-profile", isAuthenticated, async (req, res) => {
         hospital: req.body.hospital,
         location: req.body.location,
         languages: req.body.languages,
-        licenseNumber: req.body.licenseNumber
+        licenseNumber: req.body.licenseNumber,
       });
     } else {
       // Update existing caregiver
@@ -214,25 +219,25 @@ router.post("/caregiver/update-profile", isAuthenticated, async (req, res) => {
       caregiver.languages = req.body.languages;
       caregiver.licenseNumber = req.body.licenseNumber;
     }
-    
+
     // Handle certification document upload if provided
     if (req.file) {
       caregiver.certificationDocs = req.file.filename;
     }
-    
+
     await caregiver.save();
-    
+
     res.json({
       success: true,
       message: "Caregiver profile updated successfully",
-      caregiver: caregiver
+      caregiver: caregiver,
     });
   } catch (error) {
     console.error("Error updating caregiver profile:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update caregiver profile",
-      error: error.message
+      error: error.message,
     });
   }
 });

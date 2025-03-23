@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+<%- include('../../partials/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3"><%- include('../partials/sidebar') %></div>
+    <div class="col-md-9 mt-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4><i class="fas fa-bell me-2"></i>Patient Requests</h4>
+        </div>
+        <div class="card-body">
+          <% if (typeof pendingRequests !== 'undefined' && pendingRequests &&
+          pendingRequests.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Request Date</th>
+                  <th>Reason</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% pendingRequests.forEach(request => { %>
+                <tr>
+                  <td><%= request.patient.fullName %></td>
+                  <td>
+                    <%= new Date(request.createdAt).toLocaleDateString() %>
+                  </td>
+                  <td><%= request.reason %></td>
+                  <td>
+                    <form
+                      class="d-inline"
+                      action="/caregiver/patient-requests/<%= request._id %>/accept"
+                      method="POST"
+                    >
+                      <button type="submit" class="btn btn-sm btn-success">
+                        Accept
+                      </button>
+                    </form>
+                    <form
+                      class="d-inline"
+                      action="/caregiver/patient-requests/<%= request._id %>/reject"
+                      method="POST"
+                    >
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        Reject
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          <% } else { %>
+          <div class="text-center p-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p>No pending patient requests</p>
+            <p>When patients request your help, they will appear here.</p>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

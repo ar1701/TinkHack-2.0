@@ -1,0 +1,104 @@
+<%- include('../partials/header') %> <%- include('../partials/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3"><%- include('../partials/sidebar') %></div>
+    <div class="col-md-9 mt-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4><i class="fas fa-comments me-2"></i>Patient Chat</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 border-end">
+              <h5 class="mb-3">Patients</h5>
+              <div class="list-group">
+                <% if (conversations && conversations.length > 0) { %> <%
+                conversations.forEach(conversation => { %>
+                <a
+                  href="/caregiver/chat/<%= conversation.patientId %>"
+                  class="list-group-item list-group-item-action <%= conversation.unread ? 'fw-bold' : '' %>"
+                >
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><%= conversation.patientName %></h6>
+                    <small><%= conversation.lastMessageTime %></small>
+                  </div>
+                  <small
+                    ><%= conversation.lastMessage.length > 30 ?
+                    conversation.lastMessage.substring(0, 30) + '...' :
+                    conversation.lastMessage %></small
+                  >
+                  <% if (conversation.unread) { %>
+                  <span class="badge bg-primary rounded-pill">New</span>
+                  <% } %>
+                </a>
+                <% }) %> <% } else { %>
+                <div class="text-center p-3">
+                  <p class="text-muted">No active conversations</p>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <% if (activeChat) { %>
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5><%= activeChat.patientName %></h5>
+                <small class="text-muted"
+                  >Patient ID: <%= activeChat.patientId %></small
+                >
+              </div>
+              <div
+                class="chat-messages border rounded p-3 mb-3"
+                style="height: 300px; overflow-y: auto"
+              >
+                <% activeChat.messages.forEach(message => { %>
+                <div
+                  class="message <%= message.sender === 'caregiver' ? 'text-end' : '' %> mb-2"
+                >
+                  <div
+                    class="message-content d-inline-block p-2 rounded <%= message.sender === 'caregiver' ? 'bg-primary text-white' : 'bg-light' %>"
+                    style="max-width: 75%"
+                  >
+                    <%= message.content %>
+                    <div class="message-time">
+                      <small class="text-muted"><%= message.timestamp %></small>
+                    </div>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+              <form
+                id="message-form"
+                action="/caregiver/chat/<%= activeChat.patientId %>/send"
+                method="POST"
+              >
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="message"
+                    placeholder="Type your message..."
+                    required
+                  />
+                  <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-paper-plane"></i> Send
+                  </button>
+                </div>
+              </form>
+              <% } else { %>
+              <div class="text-center py-5">
+                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                <p>Select a patient conversation to start chatting</p>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

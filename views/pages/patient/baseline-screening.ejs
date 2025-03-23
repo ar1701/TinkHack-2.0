@@ -549,17 +549,40 @@
   }
 
   .form-control,
-  .form-select {
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    max-width: 600px;
-  }
+.form-select {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  max-width: 600px;
+  border: 2px solid #ced4da; /* Added border styling */
+}
 
-  .form-control:focus,
-  .form-select:focus {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd; /* Bootstrap primary color */
+  border-width: 2px;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.1);
+}
+
+/* For textareas */
+textarea.form-control {
+  border: 2px solid #ced4da;
+  transition: all 0.3s ease;
+}
+
+textarea.form-control:focus {
+  border-color: #0d6efd;
+  border-width: 2px;
+}
+
+/* For tag input containers */
+.tag-input-container .form-control {
+  border: 2px solid #ced4da;
+}
+
+.tag-input-container .form-control:focus {
+  border-color: #0d6efd;
+}
 
   .tag {
     background: #e9ecef;
